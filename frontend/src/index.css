@@ -1,26 +1,26 @@
 @import "tailwindcss";
 @import "@xyflow/react/dist/style.css";
 
-/* Modern Web Guidance: dark-mode, color, and responsive-table implementation */
+/* Modern Web Guidance: dark-mode, color, motion, html, and responsive-table implementation */
 :root {
   --color-canvas-light: #f8fafc;
-  --color-canvas-dark: #090d16;
+  --color-canvas-dark: #060911;
   --color-surface-light: #ffffff;
-  --color-surface-dark: #111827;
+  --color-surface-dark: #0f172a;
   --color-surface-elevated-light: #f1f5f9;
   --color-surface-elevated-dark: #1e293b;
   --color-text-light: #0f172a;
   --color-text-dark: #f8fafc;
   --color-text-muted-light: #475569;
   --color-text-muted-dark: #94a3b8;
-  --color-border-light: #cbd5e1;
-  --color-border-dark: #334155;
-  --color-brand-light: #2563eb;
+  --color-border-light: #e2e8f0;
+  --color-border-dark: #1e293b;
+  --color-brand-light: #0284c7;
   --color-brand-dark: #38bdf8;
   --color-scrollbar-track-light: #e2e8f0;
-  --color-scrollbar-track-dark: #1e293b;
-  --color-scrollbar-thumb-light: #64748b;
-  --color-scrollbar-thumb-dark: #64748b;
+  --color-scrollbar-track-dark: #0f172a;
+  --color-scrollbar-thumb-light: #94a3b8;
+  --color-scrollbar-thumb-dark: #475569;
 
   /* Default fallback values for browsers without light-dark() support */
   --color-canvas: var(--color-canvas-light);
@@ -67,11 +67,12 @@
 
 @supports not (scrollbar-color: auto) {
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-thumb {
     background: var(--color-scrollbar-thumb);
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-track {
     background: var(--color-scrollbar-track);
@@ -96,11 +97,74 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Motion & Reduced-Motion accessibility (modern-web-guidance: motion) */
+@keyframes pulse-ring {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.03);
+  }
+}
+
+.topology-active-pulse {
+  animation: pulse-ring 1.8s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.panel-transition {
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .react-flow__edge.animated path {
+    animation: none !important;
+  }
+}
+
+/* Native <details> & <summary> progressive disclosure styling (modern-web-guidance: html) */
+details.disclosure-box > summary {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+details.disclosure-box > summary:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* React Flow controls refinement */
+.react-flow__controls {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid #334155 !important;
+  box-shadow: none !important;
+}
+
+.react-flow__controls-button {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid #1e293b !important;
+  fill: #cbd5e1 !important;
+}
+
+.react-flow__controls-button:hover {
+  background-color: #1e293b !important;
+}
+
 /* Responsive accessible data table (modern-web-guidance: responsive-table) */
 .table-wrapper {
   overflow: auto;
   max-inline-size: 100%;
-  max-block-size: min(600px, 78vh);
+  max-block-size: min(620px, 78vh);
   container-type: inline-size;
   scrollbar-gutter: stable;
 }

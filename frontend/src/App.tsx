@@ -127,13 +127,20 @@ export const App: React.FC = () => {
       }
       if (mounted) {
         await fetchMetrics();
-        await fetchRecentRequests();
+        const reqsRes = await fetch('/api/requests').catch(() => null);
+        if (reqsRes && reqsRes.ok && mounted) {
+          const data = await reqsRes.json();
+          if (Array.isArray(data.requests) && data.requests.length > 0) {
+            setRecentRequests(data.requests);
+            setActiveRecord((prev) => prev || data.requests[0]);
+          }
+        }
       }
     })();
     return () => {
       mounted = false;
     };
-  }, [fetchMetrics, fetchRecentRequests]);
+  }, [fetchMetrics]);
 
   const handleSend = useCallback(async () => {
     if (!prompt.trim() || isRunning) return;
@@ -283,8 +290,8 @@ export const App: React.FC = () => {
 
   const tabs: Array<{ id: ActiveTab; label: string; icon: React.ReactNode }> = [
     { id: 'playground', label: 'Inference Playground', icon: <Terminal className="w-4 h-4" /> },
-    { id: 'timeline', label: 'Live Lifecycle Timeline', icon: <Clock className="w-4 h-4" /> },
     { id: 'topology', label: 'Interactive Topology', icon: <Network className="w-4 h-4" /> },
+    { id: 'timeline', label: 'Live Lifecycle Timeline', icon: <Clock className="w-4 h-4" /> },
     { id: 'metrics', label: 'Metrics', icon: <BarChart3 className="w-4 h-4" /> },
     { id: 'learning', label: 'Learning Lab', icon: <BookOpen className="w-4 h-4" /> },
   ];
@@ -296,7 +303,7 @@ export const App: React.FC = () => {
         <div
           role="status"
           data-testid="mock-mode-banner"
-          className="bg-amber-500/20 border-b border-amber-500/40 px-4 py-2 text-xs flex flex-wrap items-center justify-between gap-2"
+          className="bg-amber-500/15 border-b border-amber-500/35 px-4 py-2 text-xs flex flex-wrap items-center justify-between gap-2"
         >
           <div className="flex items-center gap-2 font-medium text-amber-900 dark:text-amber-200">
             <AlertOctagon className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
@@ -309,16 +316,21 @@ export const App: React.FC = () => {
       )}
 
       {/* Top Application Header */}
-      <header className="border-b border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-4">
+      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xs px-6 py-3.5 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-sky-600 text-white flex items-center justify-center font-bold shadow-xs">
               <Activity className="w-5 h-5" aria-hidden="true" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight">llm-d Inference Observatory</h1>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Interactive CPU-Only GKE Inference Lifecycle, Endpoint Picker Routing & OpenTelemetry Lab
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-bold tracking-tight">llm-d Inference Observatory</h1>
+                <span className="hidden sm:inline-block rounded-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-600 dark:text-slate-300">
+                  {config.mock_mode ? 'Local Simulator' : `GKE: ${config.cluster_name}`}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Interactive CPU-Only GKE Inference Lifecycle, Endpoint Picker Routing &amp; OpenTelemetry Lab
               </p>
             </div>
           </div>
@@ -326,8 +338,8 @@ export const App: React.FC = () => {
           {/* Request Selector Dropdown & Stack Pill */}
           <div className="flex flex-wrap items-center gap-3 text-xs">
             {recentRequests.length > 0 && (
-              <div className="flex items-center gap-1.5">
-                <History className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
+              <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                <History className="w-3.5 h-3.5 text-slate-500 shrink-0" aria-hidden="true" />
                 <label htmlFor="request-history-select" className="sr-only">
                   Select Observed Request
                 </label>
@@ -336,7 +348,7 @@ export const App: React.FC = () => {
                   data-testid="request-history-select"
                   value={activeRecord?.request_id || ''}
                   onChange={(e) => void fetchRequestDetail(e.target.value)}
-                  className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-2.5 py-1.5 font-mono text-xs"
+                  className="max-w-[calc(100vw-4.5rem)] sm:max-w-xs truncate rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-2.5 py-1.5 font-mono text-xs"
                 >
                   {recentRequests.map((r) => (
                     <option key={r.request_id} value={r.request_id}>
@@ -347,8 +359,8 @@ export const App: React.FC = () => {
               </div>
             )}
 
-            <span className="rounded-md border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 font-mono">
-              llm-d v1.0.0 | GAIE v1.6.2 | vLLM CPU v0.31.0
+            <span className="hidden md:inline-block rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-2.5 py-1 font-mono text-[11px] text-slate-500">
+              llm-d v1.0.0 • GAIE v1.6.2 • vLLM CPU v0.17.1
             </span>
           </div>
         </div>
@@ -356,31 +368,51 @@ export const App: React.FC = () => {
         {/* Navigation Tabs */}
         <nav
           aria-label="Observatory Screens"
-          className="max-w-7xl mx-auto mt-4 flex flex-wrap gap-1.5 border-t border-slate-200 dark:border-slate-800 pt-3"
+          className="max-w-7xl mx-auto mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/80 dark:border-slate-800/80 pt-2.5"
         >
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              data-testid={`nav-tab-${tab.id}`}
-              onClick={() => setActiveTab(tab.id)}
-              className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors cursor-pointer ${
-                activeTab === tab.id
-                  ? 'bg-sky-600 text-white'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              {tab.icon}
-              <span>{tab.label}</span>
-            </button>
-          ))}
+          <div className="flex flex-wrap gap-1.5" role="tablist">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                data-testid={`nav-tab-${tab.id}`}
+                onClick={() => setActiveTab(tab.id)}
+                className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+                  activeTab === tab.id
+                    ? 'bg-sky-600 text-white shadow-2xs'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {activeRecord && (
+            <div className="hidden lg:flex items-center gap-2.5 text-[11px] font-mono text-slate-500">
+              <span>
+                Active: <strong className="text-slate-800 dark:text-slate-200">{activeRecord.request_id}</strong>
+              </span>
+              {activeRecord.timings.ttft_ms.value !== null && (
+                <span>
+                  • TTFT <strong className="text-sky-600 dark:text-sky-400">{activeRecord.timings.ttft_ms.value} ms</strong>
+                </span>
+              )}
+              {activeRecord.selected_endpoint && (
+                <span className="truncate max-w-[240px]">
+                  • <strong className="text-emerald-600 dark:text-emerald-400">{activeRecord.selected_endpoint}</strong>
+                </span>
+              )}
+            </div>
+          )}
         </nav>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5">
         {activeTab === 'playground' && (
           <ScreenPlayground
             config={config}
@@ -408,14 +440,20 @@ export const App: React.FC = () => {
             onCancel={handleCancel}
             onClear={handleClear}
             onRetry={() => void handleSend()}
+            onNavigateTab={setActiveTab}
+          />
+        )}
+
+        {activeTab === 'topology' && (
+          <ScreenTopology
+            record={activeRecord}
+            mockMode={config.mock_mode}
+            metrics={metrics}
+            onNavigateTab={setActiveTab}
           />
         )}
 
         {activeTab === 'timeline' && <ScreenTimeline record={activeRecord} />}
-
-        {activeTab === 'topology' && (
-          <ScreenTopology record={activeRecord} mockMode={config.mock_mode} />
-        )}
 
         {activeTab === 'metrics' && (
           <ScreenMetrics

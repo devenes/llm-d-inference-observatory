@@ -29,10 +29,27 @@ test.describe('llm-d Inference Observatory End-to-End Local Demo Suite', () => {
     await expect(page.getByTestId('timeline-event-model.first_token')).toBeVisible();
     await expect(page.getByTestId('timeline-event-request.completed')).toBeVisible();
 
-    // Inspect Interactive Topology
+    // Inspect Interactive Topology & Journey Controls
     await page.getByTestId('nav-tab-topology').click();
     await expect(page.getByTestId('topology-canvas')).toBeVisible();
+    await expect(page.getByTestId('topology-journey-bar')).toBeVisible();
     await expect(page.getByTestId('inspector-node-title')).toContainText('Endpoint Picker');
+
+    // Step through Interactive Topology journey
+    await page.getByTestId('topology-step-submit').click();
+    await expect(page.getByTestId('topology-active-step-banner')).toContainText('1. Prompt Submitted');
+    await expect(page.getByTestId('inspector-node-title')).toContainText('Observer API');
+
+    await page.getByTestId('topology-step-next').click();
+    await expect(page.getByTestId('topology-active-step-banner')).toContainText('2. Gateway Forwarded');
+
+    await page.getByTestId('topology-reset').click();
+    await expect(page.getByTestId('topology-active-step-banner')).toHaveCount(0);
+
+    // Inspect a connection edge
+    await page.locator('summary', { hasText: 'Inspect Connection / Link' }).click();
+    await page.getByTestId('topology-edge-pill-e-gateway-epp').click();
+    await expect(page.getByTestId('inspector-edge-title')).toContainText('Envoy Proxy ↔ Endpoint Picker (EPP)');
 
     // 9. Show aggregate metrics separately
     await page.getByTestId('nav-tab-metrics').click();

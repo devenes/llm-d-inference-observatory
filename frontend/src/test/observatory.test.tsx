@@ -4,6 +4,7 @@ import { ObservationBadge } from '../components/ObservationBadge';
 import { ScreenTimeline, sortLifecycleEvents } from '../components/ScreenTimeline';
 import { ScreenMetrics } from '../components/ScreenMetrics';
 import { ScreenLearningLab } from '../components/ScreenLearningLab';
+import { ScreenTopology } from '../components/ScreenTopology';
 import { EventEnvelope, MetricsSummary, RequestRecord } from '../types/observatory';
 
 describe('ObservationBadge & Classification Semantics', () => {
@@ -267,6 +268,41 @@ describe('ScreenLearningLab Navigation', () => {
     fireEvent.click(screen.getByTestId('learning-topic-prefill'));
     expect(screen.getByTestId('learning-active-title')).toHaveTextContent(
       '7. Prompt Processing (Prefill)',
+    );
+  });
+});
+
+describe('ScreenTopology Interactive Journey & Node/Edge Inspection', () => {
+  it('steps through the inference journey and switches between node and connection inspectors', () => {
+    render(<ScreenTopology record={null} mockMode={false} />);
+    expect(screen.getByTestId('topology-journey-bar')).toBeInTheDocument();
+    expect(screen.getByTestId('inspector-node-title')).toHaveTextContent(
+      '4. Endpoint Picker (EPP)',
+    );
+
+    // Step through journey stages
+    fireEvent.click(screen.getByTestId('topology-step-submit'));
+    expect(screen.getByTestId('topology-active-step-banner')).toHaveTextContent(
+      '1. Prompt Submitted',
+    );
+    expect(screen.getByTestId('inspector-node-title')).toHaveTextContent(
+      '2. Observer API',
+    );
+
+    // Advance to next step
+    fireEvent.click(screen.getByTestId('topology-step-next'));
+    expect(screen.getByTestId('topology-active-step-banner')).toHaveTextContent(
+      '2. Gateway Forwarded',
+    );
+
+    // Reset full path
+    fireEvent.click(screen.getByTestId('topology-reset'));
+    expect(screen.queryByTestId('topology-active-step-banner')).not.toBeInTheDocument();
+
+    // Inspect an edge connection
+    fireEvent.click(screen.getByTestId('topology-edge-pill-e-gateway-epp'));
+    expect(screen.getByTestId('inspector-edge-title')).toHaveTextContent(
+      'Envoy Proxy ↔ Endpoint Picker (EPP)',
     );
   });
 });
