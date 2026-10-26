@@ -1,0 +1,528 @@
+package upstream
+
+import (
+	"bufio"
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/config"
+	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/events"
+	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/redact"
+	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/telemetry"
+)
+
+// ChatMessage represents an OpenAI-compatible chat message.
+type ChatMessage struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+// InferRequest represents the incoming inference request from the browser or benchmark client.
+type InferRequest struct {
+	Model        string        `json:"model"`
+	Messages     []ChatMessage `json:"messages"`
+	Prompt       string        `json:"prompt,omitempty"`
+	Temperature  *float64      `json:"temperature,omitempty"`
+	MaxTokens    int           `json:"max_tokens,omitempty"`
+	Stream       bool          `json:"stream"`
+	RouterMode   string        `json:"router_mode,omitempty"`
+	PriorityBand string        `json:"priority_band,omitempty"` // premium-traffic | standard-traffic | best-effort-traffic
+	FairnessID   string        `json:"fairness_id,omitempty"`
+	Scenario     string        `json:"scenario,omitempty"`     // Only honored when server is in MockMode
+	UpstreamURL  string        `json:"upstream_url,omitempty"` // Explicitly rejected if non-empty to prevent SSRF
+}
+
+// ExtractPromptText combines message contents or prompt field for token estimation and redaction summary.
+func (r InferRequest) ExtractPromptText() string {
+	if len(r.Messages) > 0 {
+		parts := make([]string, 0, len(r.Messages))
+		for _, m := range r.Messages {
+			if strings.TrimSpace(m.Content) != "" {
+				parts = append(parts, m.Content)
+			}
+		}
+		return strings.Join(parts, "\n")
+	}
+	return r.Prompt
+}
+
+// Client forwards real OpenAI-compatible requests to the allowlisted llm-d upstream.
+type Client struct {
+	cfg        config.Config
+	httpClient *http.Client
+	hub        *events.Hub
+	tracer     *telemetry.TracerManager
+	metrics    *telemetry.MetricsCollector
+}
+
+// NewClient constructs a real upstream client with streaming support and no response buffering timeout traps.
+func NewClient(cfg config.Config, hub *events.Hub, tracer *telemetry.TracerManager, metrics *telemetry.MetricsCollector) *Client {
+	return &Client{
+		cfg: cfg,
+		httpClient: &http.Client{
+			Transport: &http.Transport{
+				MaxIdleConns:          100,
+				IdleConnTimeout:       90 * time.Second,
+				ResponseHeaderTimeout: cfg.RequestTimeout,
+			},
+		},
+		hub:     hub,
+		tracer:  tracer,
+		metrics: metrics,
+	}
+}
+
+// Forward executes an OpenAI chat completion call against the configured llm-d upstream and streams or writes the response.
+func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time, inferReq InferRequest, w http.ResponseWriter, streamToClient bool) {
+	if err := c.cfg.ValidateUpstreamURL(c.cfg.UpstreamURL); err != nil {
+		c.failRequest(reqID, startTime, http.StatusBadGateway, "upstream URL failed allowlist validation: "+err.Error(), w, streamToClient)
+		return
+	}
+
+	upstreamPayload := map[string]any{
+		"model":    inferReq.Model,
+		"messages": inferReq.Messages,
+		"stream":   inferReq.Stream,
+	}
+	if inferReq.MaxTokens > 0 {
+		upstreamPayload["max_tokens"] = inferReq.MaxTokens
+	}
+	if inferReq.Temperature != nil {
+		upstreamPayload["temperature"] = *inferReq.Temperature
+	}
+
+	bodyBytes, err := json.Marshal(upstreamPayload)
+	if err != nil {
+		c.failRequest(reqID, startTime, http.StatusInternalServerError, "failed to encode upstream request", w, streamToClient)
+		return
+	}
+
+	targetEndpoint := strings.TrimRight(c.cfg.UpstreamURL, "/") + "/v1/chat/completions"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, targetEndpoint, bytes.NewReader(bodyBytes))
+	if err != nil {
+		c.failRequest(reqID, startTime, http.StatusInternalServerError, "failed to create upstream request", w, streamToClient)
+		return
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("X-Request-Id", reqID)
+	if inferReq.Stream {
+		httpReq.Header.Set("Accept", "text/event-stream")
+	}
+	if inferReq.PriorityBand != "" {
+		httpReq.Header.Set("x-llm-d-inference-objective", inferReq.PriorityBand)
+	}
+	if inferReq.FairnessID != "" {
+		httpReq.Header.Set("x-llm-d-inference-fairness-id", inferReq.FairnessID)
+	}
+	if c.tracer != nil {
+		c.tracer.InjectHeaders(ctx, httpReq.Header)
+	}
+
+	forwardDurNs := time.Since(startTime).Nanoseconds()
+	c.hub.Emit(reqID, events.EventGatewayForwarded, "observer-api", "gateway-proxy",
+		"Forwarded OpenAI chat completion request to llm-d Envoy/EPP router",
+		events.ObservationObserved, &forwardDurNs, map[string]any{
+			"upstream_endpoint": targetEndpoint,
+			"stream":            inferReq.Stream,
+			"priority_band":     inferReq.PriorityBand,
+			"traceparent_sent":  httpReq.Header.Get("traceparent") != "",
+		})
+
+	resp, err := c.httpClient.Do(httpReq)
+	if err != nil {
+		if errors.Is(err, context.Canceled) || errors.Is(ctx.Err(), context.Canceled) {
+			c.cancelRequest(reqID, startTime, 0, 0, nil)
+			return
+		}
+		c.failRequest(reqID, startTime, http.StatusBadGateway, fmt.Sprintf("upstream connection error: %v", err), w, streamToClient)
+		return
+	}
+	defer resp.Body.Close()
+
+	headersDur := time.Since(startTime)
+	headersDurNs := headersDur.Nanoseconds()
+
+	// Inspect real llm-d / EPP headers when present. Never fabricate EPP events if headers are absent.
+	droppedReason := resp.Header.Get("x-llm-d-request-dropped-reason")
+	eppRespMarker := resp.Header.Get("x-went-into-resp-headers")
+	selectedEndpoint := resp.Header.Get("x-gateway-destination-endpoint")
+
+	if droppedReason != "" || resp.StatusCode == http.StatusTooManyRequests {
+		c.hub.Emit(reqID, events.EventQueueObserved, "llm-d-router-epp", "epp",
+			fmt.Sprintf("EPP flow-control admission rejected request (HTTP %d, reason=%s)", resp.StatusCode, nonEmpty(droppedReason, "rate_limited")),
+			events.ObservationObserved, &headersDurNs, map[string]any{
+				"http_status":    resp.StatusCode,
+				"dropped_reason": droppedReason,
+			})
+	}
+
+	if eppRespMarker != "" || selectedEndpoint != "" {
+		c.hub.Emit(reqID, events.EventRoutingStarted, "llm-d-router-epp", "epp",
+			"EPP external processor evaluated request headers and body",
+			events.ObservationObserved, nil, map[string]any{
+				"x_went_into_resp_headers": eppRespMarker,
+			})
+	}
+
+	if selectedEndpoint != "" {
+		c.hub.Emit(reqID, events.EventEndpointSelected, "llm-d-router-epp", "inference-pool",
+			fmt.Sprintf("EPP selected model server endpoint %s", selectedEndpoint),
+			events.ObservationObserved, nil, map[string]any{
+				"selected_endpoint": selectedEndpoint,
+			})
+	}
+
+	if resp.StatusCode >= 400 {
+		errBody, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+		msg := fmt.Sprintf("upstream returned HTTP %d: %s", resp.StatusCode, strings.TrimSpace(string(errBody)))
+		c.failRequest(reqID, startTime, resp.StatusCode, msg, w, streamToClient)
+		return
+	}
+
+	c.hub.Emit(reqID, events.EventModelRequestStarted, "vllm-model-server", "model-server",
+		fmt.Sprintf("Upstream HTTP %d response headers received from model server", resp.StatusCode),
+		events.ObservationMeasured, &headersDurNs, map[string]any{
+			"http_status":        resp.StatusCode,
+			"content_type":       resp.Header.Get("Content-Type"),
+			"headers_latency_ms": float64(headersDur.Nanoseconds()) / 1e6,
+		})
+
+	promptTokens := redact.EstimateTokens(inferReq.ExtractPromptText())
+
+	if inferReq.Stream {
+		c.handleStreamingResponse(ctx, reqID, startTime, headersDur, selectedEndpoint, promptTokens, resp, w, streamToClient)
+	} else {
+		c.handleNonStreamingResponse(ctx, reqID, startTime, headersDur, selectedEndpoint, promptTokens, resp, w)
+	}
+}
+
+func (c *Client) handleStreamingResponse(ctx context.Context, reqID string, startTime time.Time, headersDur time.Duration, selectedEndpoint string, promptTokens int, resp *http.Response, w http.ResponseWriter, streamToClient bool) {
+	var flusher http.Flusher
+	if streamToClient && w != nil {
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Connection", "keep-alive")
+		w.Header().Set("X-Accel-Buffering", "no")
+		w.Header().Set("X-Request-Id", reqID)
+		w.WriteHeader(http.StatusOK)
+		flusher, _ = w.(http.Flusher)
+		if flusher != nil {
+			flusher.Flush()
+		}
+	}
+
+	scanner := bufio.NewScanner(resp.Body)
+	scanner.Buffer(make([]byte, 0, 64*1024), 512*1024)
+
+	var (
+		ttftDur          *time.Duration
+		lastTokenTime    time.Time
+		itlSamplesMs     []float64
+		completionTokens int
+	)
+
+	for scanner.Scan() {
+		if ctx.Err() != nil {
+			c.cancelRequest(reqID, startTime, promptTokens, completionTokens, ttftDur)
+			return
+		}
+		line := scanner.Text()
+		if streamToClient && w != nil {
+			_, _ = fmt.Fprintf(w, "%s\n", line)
+			if flusher != nil {
+				flusher.Flush()
+			}
+		}
+
+		trimmed := strings.TrimSpace(line)
+		if !strings.HasPrefix(trimmed, "data:") {
+			continue
+		}
+		payload := strings.TrimSpace(strings.TrimPrefix(trimmed, "data:"))
+		if payload == "[DONE]" {
+			streamDoneDur := time.Since(startTime).Nanoseconds()
+			c.hub.Emit(reqID, events.EventModelStreamCompleted, "vllm-model-server", "model-server",
+				"Received [DONE] sentinel from upstream SSE token stream",
+				events.ObservationObserved, &streamDoneDur, map[string]any{
+					"completion_tokens": completionTokens,
+				})
+			break
+		}
+
+		// Parse OpenAI chunk to distinguish metadata-only role chunks from real non-empty content tokens (True TTFT).
+		var chunk struct {
+			Choices []struct {
+				Delta struct {
+					Role    string `json:"role"`
+					Content string `json:"content"`
+				} `json:"delta"`
+				FinishReason *string `json:"finish_reason"`
+			} `json:"choices"`
+			Usage *struct {
+				PromptTokens     int `json:"prompt_tokens"`
+				CompletionTokens int `json:"completion_tokens"`
+			} `json:"usage"`
+		}
+		if err := json.Unmarshal([]byte(payload), &chunk); err != nil {
+			continue
+		}
+		if chunk.Usage != nil {
+			if chunk.Usage.PromptTokens > 0 {
+				promptTokens = chunk.Usage.PromptTokens
+			}
+			if chunk.Usage.CompletionTokens > 0 {
+				completionTokens = chunk.Usage.CompletionTokens
+			}
+		}
+		if len(chunk.Choices) == 0 {
+			continue
+		}
+		deltaContent := chunk.Choices[0].Delta.Content
+		if deltaContent == "" {
+			// Initial role chunk (e.g., {"role":"assistant","content":""}); do NOT count as first token!
+			continue
+		}
+
+		now := time.Now()
+		completionTokens++
+		if ttftDur == nil {
+			d := now.Sub(startTime)
+			ttftDur = &d
+			ttftNs := d.Nanoseconds()
+			lastTokenTime = now
+			c.hub.Emit(reqID, events.EventModelFirstToken, "observer-api", "model-server",
+				fmt.Sprintf("First non-empty generated token arrived (True TTFT %.2f ms)", float64(ttftNs)/1e6),
+				events.ObservationMeasured, &ttftNs, map[string]any{
+					"ttft_ms":            float64(ttftNs) / 1e6,
+					"headers_to_ttft_ms": float64((d - headersDur).Nanoseconds()) / 1e6,
+					"token_index":        1,
+				})
+		} else {
+			itl := now.Sub(lastTokenTime)
+			lastTokenTime = now
+			itlMs := float64(itl.Nanoseconds()) / 1e6
+			itlSamplesMs = append(itlSamplesMs, itlMs)
+			itlNs := itl.Nanoseconds()
+			c.hub.Emit(reqID, events.EventModelToken, "observer-api", "model-server",
+				fmt.Sprintf("Streamed token #%d (ITL %.2f ms)", completionTokens, itlMs),
+				events.ObservationMeasured, &itlNs, map[string]any{
+					"token_index": completionTokens,
+					"itl_ms":      itlMs,
+				})
+		}
+	}
+
+	if err := scanner.Err(); err != nil && errors.Is(ctx.Err(), context.Canceled) {
+		c.cancelRequest(reqID, startTime, promptTokens, completionTokens, ttftDur)
+		return
+	}
+
+	totalDur := time.Since(startTime)
+	totalNs := totalDur.Nanoseconds()
+	completedAt := time.Now().UTC()
+
+	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
+		rec.Status = "completed"
+		rec.HTTPStatus = http.StatusOK
+		rec.SelectedEndpoint = selectedEndpoint
+		rec.CompletedAt = &completedAt
+		events.FinalizeTimings(rec, &headersDur, ttftDur, &totalDur, itlSamplesMs, promptTokens, completionTokens, nil)
+	})
+
+	c.hub.Emit(reqID, events.EventRequestCompleted, "observer-api", "observer-api",
+		fmt.Sprintf("Streaming inference completed (%d tokens in %.2f ms)", completionTokens, float64(totalNs)/1e6),
+		events.ObservationMeasured, &totalNs, map[string]any{
+			"prompt_tokens":     promptTokens,
+			"completion_tokens": completionTokens,
+			"total_duration_ms": float64(totalNs) / 1e6,
+		})
+
+	if rec, ok := c.hub.GetRequest(reqID); ok {
+		c.metrics.RecordCompletion("completed", rec.Timings.TTFTMs.Value, rec.Timings.MeanITLMs.Value, rec.Timings.TotalDurationMs.Value, rec.Timings.DecodeTokensPerSec.Value, promptTokens, completionTokens)
+		go c.enrichTraceAsync(rec.RequestID, rec.TraceID)
+	}
+}
+
+func (c *Client) handleNonStreamingResponse(ctx context.Context, reqID string, startTime time.Time, headersDur time.Duration, selectedEndpoint string, promptTokens int, resp *http.Response, w http.ResponseWriter) {
+	bodyBytes, err := io.ReadAll(io.LimitReader(resp.Body, 2*1024*1024))
+	if err != nil {
+		if errors.Is(ctx.Err(), context.Canceled) {
+			c.cancelRequest(reqID, startTime, promptTokens, 0, nil)
+			return
+		}
+		c.failRequest(reqID, startTime, http.StatusBadGateway, "failed reading upstream response body", w, false)
+		return
+	}
+
+	var parsed struct {
+		Usage *struct {
+			PromptTokens     int `json:"prompt_tokens"`
+			CompletionTokens int `json:"completion_tokens"`
+		} `json:"usage"`
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+	_ = json.Unmarshal(bodyBytes, &parsed)
+	completionTokens := 0
+	if parsed.Usage != nil {
+		if parsed.Usage.PromptTokens > 0 {
+			promptTokens = parsed.Usage.PromptTokens
+		}
+		completionTokens = parsed.Usage.CompletionTokens
+	} else if len(parsed.Choices) > 0 {
+		completionTokens = redact.EstimateTokens(parsed.Choices[0].Message.Content)
+	}
+
+	totalDur := time.Since(startTime)
+	totalNs := totalDur.Nanoseconds()
+	completedAt := time.Now().UTC()
+
+	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
+		rec.Status = "completed"
+		rec.HTTPStatus = http.StatusOK
+		rec.SelectedEndpoint = selectedEndpoint
+		rec.CompletedAt = &completedAt
+		events.FinalizeTimings(rec, &headersDur, nil, &totalDur, nil, promptTokens, completionTokens, nil)
+	})
+
+	c.hub.Emit(reqID, events.EventRequestCompleted, "observer-api", "observer-api",
+		fmt.Sprintf("Non-streaming inference completed (%d tokens in %.2f ms)", completionTokens, float64(totalNs)/1e6),
+		events.ObservationMeasured, &totalNs, map[string]any{
+			"prompt_tokens":     promptTokens,
+			"completion_tokens": completionTokens,
+			"total_duration_ms": float64(totalNs) / 1e6,
+		})
+
+	if rec, ok := c.hub.GetRequest(reqID); ok {
+		c.metrics.RecordCompletion("completed", nil, nil, rec.Timings.TotalDurationMs.Value, rec.Timings.EndToEndTokensPerSec.Value, promptTokens, completionTokens)
+		go c.enrichTraceAsync(rec.RequestID, rec.TraceID)
+	}
+
+	if w != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("X-Request-Id", reqID)
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(bodyBytes)
+	}
+}
+
+func (c *Client) enrichTraceAsync(reqID, traceID string) {
+	if c.tracer == nil || traceID == "" {
+		return
+	}
+	// Allow collector batch flush window before querying Jaeger.
+	time.Sleep(150 * time.Millisecond)
+	spans, err := c.tracer.FetchJaegerTrace(context.Background(), traceID)
+	if err != nil {
+		c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
+			rec.Trace.Status = "unavailable"
+			rec.Trace.ObservationKind = events.ObservationUnavailable
+			rec.Trace.ErrorMessage = err.Error()
+		})
+		return
+	}
+
+	nowStr := time.Now().UTC().Format(time.RFC3339Nano)
+	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
+		rec.Trace.Status = "enriched"
+		rec.Trace.ObservationKind = events.ObservationObserved
+		rec.Trace.EnrichedAt = nowStr
+		rec.Trace.Spans = spans
+	})
+
+	c.hub.Emit(reqID, events.EventTraceEnriched, "jaeger-query", "otel-collector",
+		fmt.Sprintf("Correlated %d distributed OpenTelemetry trace spans from Jaeger", len(spans)),
+		events.ObservationObserved, nil, map[string]any{
+			"span_count": len(spans),
+			"trace_id":   traceID,
+		})
+}
+
+func (c *Client) cancelRequest(reqID string, startTime time.Time, promptTokens, completionTokens int, ttftDur *time.Duration) {
+	totalDur := time.Since(startTime)
+	totalNs := totalDur.Nanoseconds()
+	now := time.Now().UTC()
+
+	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
+		rec.Status = "cancelled"
+		rec.HTTPStatus = 499
+		rec.CompletedAt = &now
+		events.FinalizeTimings(rec, nil, ttftDur, &totalDur, nil, promptTokens, completionTokens, nil)
+	})
+	c.hub.Emit(reqID, events.EventRequestCancelled, "observer-api", "observer-api",
+		"Client cancelled in-flight inference request; upstream context aborted",
+		events.ObservationObserved, &totalNs, map[string]any{
+			"tokens_before_cancel": completionTokens,
+		})
+	if rec, ok := c.hub.GetRequest(reqID); ok {
+		c.metrics.RecordCompletion("cancelled", rec.Timings.TTFTMs.Value, nil, rec.Timings.TotalDurationMs.Value, nil, promptTokens, completionTokens)
+	}
+}
+
+func (c *Client) failRequest(reqID string, startTime time.Time, statusCode int, errMsg string, w http.ResponseWriter, streamToClient bool) {
+	totalDur := time.Since(startTime)
+	totalNs := totalDur.Nanoseconds()
+	now := time.Now().UTC()
+	cleanMsg := redact.ScrubString(errMsg)
+
+	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
+		rec.Status = "failed"
+		rec.HTTPStatus = statusCode
+		rec.ErrorMessage = cleanMsg
+		rec.CompletedAt = &now
+		events.FinalizeTimings(rec, nil, nil, &totalDur, nil, 0, 0, nil)
+	})
+
+	c.hub.Emit(reqID, events.EventRequestFailed, "observer-api", "gateway-proxy",
+		cleanMsg,
+		events.ObservationObserved, &totalNs, map[string]any{
+			"http_status": statusCode,
+		})
+	c.metrics.RecordCompletion("failed", nil, nil, nil, nil, 0, 0)
+
+	if w != nil {
+		if streamToClient {
+			w.Header().Set("Content-Type", "text/event-stream")
+			w.WriteHeader(statusCode)
+			errPayload, _ := json.Marshal(map[string]any{
+				"error": map[string]any{
+					"message":    cleanMsg,
+					"type":       "upstream_error",
+					"request_id": reqID,
+				},
+			})
+			_, _ = fmt.Fprintf(w, "data: %s\n\n", string(errPayload))
+			if f, ok := w.(http.Flusher); ok {
+				f.Flush()
+			}
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(statusCode)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"error": map[string]any{
+				"message":    cleanMsg,
+				"type":       "upstream_error",
+				"request_id": reqID,
+			},
+		})
+	}
+}
+
+func nonEmpty(val, fallback string) string {
+	if strings.TrimSpace(val) != "" {
+		return val
+	}
+	return fallback
+}

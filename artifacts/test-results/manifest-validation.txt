@@ -1,0 +1,13 @@
+Validated 65 Kubernetes resource documents across 13 manifest files.
+  - ClusterRole: 4
+  - ClusterRoleBinding: 5
+  - ConfigMap: 8
+  - Deployment: 9
+  - InferenceObjective: 3
+  - InferencePool: 3
+  - Namespace: 1
+  - NetworkPolicy: 2
+  - Role: 6
+  - RoleBinding: 6
+  - Service: 13
+  - ServiceAccount: 5

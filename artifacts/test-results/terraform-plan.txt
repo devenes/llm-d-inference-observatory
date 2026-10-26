@@ -1,0 +1,678 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # google_artifact_registry_repository.observatory will be created
+  + resource "google_artifact_registry_repository" "observatory" {
+      + create_time      = (known after apply)
+      + deletion_policy  = "DELETE"
+      + description      = "Container images for llm-d Inference Observatory (Observer API and React UI)"
+      + effective_labels = {
+          + "accelerator-type"           = "cpu-only"
+          + "deployment-tier"            = "experimental-small"
+          + "goog-terraform-provisioned" = "true"
+          + "managed-by"                 = "terraform"
+          + "project"                    = "llm-d-inference-observatory"
+        }
+      + format           = "DOCKER"
+      + id               = (known after apply)
+      + labels           = {
+          + "accelerator-type" = "cpu-only"
+          + "deployment-tier"  = "experimental-small"
+          + "managed-by"       = "terraform"
+          + "project"          = "llm-d-inference-observatory"
+        }
+      + location         = "us-west4"
+      + mode             = "STANDARD_REPOSITORY"
+      + name             = (known after apply)
+      + project          = "enes-turan-demo"
+      + registry_uri     = (known after apply)
+      + repository_id    = "llm-d-observatory"
+      + terraform_labels = {
+          + "accelerator-type"           = "cpu-only"
+          + "deployment-tier"            = "experimental-small"
+          + "goog-terraform-provisioned" = "true"
+          + "managed-by"                 = "terraform"
+          + "project"                    = "llm-d-inference-observatory"
+        }
+      + update_time      = (known after apply)
+
+      + vulnerability_scanning_config (known after apply)
+    }
+
+  # google_compute_firewall.allow_internal will be created
+  + resource "google_compute_firewall" "allow_internal" {
+      + creation_timestamp = (known after apply)
+      + deletion_policy    = "DELETE"
+      + destination_ranges = (known after apply)
+      + direction          = (known after apply)
+      + enable_logging     = (known after apply)
+      + id                 = (known after apply)
+      + name               = "llm-d-observatory-allow-internal"
+      + network            = "llm-d-observatory-vpc"
+      + priority           = 1000
+      + project            = "enes-turan-demo"
+      + self_link          = (known after apply)
+      + source_ranges      = [
+          + "10.10.0.0/24",
+          + "10.20.0.0/16",
+          + "10.30.0.0/20",
+        ]
+
+      + allow {
+          + ports    = [
+              + "80",
+              + "4317",
+              + "4318",
+              + "5556",
+              + "5559",
+              + "8000",
+              + "8080",
+              + "8081",
+              + "9002",
+              + "9003",
+              + "9090",
+              + "16686",
+            ]
+          + protocol = "tcp"
+        }
+      + allow {
+          + ports    = []
+          + protocol = "icmp"
+        }
+    }
+
+  # google_compute_network.vpc will be created
+  + resource "google_compute_network" "vpc" {
+      + auto_create_subnetworks                   = false
+      + bgp_always_compare_med                    = (known after apply)
+      + bgp_best_path_selection_mode              = (known after apply)
+      + bgp_inter_region_cost                     = (known after apply)
+      + delete_bgp_always_compare_med             = false
+      + delete_default_routes_on_create           = false
+      + deletion_policy                           = "DELETE"
+      + gateway_ipv4                              = (known after apply)
+      + id                                        = (known after apply)
+      + internal_ipv6_range                       = (known after apply)
+      + mtu                                       = (known after apply)
+      + name                                      = "llm-d-observatory-vpc"
+      + network_firewall_policy_enforcement_order = "AFTER_CLASSIC_FIREWALL"
+      + network_id                                = (known after apply)
+      + numeric_id                                = (known after apply)
+      + project                                   = "enes-turan-demo"
+      + routing_mode                              = (known after apply)
+      + self_link                                 = (known after apply)
+    }
+
+  # google_compute_router.router will be created
+  + resource "google_compute_router" "router" {
+      + creation_timestamp = (known after apply)
+      + deletion_policy    = "DELETE"
+      + id                 = (known after apply)
+      + name               = "llm-d-observatory-router"
+      + network            = (known after apply)
+      + project            = "enes-turan-demo"
+      + region             = "us-west4"
+      + self_link          = (known after apply)
+    }
+
+  # google_compute_router_nat.nat will be created
+  + resource "google_compute_router_nat" "nat" {
+      + auto_network_tier                   = (known after apply)
+      + deletion_policy                     = "DELETE"
+      + drain_nat_ips                       = (known after apply)
+      + enable_dynamic_port_allocation      = (known after apply)
+      + enable_endpoint_independent_mapping = (known after apply)
+      + endpoint_types                      = (known after apply)
+      + icmp_idle_timeout_sec               = 30
+      + id                                  = (known after apply)
+      + min_ports_per_vm                    = (known after apply)
+      + name                                = "llm-d-observatory-nat"
+      + nat_ip_allocate_option              = "AUTO_ONLY"
+      + nat_ips                             = (known after apply)
+      + project                             = "enes-turan-demo"
+      + region                              = "us-west4"
+      + router                              = "llm-d-observatory-router"
+      + source_subnetwork_ip_ranges_to_nat  = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+      + tcp_established_idle_timeout_sec    = 1200
+      + tcp_time_wait_timeout_sec           = 120
+      + tcp_transitory_idle_timeout_sec     = 30
+      + type                                = "PUBLIC"
+      + udp_idle_timeout_sec                = 30
+    }
+
+  # google_compute_subnetwork.nodes will be created
+  + resource "google_compute_subnetwork" "nodes" {
+      + allow_subnet_cidr_routes_overlap = (known after apply)
+      + creation_timestamp               = (known after apply)
+      + deletion_policy                  = "DELETE"
+      + external_ipv6_prefix             = (known after apply)
+      + fingerprint                      = (known after apply)
+      + gateway_address                  = (known after apply)
+      + id                               = (known after apply)
+      + internal_ipv6_prefix             = (known after apply)
+      + ip_cidr_range                    = "10.10.0.0/24"
+      + ipv6_cidr_range                  = (known after apply)
+      + ipv6_gce_endpoint                = (known after apply)
+      + name                             = "llm-d-observatory-nodes"
+      + network                          = (known after apply)
+      + private_ip_google_access         = true
+      + private_ipv6_google_access       = (known after apply)
+      + project                          = "enes-turan-demo"
+      + purpose                          = (known after apply)
+      + region                           = "us-west4"
+      + self_link                        = (known after apply)
+      + stack_type                       = (known after apply)
+      + state                            = (known after apply)
+      + subnetwork_id                    = (known after apply)
+
+      + secondary_ip_range {
+          + ip_cidr_range = "10.20.0.0/16"
+          + range_name    = "pods"
+        }
+      + secondary_ip_range {
+          + ip_cidr_range = "10.30.0.0/20"
+          + range_name    = "services"
+        }
+    }
+
+  # google_container_cluster.primary will be created
+  + resource "google_container_cluster" "primary" {
+      + autopilot_privileged_admission           = (known after apply)
+      + cluster_ipv4_cidr                        = (known after apply)
+      + datapath_provider                        = (known after apply)
+      + default_max_pods_per_node                = (known after apply)
+      + deletion_policy                          = "DELETE"
+      + deletion_protection                      = false
+      + disable_l4_lb_firewall_reconciliation    = false
+      + effective_labels                         = {
+          + "accelerator-type"           = "cpu-only"
+          + "deployment-tier"            = "experimental-small"
+          + "goog-terraform-provisioned" = "true"
+          + "managed-by"                 = "terraform"
+          + "project"                    = "llm-d-inference-observatory"
+        }
+      + emulated_version                         = (known after apply)
+      + enable_cilium_clusterwide_network_policy = false
+      + enable_fqdn_network_policy               = false
+      + enable_intranode_visibility              = (known after apply)
+      + enable_kubernetes_alpha                  = false
+      + enable_l4_ilb_subsetting                 = (known after apply)
+      + enable_legacy_abac                       = false
+      + enable_multi_networking                  = false
+      + enable_shielded_nodes                    = true
+      + enable_tpu                               = (known after apply)
+      + endpoint                                 = (known after apply)
+      + id                                       = (known after apply)
+      + initial_node_count                       = 1
+      + label_fingerprint                        = (known after apply)
+      + location                                 = "us-west4-a"
+      + logging_service                          = (known after apply)
+      + master_version                           = (known after apply)
+      + monitoring_service                       = (known after apply)
+      + name                                     = "llm-d-observatory"
+      + network                                  = (known after apply)
+      + networking_mode                          = "VPC_NATIVE"
+      + node_locations                           = (known after apply)
+      + node_version                             = (known after apply)
+      + operation                                = (known after apply)
+      + private_ipv6_google_access               = (known after apply)
+      + project                                  = "enes-turan-demo"
+      + remove_default_node_pool                 = true
+      + resource_labels                          = {
+          + "accelerator-type" = "cpu-only"
+          + "deployment-tier"  = "experimental-small"
+          + "managed-by"       = "terraform"
+          + "project"          = "llm-d-inference-observatory"
+        }
+      + self_link                                = (known after apply)
+      + services_ipv4_cidr                       = (known after apply)
+      + subnetwork                               = (known after apply)
+      + terraform_labels                         = {
+          + "accelerator-type"           = "cpu-only"
+          + "deployment-tier"            = "experimental-small"
+          + "goog-terraform-provisioned" = "true"
+          + "managed-by"                 = "terraform"
+          + "project"                    = "llm-d-inference-observatory"
+        }
+      + tpu_ipv4_cidr_block                      = (known after apply)
+
+      + addons_config (known after apply)
+
+      + anonymous_authentication_config (known after apply)
+
+      + authenticator_groups_config (known after apply)
+
+      + autopilot_cluster_policy_config (known after apply)
+
+      + cluster_autoscaling (known after apply)
+
+      + cluster_telemetry (known after apply)
+
+      + confidential_nodes (known after apply)
+
+      + control_plane_endpoints_config (known after apply)
+
+      + cost_management_config (known after apply)
+
+      + database_encryption (known after apply)
+
+      + default_snat_status (known after apply)
+
+      + enterprise_config (known after apply)
+
+      + gateway_api_config (known after apply)
+
+      + gke_auto_upgrade_config (known after apply)
+
+      + identity_service_config (known after apply)
+
+      + ip_allocation_policy {
+          + cluster_ipv4_cidr_block       = (known after apply)
+          + cluster_secondary_range_name  = "pods"
+          + services_ipv4_cidr_block      = (known after apply)
+          + services_secondary_range_name = "services"
+          + stack_type                    = "IPV4"
+
+          + auto_ipam_config (known after apply)
+
+          + network_tier_config (known after apply)
+
+          + pod_cidr_overprovision_config (known after apply)
+        }
+
+      + logging_config {
+          + enable_components = [
+              + "SYSTEM_COMPONENTS",
+              + "WORKLOADS",
+            ]
+        }
+
+      + managed_machine_learning_diagnostics_config (known after apply)
+
+      + managed_opentelemetry_config (known after apply)
+
+      + master_auth (known after apply)
+
+      + master_authorized_networks_config (known after apply)
+
+      + mesh_certificates (known after apply)
+
+      + monitoring_config {
+          + enable_components = [
+              + "SYSTEM_COMPONENTS",
+            ]
+
+          + advanced_datapath_observability_config (known after apply)
+
+          + managed_prometheus {
+              + enabled = true
+
+              + auto_monitoring_config {
+                  + scope = "ALL"
+                }
+            }
+        }
+
+      + node_config (known after apply)
+
+      + node_creation_config (known after apply)
+
+      + node_pool (known after apply)
+
+      + node_pool_auto_config (known after apply)
+
+      + node_pool_defaults (known after apply)
+
+      + notification_config (known after apply)
+
+      + pod_autoscaling (known after apply)
+
+      + protect_config (known after apply)
+
+      + rbac_binding_config (known after apply)
+
+      + release_channel {
+          + channel = "REGULAR"
+        }
+
+      + security_posture_config (known after apply)
+
+      + service_external_ips_config (known after apply)
+
+      + tpu_config (known after apply)
+
+      + vertical_pod_autoscaling (known after apply)
+
+      + workload_alts_config (known after apply)
+
+      + workload_identity_config {
+          + workload_pool = "enes-turan-demo.svc.id.goog"
+        }
+    }
+
+  # google_container_node_pool.cpu_inference_pool will be created
+  + resource "google_container_node_pool" "cpu_inference_pool" {
+      + cluster                     = "llm-d-observatory"
+      + deletion_policy             = "DELETE"
+      + id                          = (known after apply)
+      + initial_node_count          = (known after apply)
+      + instance_group_urls         = (known after apply)
+      + location                    = "us-west4-a"
+      + managed_instance_group_urls = (known after apply)
+      + max_pods_per_node           = (known after apply)
+      + name                        = "cpu-inference-pool"
+      + name_prefix                 = (known after apply)
+      + node_count                  = 1
+      + node_locations              = (known after apply)
+      + operation                   = (known after apply)
+      + project                     = "enes-turan-demo"
+      + version                     = (known after apply)
+
+      + management (known after apply)
+
+      + network_config (known after apply)
+
+      + node_config {
+          + disk_size_gb       = 100
+          + disk_type          = "pd-balanced"
+          + effective_taints   = (known after apply)
+          + gpudirect_strategy = (known after apply)
+          + image_type         = "COS_CONTAINERD"
+          + labels             = {
+              + "accelerator-type"    = "cpu-only"
+              + "deployment-tier"     = "experimental-small"
+              + "llm-d.ai/cpu-family" = "intel-sapphire-rapids"
+              + "llm-d.ai/node-role"  = "inference"
+              + "managed-by"          = "terraform"
+              + "project"             = "llm-d-inference-observatory"
+              + "role"                = "cpu-inference"
+            }
+          + local_ssd_count    = (known after apply)
+          + logging_variant    = (known after apply)
+          + machine_type       = "c3-standard-22"
+          + metadata           = (known after apply)
+          + min_cpu_platform   = (known after apply)
+          + oauth_scopes       = [
+              + "https://www.googleapis.com/auth/cloud-platform",
+            ]
+          + preemptible        = false
+          + service_account    = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+          + spot               = false
+
+          + boot_disk (known after apply)
+
+          + confidential_nodes (known after apply)
+
+          + containerd_config (known after apply)
+
+          + gcfs_config (known after apply)
+
+          + guest_accelerator (known after apply)
+
+          + kubelet_config (known after apply)
+
+          + linux_node_config (known after apply)
+
+          + node_image_config (known after apply)
+
+          + shielded_instance_config {
+              + enable_integrity_monitoring = true
+              + enable_secure_boot          = true
+            }
+
+          + windows_node_config (known after apply)
+
+          + workload_metadata_config {
+              + mode = "GKE_METADATA"
+            }
+        }
+
+      + node_drain_config (known after apply)
+
+      + upgrade_settings (known after apply)
+    }
+
+  # google_container_node_pool.system_pool will be created
+  + resource "google_container_node_pool" "system_pool" {
+      + cluster                     = "llm-d-observatory"
+      + deletion_policy             = "DELETE"
+      + id                          = (known after apply)
+      + initial_node_count          = (known after apply)
+      + instance_group_urls         = (known after apply)
+      + location                    = "us-west4-a"
+      + managed_instance_group_urls = (known after apply)
+      + max_pods_per_node           = (known after apply)
+      + name                        = "system-pool"
+      + name_prefix                 = (known after apply)
+      + node_count                  = 1
+      + node_locations              = (known after apply)
+      + operation                   = (known after apply)
+      + project                     = "enes-turan-demo"
+      + version                     = (known after apply)
+
+      + management (known after apply)
+
+      + network_config (known after apply)
+
+      + node_config {
+          + disk_size_gb       = 50
+          + disk_type          = "pd-balanced"
+          + effective_taints   = (known after apply)
+          + gpudirect_strategy = (known after apply)
+          + image_type         = "COS_CONTAINERD"
+          + labels             = {
+              + "accelerator-type"   = "cpu-only"
+              + "deployment-tier"    = "experimental-small"
+              + "llm-d.ai/node-role" = "system"
+              + "managed-by"         = "terraform"
+              + "project"            = "llm-d-inference-observatory"
+              + "role"               = "system"
+            }
+          + local_ssd_count    = (known after apply)
+          + logging_variant    = (known after apply)
+          + machine_type       = "e2-standard-4"
+          + metadata           = (known after apply)
+          + min_cpu_platform   = (known after apply)
+          + oauth_scopes       = [
+              + "https://www.googleapis.com/auth/cloud-platform",
+            ]
+          + preemptible        = false
+          + service_account    = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+          + spot               = false
+
+          + boot_disk (known after apply)
+
+          + confidential_nodes (known after apply)
+
+          + containerd_config (known after apply)
+
+          + gcfs_config (known after apply)
+
+          + guest_accelerator (known after apply)
+
+          + kubelet_config (known after apply)
+
+          + linux_node_config (known after apply)
+
+          + node_image_config (known after apply)
+
+          + shielded_instance_config {
+              + enable_integrity_monitoring = true
+              + enable_secure_boot          = true
+            }
+
+          + windows_node_config (known after apply)
+
+          + workload_metadata_config {
+              + mode = "GKE_METADATA"
+            }
+        }
+
+      + node_drain_config (known after apply)
+
+      + upgrade_settings (known after apply)
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/artifactregistry.reader"] will be created
+  + resource "google_project_iam_member" "node_sa_roles" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + project = "enes-turan-demo"
+      + role    = "roles/artifactregistry.reader"
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/cloudtrace.agent"] will be created
+  + resource "google_project_iam_member" "node_sa_roles" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + project = "enes-turan-demo"
+      + role    = "roles/cloudtrace.agent"
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/container.defaultNodeServiceAccount"] will be created
+  + resource "google_project_iam_member" "node_sa_roles" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + project = "enes-turan-demo"
+      + role    = "roles/container.defaultNodeServiceAccount"
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/logging.logWriter"] will be created
+  + resource "google_project_iam_member" "node_sa_roles" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + project = "enes-turan-demo"
+      + role    = "roles/logging.logWriter"
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/monitoring.metricWriter"] will be created
+  + resource "google_project_iam_member" "node_sa_roles" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + project = "enes-turan-demo"
+      + role    = "roles/monitoring.metricWriter"
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/monitoring.viewer"] will be created
+  + resource "google_project_iam_member" "node_sa_roles" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + project = "enes-turan-demo"
+      + role    = "roles/monitoring.viewer"
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/stackdriver.resourceMetadata.writer"] will be created
+  + resource "google_project_iam_member" "node_sa_roles" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + project = "enes-turan-demo"
+      + role    = "roles/stackdriver.resourceMetadata.writer"
+    }
+
+  # google_project_service.required["artifactregistry.googleapis.com"] will be created
+  + resource "google_project_service" "required" {
+      + deletion_policy    = "DELETE"
+      + disable_on_destroy = false
+      + id                 = (known after apply)
+      + project            = "enes-turan-demo"
+      + service            = "artifactregistry.googleapis.com"
+    }
+
+  # google_project_service.required["cloudtrace.googleapis.com"] will be created
+  + resource "google_project_service" "required" {
+      + deletion_policy    = "DELETE"
+      + disable_on_destroy = false
+      + id                 = (known after apply)
+      + project            = "enes-turan-demo"
+      + service            = "cloudtrace.googleapis.com"
+    }
+
+  # google_project_service.required["compute.googleapis.com"] will be created
+  + resource "google_project_service" "required" {
+      + deletion_policy    = "DELETE"
+      + disable_on_destroy = false
+      + id                 = (known after apply)
+      + project            = "enes-turan-demo"
+      + service            = "compute.googleapis.com"
+    }
+
+  # google_project_service.required["container.googleapis.com"] will be created
+  + resource "google_project_service" "required" {
+      + deletion_policy    = "DELETE"
+      + disable_on_destroy = false
+      + id                 = (known after apply)
+      + project            = "enes-turan-demo"
+      + service            = "container.googleapis.com"
+    }
+
+  # google_project_service.required["iam.googleapis.com"] will be created
+  + resource "google_project_service" "required" {
+      + deletion_policy    = "DELETE"
+      + disable_on_destroy = false
+      + id                 = (known after apply)
+      + project            = "enes-turan-demo"
+      + service            = "iam.googleapis.com"
+    }
+
+  # google_project_service.required["logging.googleapis.com"] will be created
+  + resource "google_project_service" "required" {
+      + deletion_policy    = "DELETE"
+      + disable_on_destroy = false
+      + id                 = (known after apply)
+      + project            = "enes-turan-demo"
+      + service            = "logging.googleapis.com"
+    }
+
+  # google_project_service.required["monitoring.googleapis.com"] will be created
+  + resource "google_project_service" "required" {
+      + deletion_policy    = "DELETE"
+      + disable_on_destroy = false
+      + id                 = (known after apply)
+      + project            = "enes-turan-demo"
+      + service            = "monitoring.googleapis.com"
+    }
+
+  # google_service_account.node_sa will be created
+  + resource "google_service_account" "node_sa" {
+      + account_id      = "llm-d-observatory-node-sa"
+      + deletion_policy = "DELETE"
+      + disabled        = false
+      + display_name    = "GKE CPU Node Service Account for llm-d-observatory"
+      + email           = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + id              = (known after apply)
+      + member          = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + name            = (known after apply)
+      + project         = "enes-turan-demo"
+      + unique_id       = (known after apply)
+    }
+
+Plan: 24 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + artifact_registry_repository_url = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory"
+  + cluster_endpoint                 = (sensitive value)
+  + cluster_name                     = "llm-d-observatory"
+  + frontend_image_uri               = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0"
+  + node_service_account_email       = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+  + observer_image_uri               = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0"
+  + project_id                       = "enes-turan-demo"
+  + region                           = "us-west4"
+  + subnet_name                      = "llm-d-observatory-nodes"
+  + vpc_network_name                 = "llm-d-observatory-vpc"
+  + zone                             = "us-west4-a"
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.

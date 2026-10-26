@@ -1,0 +1,34 @@
+# Terraform state & provider binaries (preserve .terraform.lock.hcl)
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/crash.log
+terraform/crash.*.log
+terraform/*.tfvars
+!terraform/terraform.tfvars.example
+terraform/override.tf
+terraform/override.tf.json
+terraform/*_override.tf
+terraform/*_override.tf.json
+
+# Frontend dependencies & build outputs
+frontend/node_modules/
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
+*.tsbuildinfo
+
+# Go build binaries & coverage
+backend/observer/observer
+backend/observer/benchmark
+backend/observer/*.out
+backend/observer/coverage.html
+
+# Rendered manifests & local scratch
+deploy/rendered/
+.env
+.env.*
+*.pem
+*.key
+kubeconfig*
+.DS_Store

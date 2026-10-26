@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: observer-api
+  namespace: llm-d-observatory
+  labels:
+    app.kubernetes.io/name: observer-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: observer-api
+  namespace: llm-d-observatory
+  labels:
+    app.kubernetes.io/name: observer-api
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: observer-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: observer-api
+        app.kubernetes.io/component: backend
+    spec:
+      serviceAccountName: observer-api
+      nodeSelector:
+        role: system
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+      containers:
+        - name: observer-api
+          image: us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OBSERVER_LISTEN_ADDR
+              value: ":8080"
+            # Mock mode is strictly false in cluster deployment manifests
+            - name: OBSERVER_MOCK_MODE
+              value: "false"
+            - name: OBSERVER_REDACT_PROMPTS
+              value: "true"
+            - name: OBSERVER_UPSTREAM_URL
+              value: "http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:80"
+            - name: OBSERVER_ALLOWED_UPSTREAM_HOSTS
+              value: "llm-d-router-epp,llm-d-router-epp.llm-d-observatory.svc.cluster.local,localhost,127.0.0.1"
+            - name: OBSERVER_ALLOWED_MODELS
+              value: "Qwen/Qwen2.5-0.5B-Instruct,meta-llama/Llama-3.2-3B-Instruct"
+            - name: OBSERVER_DEFAULT_MODEL
+              value: "Qwen/Qwen2.5-0.5B-Instruct"
+            - name: OBSERVER_ROUTER_MODE
+              value: "optimized-baseline"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://otel-collector.llm-d-observatory.svc.cluster.local:4318"
+            - name: OBSERVER_JAEGER_QUERY_URL
+              value: "http://jaeger-query.llm-d-observatory.svc.cluster.local:16686"
+            - name: OBSERVER_EPP_METRICS_URL
+              value: "http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:9090/metrics"
+            - name: OBSERVER_VLLM_METRICS_URL
+              value: "http://llm-d-router-epp-model-servers.llm-d-observatory.svc.cluster.local:8000/metrics"
+            - name: OBSERVER_CLUSTER_NAME
+              value: "llm-d-observatory"
+            - name: OBSERVER_NAMESPACE
+              value: "llm-d-observatory"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: observer-api
+  namespace: llm-d-observatory
+  labels:
+    app.kubernetes.io/name: observer-api
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: observer-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

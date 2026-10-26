@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: experimental-small-vllm-decode
+  namespace: llm-d-observatory
+  labels:
+    app.kubernetes.io/name: vllm-cpu-model-server
+    app.kubernetes.io/component: model-server
+    llm-d.ai/guide: optimized-baseline
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vllm-cpu-model-server
+      llm-d.ai/guide: optimized-baseline
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vllm-cpu-model-server
+        app.kubernetes.io/component: model-server
+        llm-d.ai/guide: optimized-baseline
+    spec:
+      nodeSelector:
+        role: cpu-inference
+      terminationGracePeriodSeconds: 75
+      containers:
+        - name: vllm
+          image: docker.io/vllm/vllm-openai-cpu:v0.31.0
+          imagePullPolicy: IfNotPresent
+          command: ["vllm", "serve"]
+          args:
+            - "Qwen/Qwen2.5-0.5B-Instruct"
+            - "--enable-scale-out"
+            - "--enable-prefix-caching"
+            - "--disable-access-log-for-endpoints=/health,/metrics,/v1/models,/v1/completions/render,/v1/chat/completions/render"
+            - "--disable-hybrid-kv-cache-manager"
+            - "--max_model_len=4096"
+            - "--block-size=64"
+            - "--otlp-traces-endpoint=grpc://otel-collector.llm-d-observatory.svc.cluster.local:4317"
+            - "--kv-events-config"
+            - '{"enable_kv_cache_events":true,"publisher":"zmq","endpoint":"$(KV_EVENTS_ENDPOINT)","replay_endpoint":"$(KV_EVENTS_REPLAY_ENDPOINT)","topic":"kv@$(POD_IP):$(POD_PORT)@Qwen/Qwen2.5-0.5B-Instruct"}'
+            - "--shutdown-timeout=45"
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_PORT
+              value: "8000"
+            - name: KV_EVENTS_ENDPOINT
+              value: "tcp://*:5556"
+            - name: KV_EVENTS_REPLAY_ENDPOINT
+              value: "tcp://*:5559"
+            - name: DO_NOT_TRACK
+              value: "1"
+            - name: VLLM_CPU_KVCACHE_SPACE
+              value: "4"
+            - name: VLLM_CPU_NUM_OF_RESERVED_CPU
+              value: "1"
+            - name: HF_HOME
+              value: "/var/cache/huggingface"
+            - name: OTEL_SERVICE_NAME
+              value: "vllm-cpu-model-server"
+            - name: OTEL_EXPORTER_OTLP_TRACES_INSECURE
+              value: "true"
+          ports:
+            - name: modelserver
+              containerPort: 8000
+              protocol: TCP
+            - name: kv-events
+              containerPort: 5556
+              protocol: TCP
+            - name: kv-replay
+              containerPort: 5559
+              protocol: TCP
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sleep", "15"]
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 90
+            periodSeconds: 15
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /v1/models
+              port: 8000
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: Unconfined
+            capabilities:
+              add:
+                - SYS_NICE
+          resources:
+            requests:
+              cpu: "6"
+              memory: 12Gi
+            limits:
+              cpu: "8"
+              memory: 16Gi
+          volumeMounts:
+            - name: hf-cache
+              mountPath: /var/cache/huggingface
+            - name: dshm
+              mountPath: /dev/shm
+      volumes:
+        - name: hf-cache
+          emptyDir: {}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-basic-service
+  namespace: llm-d-observatory
+  labels:
+    app.kubernetes.io/name: vllm-cpu-model-server
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: vllm-cpu-model-server
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP

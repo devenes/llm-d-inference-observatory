@@ -1,0 +1,29 @@
+apiVersion: llm-d.ai/v1
+kind: InferenceObjective
+metadata:
+  name: premium-traffic
+  namespace: llm-d-observatory
+spec:
+  priority: 100
+  poolRefs:
+    - name: llm-d-router
+---
+apiVersion: llm-d.ai/v1
+kind: InferenceObjective
+metadata:
+  name: standard-traffic
+  namespace: llm-d-observatory
+spec:
+  priority: 0
+  poolRefs:
+    - name: llm-d-router
+---
+apiVersion: llm-d.ai/v1
+kind: InferenceObjective
+metadata:
+  name: best-effort-traffic
+  namespace: llm-d-observatory
+spec:
+  priority: -10
+  poolRefs:
+    - name: llm-d-router

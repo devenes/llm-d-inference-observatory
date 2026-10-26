@@ -1,0 +1,185 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+/* Modern Web Guidance: dark-mode, color, and responsive-table implementation */
+:root {
+  --color-canvas-light: #f8fafc;
+  --color-canvas-dark: #090d16;
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #111827;
+  --color-surface-elevated-light: #f1f5f9;
+  --color-surface-elevated-dark: #1e293b;
+  --color-text-light: #0f172a;
+  --color-text-dark: #f8fafc;
+  --color-text-muted-light: #475569;
+  --color-text-muted-dark: #94a3b8;
+  --color-border-light: #cbd5e1;
+  --color-border-dark: #334155;
+  --color-brand-light: #2563eb;
+  --color-brand-dark: #38bdf8;
+  --color-scrollbar-track-light: #e2e8f0;
+  --color-scrollbar-track-dark: #1e293b;
+  --color-scrollbar-thumb-light: #64748b;
+  --color-scrollbar-thumb-dark: #64748b;
+
+  /* Default fallback values for browsers without light-dark() support */
+  --color-canvas: var(--color-canvas-light);
+  --color-surface: var(--color-surface-light);
+  --color-surface-elevated: var(--color-surface-elevated-light);
+  --color-text: var(--color-text-light);
+  --color-text-muted: var(--color-text-muted-light);
+  --color-border: var(--color-border-light);
+  --color-brand: var(--color-brand-light);
+  --color-scrollbar-track: var(--color-scrollbar-track-light);
+  --color-scrollbar-thumb: var(--color-scrollbar-thumb-light);
+
+  /* MANDATORY: Fallback for browsers without light-dark support */
+  @media (prefers-color-scheme: dark) {
+    --color-canvas: var(--color-canvas-dark);
+    --color-surface: var(--color-surface-dark);
+    --color-surface-elevated: var(--color-surface-elevated-dark);
+    --color-text: var(--color-text-dark);
+    --color-text-muted: var(--color-text-muted-dark);
+    --color-border: var(--color-border-dark);
+    --color-brand: var(--color-brand-dark);
+    --color-scrollbar-track: var(--color-scrollbar-track-dark);
+    --color-scrollbar-thumb: var(--color-scrollbar-thumb-dark);
+  }
+
+  @supports (color: light-dark(white, black)) {
+    --color-canvas: light-dark(var(--color-canvas-light), var(--color-canvas-dark));
+    --color-surface: light-dark(var(--color-surface-light), var(--color-surface-dark));
+    --color-surface-elevated: light-dark(var(--color-surface-elevated-light), var(--color-surface-elevated-dark));
+    --color-text: light-dark(var(--color-text-light), var(--color-text-dark));
+    --color-text-muted: light-dark(var(--color-text-muted-light), var(--color-text-muted-dark));
+    --color-border: light-dark(var(--color-border-light), var(--color-border-dark));
+    --color-brand: light-dark(var(--color-brand-light), var(--color-brand-dark));
+    --color-scrollbar-track: light-dark(var(--color-scrollbar-track-light), var(--color-scrollbar-track-dark));
+    --color-scrollbar-thumb: light-dark(var(--color-scrollbar-thumb-light), var(--color-scrollbar-thumb-dark));
+  }
+
+  /* MANDATORY: Apply color-scheme to :root for viewport-wide theming */
+  color-scheme: light dark;
+  accent-color: var(--color-brand);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+}
+
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-scrollbar-thumb);
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-scrollbar-track);
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --color-canvas: Canvas;
+    --color-surface: Canvas;
+    --color-text: CanvasText;
+    --color-border: ButtonBorder;
+    --color-brand: Highlight;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Responsive accessible data table (modern-web-guidance: responsive-table) */
+.table-wrapper {
+  overflow: auto;
+  max-inline-size: 100%;
+  max-block-size: min(600px, 78vh);
+  container-type: inline-size;
+  scrollbar-gutter: stable;
+}
+
+.lifecycle-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.lifecycle-table thead {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+  background-color: var(--color-surface-elevated);
+}
+
+.lifecycle-table tbody th {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  background-color: var(--color-surface);
+}
+
+@container (width < 600px) {
+  .lifecycle-table,
+  .lifecycle-table thead,
+  .lifecycle-table tbody,
+  .lifecycle-table tr,
+  .lifecycle-table th,
+  .lifecycle-table td {
+    display: block;
+  }
+
+  .lifecycle-table thead {
+    /* MANDATORY: Hide column header from layout and screen readers */
+    display: none;
+  }
+
+  .lifecycle-table tr {
+    margin-block-end: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .lifecycle-table tbody th {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+    background-color: var(--color-surface-elevated);
+  }
+
+  .lifecycle-table {
+    --label-2: "Source Component";
+    --label-3: "Timestamp";
+    --label-4: "Duration";
+    --label-5: "Classification";
+    --label-6: "Details & Explanation";
+  }
+
+  .lifecycle-table td:nth-child(2)::before {
+    content: var(--label-2) ": ";
+    font-weight: 600;
+  }
+  .lifecycle-table td:nth-child(3)::before {
+    content: var(--label-3) ": ";
+    font-weight: 600;
+  }
+  .lifecycle-table td:nth-child(4)::before {
+    content: var(--label-4) ": ";
+    font-weight: 600;
+  }
+  .lifecycle-table td:nth-child(5)::before {
+    content: var(--label-5) ": ";
+    font-weight: 600;
+  }
+  .lifecycle-table td:nth-child(6)::before {
+    content: var(--label-6) ": ";
+    font-weight: 600;
+  }
+}

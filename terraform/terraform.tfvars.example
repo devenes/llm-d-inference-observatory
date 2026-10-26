@@ -1,0 +1,10 @@
+project_id             = "enes-turan-demo"
+region                 = "us-west4"
+zone                   = "us-west4-a"
+cluster_name           = "llm-d-observatory"
+deployment_profile     = "experimental-small"
+system_machine_type    = "e2-standard-4"
+system_node_count      = 1
+inference_machine_type = "c3-standard-22"
+inference_node_count   = 1
+artifact_registry_id   = "llm-d-observatory"
