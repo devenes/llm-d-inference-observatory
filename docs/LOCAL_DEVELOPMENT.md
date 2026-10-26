@@ -1,10 +1,10 @@
 # Local Development & Mock Mode Guide
 
-Because cloud infrastructure is not created during the preparation phase, `llm-d-inference-observatory` includes a deterministic local demo mode (`OBSERVER_MOCK_MODE=true`) that exercises the entire UI, SSE lifecycle pipeline, topology visualizer, and benchmark harness without a Kubernetes cluster.
+`llm-d-inference-observatory` includes a deterministic local demo mode (`OBSERVER_MOCK_MODE=true`) and a Docker Compose workflow that exercise the entire UI, SSE lifecycle pipeline, Interactive Topology visualizer, and benchmark harness without requiring a live Kubernetes cluster.
 
 ---
 
-## 1. Running Local Demo Mode
+## 1. Option A — Local Hot-Reload Development (`make dev`)
 
 ```bash
 make dev
@@ -17,13 +17,35 @@ make dev
 
 - Every event, timing, and span produced when `OBSERVER_MOCK_MODE=true` is tagged with `"observation_kind": "simulated"` and prefixed with `[SIMULATED]`.
 - A prominent amber banner (`LOCAL DEMO / MOCK MODE ACTIVE`) is rendered at the top of the UI.
-- Production Kubernetes manifests ([observer-api.yaml](file:///Users/enes/GitHub/llm-d-inference-observatory/deploy/observatory/observer-api.yaml)) hardcode `OBSERVER_MOCK_MODE: "false"` and are verified by `./scripts/validate-manifests.sh` so mock mode can never silently substitute for a real upstream in GKE deployments.
+- Production Kubernetes manifests ([`observer-api.yaml`](file:///Users/enes/GitHub/llm-d-inference-observatory/deploy/observatory/observer-api.yaml)) hardcode `OBSERVER_MOCK_MODE: "false"` and are verified by `./scripts/validate-manifests.sh` so mock mode can never silently substitute for a real upstream in GKE deployments.
 
 ---
 
-## 2. Supported Local Mock Scenarios
+## 2. Option B — Local Docker Compose Stack (`docker compose`)
 
-Select any of the following scenarios in the **Inference Playground** (`Simulated Demo Scenario` dropdown) or pass `"scenario"` in the JSON request body:
+To run the production multi-stage containers (`observer-api` + `nginx` frontend) locally via Docker Compose:
+
+```bash
+# Build and start both containers in detached mode
+docker compose up -d --build
+
+# Open http://localhost:8088 in your browser
+open http://localhost:8088
+
+# Or run the automated Docker Compose smoke test (builds, verifies health & /api/infer, and tears down)
+make compose-smoke
+```
+
+| Container | Host Port | Container Port | Description |
+| :--- | :--- | :--- | :--- |
+| `frontend` | `http://localhost:8088` | `:8080` | Unprivileged Nginx serving the production React bundle and proxying `/api/*` to `observer-api:8080`. |
+| `observer-api` | `http://localhost:8080` | `:8080` | Distroless non-root Go binary running in `OBSERVER_MOCK_MODE=true`. |
+
+---
+
+## 3. Supported Local Mock Scenarios
+
+Select any of the following scenarios in the **Inference Playground** (`Simulated Scenario` dropdown) or pass `"scenario"` in the JSON request body:
 
 | Scenario | Behavior Exercised |
 | :--- | :--- |
@@ -37,7 +59,9 @@ Select any of the following scenarios in the **Inference Playground** (`Simulate
 
 ---
 
-## 3. Environment Variables Reference
+## 4. Environment Variables Reference
+
+All runtime settings are validated in [`config.go`](file:///Users/enes/GitHub/llm-d-inference-observatory/backend/observer/internal/config/config.go):
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
@@ -45,9 +69,16 @@ Select any of the following scenarios in the **Inference Playground** (`Simulate
 | `OBSERVER_MOCK_MODE` | `false` | Enables local deterministic simulator when `true`. |
 | `OBSERVER_UPSTREAM_URL` | `http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:80` | Target `llm-d` router base URL. |
 | `OBSERVER_ALLOWED_UPSTREAM_HOSTS` | `localhost,127.0.0.1,llm-d-router-epp,...` | Comma-separated SSRF host allowlist. |
-| `OBSERVER_ALLOWED_MODELS` | `Qwen/Qwen2.5-0.5B-Instruct,meta-llama/Llama-3.2-3B-Instruct` | Permitted model identifiers. |
+| `OBSERVER_ALLOWED_MODELS` | `Qwen/Qwen2.5-0.5B-Instruct` | Comma-separated permitted model identifiers. |
+| `OBSERVER_DEFAULT_MODEL` | `Qwen/Qwen2.5-0.5B-Instruct` | Default model when omitted in request payload. |
+| `OBSERVER_ROUTER_MODE` | `optimized-baseline` | Default active router profile label. |
 | `OBSERVER_REDACT_PROMPTS` | `true` | Redacts raw prompts and completions from logs and span attributes. |
 | `OBSERVER_MAX_BODY_BYTES` | `65536` | Maximum request payload size (`64 KiB`). |
 | `OBSERVER_MAX_OUTPUT_TOKENS` | `1024` | Maximum allowed `max_tokens` per request. |
 | `OBSERVER_MAX_CONCURRENT_REQUESTS` | `16` | In-flight request concurrency limit. |
 | `OBSERVER_REQUEST_TIMEOUT` | `120s` | Per-request upstream timeout. |
+| `OBSERVER_TRACE_QUERY_TIMEOUT` | `4s` | Timeout for asynchronous Jaeger `/api/traces/{id}` queries. |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `""` | OTLP HTTP/gRPC collector endpoint for `observer.infer` spans. |
+| `OBSERVER_JAEGER_QUERY_URL` | `http://jaeger-query.llm-d-observatory.svc.cluster.local:16686` | Jaeger Query API base URL. |
+| `OBSERVER_EPP_METRICS_URL` | `http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:9090/metrics` | EPP Prometheus metrics endpoint. |
+| `OBSERVER_VLLM_METRICS_URL` | `http://llm-d-router-epp-model-servers.llm-d-observatory.svc.cluster.local:8000/metrics` | Headless service URL used to discover and scrape all vLLM pod IPs. |

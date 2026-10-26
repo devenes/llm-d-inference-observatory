@@ -19,15 +19,15 @@ func TestScrubStringAndPromptRedaction(t *testing.T) {
 	}
 
 	attrs := SanitizeAttributes(map[string]any{
-		"prompt":                   "raw prompt text",
-		"prompt_tokens":            42,
-		"prompt_tokens_source":     "vllm_usage",
-		"completion_tokens_source": "vllm_usage",
+		"prompt":                     "raw prompt text",
+		"prompt_tokens":              42,
+		"prompt_tokens_source":       "vllm_usage",
+		"completion_tokens_source":   "vllm_usage",
 		"llm_d.prompt_tokens_source": "vllm_usage",
-		"epp_token_backend":        "vllm",
-		"authorization":            "Bearer secret12345",
-		"selected_node":            "10.20.0.14:8000",
-		"embedded_secret":          "token is hf_1234567890abcdef",
+		"epp_token_backend":          "vllm",
+		"authorization":              "Bearer secret12345",
+		"selected_node":              "10.20.0.14:8000",
+		"embedded_secret":            "token is hf_1234567890abcdef",
 	}, true)
 
 	if attrs["prompt"] != "[REDACTED]" {

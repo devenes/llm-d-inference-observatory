@@ -1,0 +1,1215 @@
+google_project_service.required["artifactregistry.googleapis.com"]: Refreshing state... [id=enes-turan-demo/artifactregistry.googleapis.com]
+google_project_service.required["logging.googleapis.com"]: Refreshing state... [id=enes-turan-demo/logging.googleapis.com]
+google_project_service.required["compute.googleapis.com"]: Refreshing state... [id=enes-turan-demo/compute.googleapis.com]
+google_project_service.required["cloudtrace.googleapis.com"]: Refreshing state... [id=enes-turan-demo/cloudtrace.googleapis.com]
+google_project_service.required["container.googleapis.com"]: Refreshing state... [id=enes-turan-demo/container.googleapis.com]
+google_project_service.required["monitoring.googleapis.com"]: Refreshing state... [id=enes-turan-demo/monitoring.googleapis.com]
+google_project_service.required["iam.googleapis.com"]: Refreshing state... [id=enes-turan-demo/iam.googleapis.com]
+google_service_account.node_sa: Refreshing state... [id=projects/enes-turan-demo/serviceAccounts/llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
+google_artifact_registry_repository.observatory: Refreshing state... [id=projects/enes-turan-demo/locations/us-west4/repositories/llm-d-observatory]
+google_compute_network.vpc: Refreshing state... [id=projects/enes-turan-demo/global/networks/llm-d-observatory-vpc]
+google_compute_router.router: Refreshing state... [id=projects/enes-turan-demo/regions/us-west4/routers/llm-d-observatory-router]
+google_compute_subnetwork.nodes: Refreshing state... [id=projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes]
+google_compute_firewall.allow_internal: Refreshing state... [id=projects/enes-turan-demo/global/firewalls/llm-d-observatory-allow-internal]
+google_project_iam_member.node_sa_roles["roles/stackdriver.resourceMetadata.writer"]: Refreshing state... [id=enes-turan-demo/roles/stackdriver.resourceMetadata.writer/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/cloudtrace.agent"]: Refreshing state... [id=enes-turan-demo/roles/cloudtrace.agent/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/artifactregistry.reader"]: Refreshing state... [id=enes-turan-demo/roles/artifactregistry.reader/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/logging.logWriter"]: Refreshing state... [id=enes-turan-demo/roles/logging.logWriter/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/monitoring.metricWriter"]: Refreshing state... [id=enes-turan-demo/roles/monitoring.metricWriter/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/monitoring.viewer"]: Refreshing state... [id=enes-turan-demo/roles/monitoring.viewer/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/container.defaultNodeServiceAccount"]: Refreshing state... [id=enes-turan-demo/roles/container.defaultNodeServiceAccount/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
+google_compute_router_nat.nat: Refreshing state... [id=enes-turan-demo/us-west4/llm-d-observatory-router/llm-d-observatory-nat]
+google_container_cluster.primary: Refreshing state... [id=projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory]
+google_container_node_pool.cpu_inference_pool: Refreshing state... [id=projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory/nodePools/cpu-inference-pool]
+google_container_node_pool.system_pool: Refreshing state... [id=projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory/nodePools/system-pool]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # google_artifact_registry_repository.observatory will be destroyed
+  - resource "google_artifact_registry_repository" "observatory" {
+      - cleanup_policy_dry_run = false -> null
+      - create_time            = "2026-10-26T21:01:37.456464Z" -> null
+      - deletion_policy        = "DELETE" -> null
+      - description            = "Container images for llm-d Inference Observatory (Observer API and React UI)" -> null
+      - effective_labels       = {
+          - "accelerator-type"           = "cpu-only"
+          - "deployment-tier"            = "experimental-small"
+          - "goog-terraform-provisioned" = "true"
+          - "managed-by"                 = "terraform"
+          - "project"                    = "llm-d-inference-observatory"
+        } -> null
+      - format                 = "DOCKER" -> null
+      - id                     = "projects/enes-turan-demo/locations/us-west4/repositories/llm-d-observatory" -> null
+      - labels                 = {
+          - "accelerator-type" = "cpu-only"
+          - "deployment-tier"  = "experimental-small"
+          - "managed-by"       = "terraform"
+          - "project"          = "llm-d-inference-observatory"
+        } -> null
+      - location               = "us-west4" -> null
+      - mode                   = "STANDARD_REPOSITORY" -> null
+      - name                   = "llm-d-observatory" -> null
+      - project                = "enes-turan-demo" -> null
+      - registry_uri           = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory" -> null
+      - repository_id          = "llm-d-observatory" -> null
+      - terraform_labels       = {
+          - "accelerator-type"           = "cpu-only"
+          - "deployment-tier"            = "experimental-small"
+          - "goog-terraform-provisioned" = "true"
+          - "managed-by"                 = "terraform"
+          - "project"                    = "llm-d-inference-observatory"
+        } -> null
+      - update_time            = "2026-10-26T23:19:52.918341Z" -> null
+        # (1 unchanged attribute hidden)
+
+      - vulnerability_scanning_config {
+          - enablement_state        = "SCANNING_DISABLED" -> null
+          - enablement_state_reason = "API containerscanning.googleapis.com is not enabled." -> null
+            # (1 unchanged attribute hidden)
+        }
+    }
+
+  # google_compute_firewall.allow_internal will be destroyed
+  - resource "google_compute_firewall" "allow_internal" {
+      - creation_timestamp      = "2026-10-26T14:01:59.164-07:00" -> null
+      - deletion_policy         = "DELETE" -> null
+      - destination_ranges      = [] -> null
+      - direction               = "INGRESS" -> null
+      - disabled                = false -> null
+      - id                      = "projects/enes-turan-demo/global/firewalls/llm-d-observatory-allow-internal" -> null
+      - name                    = "llm-d-observatory-allow-internal" -> null
+      - network                 = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - priority                = 1000 -> null
+      - project                 = "enes-turan-demo" -> null
+      - self_link               = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/firewalls/llm-d-observatory-allow-internal" -> null
+      - source_ranges           = [
+          - "10.10.0.0/24",
+          - "10.20.0.0/16",
+          - "10.30.0.0/20",
+        ] -> null
+      - source_service_accounts = [] -> null
+      - source_tags             = [] -> null
+      - target_service_accounts = [] -> null
+      - target_tags             = [] -> null
+        # (1 unchanged attribute hidden)
+
+      - allow {
+          - ports    = [
+              - "80",
+              - "4317",
+              - "4318",
+              - "5556",
+              - "5559",
+              - "8000",
+              - "8080",
+              - "8081",
+              - "9002",
+              - "9003",
+              - "9090",
+              - "16686",
+            ] -> null
+          - protocol = "tcp" -> null
+        }
+      - allow {
+          - ports    = [] -> null
+          - protocol = "icmp" -> null
+        }
+    }
+
+  # google_compute_network.vpc will be destroyed
+  - resource "google_compute_network" "vpc" {
+      - auto_create_subnetworks                   = false -> null
+      - bgp_always_compare_med                    = false -> null
+      - bgp_best_path_selection_mode              = "LEGACY" -> null
+      - delete_bgp_always_compare_med             = false -> null
+      - delete_default_routes_on_create           = false -> null
+      - deletion_policy                           = "DELETE" -> null
+      - enable_ula_internal_ipv6                  = false -> null
+      - id                                        = "projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - mtu                                       = 0 -> null
+      - name                                      = "llm-d-observatory-vpc" -> null
+      - network_firewall_policy_enforcement_order = "AFTER_CLASSIC_FIREWALL" -> null
+      - network_id                                = "3659268708510073183" -> null
+      - numeric_id                                = "3659268708510073183" -> null
+      - project                                   = "enes-turan-demo" -> null
+      - routing_mode                              = "REGIONAL" -> null
+      - self_link                                 = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+        # (5 unchanged attributes hidden)
+    }
+
+  # google_compute_router.router will be destroyed
+  - resource "google_compute_router" "router" {
+      - creation_timestamp            = "2026-10-26T14:01:59.242-07:00" -> null
+      - deletion_policy               = "DELETE" -> null
+      - encrypted_interconnect_router = false -> null
+      - id                            = "projects/enes-turan-demo/regions/us-west4/routers/llm-d-observatory-router" -> null
+      - name                          = "llm-d-observatory-router" -> null
+      - network                       = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - project                       = "enes-turan-demo" -> null
+      - region                        = "us-west4" -> null
+      - self_link                     = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/regions/us-west4/routers/llm-d-observatory-router" -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # google_compute_router_nat.nat will be destroyed
+  - resource "google_compute_router_nat" "nat" {
+      - deletion_policy                      = "DELETE" -> null
+      - drain_nat_ips                        = [] -> null
+      - enable_dynamic_port_allocation       = false -> null
+      - enable_endpoint_independent_mapping  = false -> null
+      - endpoint_types                       = [
+          - "ENDPOINT_TYPE_VM",
+        ] -> null
+      - icmp_idle_timeout_sec                = 30 -> null
+      - id                                   = "enes-turan-demo/us-west4/llm-d-observatory-router/llm-d-observatory-nat" -> null
+      - max_ports_per_vm                     = 0 -> null
+      - min_ports_per_vm                     = 0 -> null
+      - name                                 = "llm-d-observatory-nat" -> null
+      - nat_ip_allocate_option               = "AUTO_ONLY" -> null
+      - nat_ips                              = [] -> null
+      - project                              = "enes-turan-demo" -> null
+      - region                               = "us-west4" -> null
+      - router                               = "llm-d-observatory-router" -> null
+      - source_subnetwork_ip_ranges_to_nat   = "ALL_SUBNETWORKS_ALL_IP_RANGES" -> null
+      - tcp_established_idle_timeout_sec     = 1200 -> null
+      - tcp_time_wait_timeout_sec            = 120 -> null
+      - tcp_transitory_idle_timeout_sec      = 30 -> null
+      - type                                 = "PUBLIC" -> null
+      - udp_idle_timeout_sec                 = 30 -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # google_compute_subnetwork.nodes will be destroyed
+  - resource "google_compute_subnetwork" "nodes" {
+      - allow_subnet_cidr_routes_overlap = false -> null
+      - creation_timestamp               = "2026-10-26T14:02:00.318-07:00" -> null
+      - deletion_policy                  = "DELETE" -> null
+      - gateway_address                  = "10.10.0.1" -> null
+      - id                               = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+      - ip_cidr_range                    = "10.10.0.0/24" -> null
+      - name                             = "llm-d-observatory-nodes" -> null
+      - network                          = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - private_ip_google_access         = true -> null
+      - private_ipv6_google_access       = "DISABLE_GOOGLE_ACCESS" -> null
+      - project                          = "enes-turan-demo" -> null
+      - purpose                          = "PRIVATE" -> null
+      - region                           = "us-west4" -> null
+      - self_link                        = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+      - stack_type                       = "IPV4_ONLY" -> null
+      - subnetwork_id                    = 1295705303092953383 -> null
+        # (11 unchanged attributes hidden)
+
+      - secondary_ip_range {
+          - ip_cidr_range           = "10.20.0.0/16" -> null
+          - range_name              = "pods" -> null
+            # (1 unchanged attribute hidden)
+        }
+      - secondary_ip_range {
+          - ip_cidr_range           = "10.30.0.0/20" -> null
+          - range_name              = "services" -> null
+            # (1 unchanged attribute hidden)
+        }
+    }
+
+  # google_container_cluster.primary will be destroyed
+  - resource "google_container_cluster" "primary" {
+      - autopilot_privileged_admission           = [] -> null
+      - cluster_ipv4_cidr                        = "10.20.0.0/16" -> null
+      - default_max_pods_per_node                = 110 -> null
+      - deletion_policy                          = "DELETE" -> null
+      - deletion_protection                      = false -> null
+      - disable_l4_lb_firewall_reconciliation    = false -> null
+      - effective_labels                         = {
+          - "accelerator-type"           = "cpu-only"
+          - "deployment-tier"            = "experimental-small"
+          - "goog-terraform-provisioned" = "true"
+          - "managed-by"                 = "terraform"
+          - "project"                    = "llm-d-inference-observatory"
+        } -> null
+      - enable_autopilot                         = false -> null
+      - enable_cilium_clusterwide_network_policy = false -> null
+      - enable_fqdn_network_policy               = false -> null
+      - enable_intranode_visibility              = false -> null
+      - enable_kubernetes_alpha                  = false -> null
+      - enable_l4_ilb_subsetting                 = false -> null
+      - enable_legacy_abac                       = false -> null
+      - enable_multi_networking                  = false -> null
+      - enable_shielded_nodes                    = true -> null
+      - enable_tpu                               = false -> null
+      - endpoint                                 = "34.16.143.208" -> null
+      - id                                       = "projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory" -> null
+      - initial_node_count                       = 1 -> null
+      - label_fingerprint                        = "df54e789" -> null
+      - location                                 = "us-west4-a" -> null
+      - logging_service                          = "logging.googleapis.com/kubernetes" -> null
+      - master_version                           = "1.36.4-gke.2046003" -> null
+      - monitoring_service                       = "monitoring.googleapis.com/kubernetes" -> null
+      - name                                     = "llm-d-observatory" -> null
+      - network                                  = "projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - networking_mode                          = "VPC_NATIVE" -> null
+      - node_locations                           = [] -> null
+      - node_version                             = "1.36.4-gke.2046003" -> null
+      - project                                  = "enes-turan-demo" -> null
+      - remove_default_node_pool                 = true -> null
+      - resource_labels                          = {
+          - "accelerator-type" = "cpu-only"
+          - "deployment-tier"  = "experimental-small"
+          - "managed-by"       = "terraform"
+          - "project"          = "llm-d-inference-observatory"
+        } -> null
+      - self_link                                = "https://container.googleapis.com/v1beta1/projects/enes-turan-demo/zones/us-west4-a/clusters/llm-d-observatory" -> null
+      - services_ipv4_cidr                       = "10.30.0.0/20" -> null
+      - subnetwork                               = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+      - terraform_labels                         = {
+          - "accelerator-type"           = "cpu-only"
+          - "deployment-tier"            = "experimental-small"
+          - "goog-terraform-provisioned" = "true"
+          - "managed-by"                 = "terraform"
+          - "project"                    = "llm-d-inference-observatory"
+        } -> null
+        # (6 unchanged attributes hidden)
+
+      - addons_config {
+          - dns_cache_config {
+              - enabled = true -> null
+            }
+          - gce_persistent_disk_csi_driver_config {
+              - enabled = true -> null
+            }
+          - gcp_filestore_csi_driver_config {
+              - enabled = true -> null
+            }
+          - network_policy_config {
+              - disabled = true -> null
+            }
+          - node_readiness_config {
+              - enabled = false -> null
+            }
+        }
+
+      - anonymous_authentication_config {
+          - mode = "LIMITED" -> null
+        }
+
+      - binary_authorization {
+          - enabled         = false -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - cluster_autoscaling {
+          - auto_provisioning_locations   = [] -> null
+          - autoscaling_profile           = "BALANCED" -> null
+          - default_compute_class_enabled = false -> null
+          - enabled                       = false -> null
+
+          - auto_provisioning_defaults {
+              - disk_size         = 0 -> null
+              - image_type        = "COS_CONTAINERD" -> null
+              - oauth_scopes      = [
+                  - "https://www.googleapis.com/auth/devstorage.read_only",
+                  - "https://www.googleapis.com/auth/logging.write",
+                  - "https://www.googleapis.com/auth/monitoring",
+                  - "https://www.googleapis.com/auth/service.management.readonly",
+                  - "https://www.googleapis.com/auth/servicecontrol",
+                  - "https://www.googleapis.com/auth/trace.append",
+                ] -> null
+              - service_account   = "default" -> null
+                # (3 unchanged attributes hidden)
+
+              - management {
+                  - auto_repair     = true -> null
+                  - auto_upgrade    = true -> null
+                  - upgrade_options = [] -> null
+                }
+            }
+        }
+
+      - cluster_telemetry {
+          - type = "ENABLED" -> null
+        }
+
+      - control_plane_endpoints_config {
+          - dns_endpoint_config {
+              - allow_external_traffic    = false -> null
+              - enable_k8s_certs_via_dns  = false -> null
+              - enable_k8s_tokens_via_dns = false -> null
+              - endpoint                  = "gke-6808a6986d204c749e2226661feca28ec745-697289276442.us-west4-a.gke.goog" -> null
+            }
+          - ip_endpoints_config {
+              - enabled = true -> null
+            }
+        }
+
+      - database_encryption {
+          - state    = "DECRYPTED" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - default_snat_status {
+          - disabled = false -> null
+        }
+
+      - enterprise_config {
+          - cluster_tier = "STANDARD" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - ip_allocation_policy {
+          - cluster_ipv4_cidr_block       = "10.20.0.0/16" -> null
+          - cluster_secondary_range_name  = "pods" -> null
+          - services_ipv4_cidr_block      = "10.30.0.0/20" -> null
+          - services_secondary_range_name = "services" -> null
+          - stack_type                    = "IPV4" -> null
+
+          - network_tier_config {
+              - network_tier = "NETWORK_TIER_DEFAULT" -> null
+            }
+
+          - pod_cidr_overprovision_config {
+              - disabled = false -> null
+            }
+        }
+
+      - logging_config {
+          - enable_components = [
+              - "SYSTEM_COMPONENTS",
+              - "WORKLOADS",
+            ] -> null
+        }
+
+      - master_auth {
+          - cluster_ca_certificate = "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVMVENDQXBXZ0F3SUJBZ0lSQUpwKzJEbkdvZFRkTFBvZFdQTEVqeXd3RFFZSktvWklodmNOQVFFTEJRQXcKTHpFdE1Dc0dBMVVFQXhNa01qVTNaalZsTURRdFlqYzFNUzAwTW1VMExUa3lOak10Tm1WalpURmlaVGc1T0dZegpNQ0FYRFRJMk1UQXlOakl3TURJeU5sb1lEekl3TlRZeE1ERTRNakV3TWpJMldqQXZNUzB3S3dZRFZRUURFeVF5Ck5UZG1OV1V3TkMxaU56VXhMVFF5WlRRdE9USTJNeTAyWldObE1XSmxPRGs0WmpNd2dnR2lNQTBHQ1NxR1NJYjMKRFFFQkFRVUFBNElCandBd2dnR0tBb0lCZ1FEclRsR1ZQVUpxNlFhamhndURRZUlQbjBYNlI2aS9iMGMxQlhJSwpOT3NDMzVjTUpXeDVqaWJTS09vcUFKY1g4YmR5NzNnZkJYcnRsdDZIMW9uK2NHNnkzZU9wckdHaVRsdXY3blRXCmgwQktyZTMrNVBkR3VOSEYzWjFzejUvK29Dai9tc29VY3h6eEtaVm5CNGMxV1dxRXJMMEY0R0JoM1VRcGNtSkYKcmJHUXlpWUVJY1pXcXFKSDAwYnBDQlN3enBnMDFYMmgwZHpHVm9BOVVhSFNBOGlLWmxIMWRjWjF4L01IS3JUVgpYdnpEYm1CQmhZK0MvWDJ6VjZuT002cWRKZVBsYzFZVEtyQ0lCb3NZWnhLVUIzaHdDMmdlZ0ZrWXVzamJ2QXdpCjBDd2dvdGRvcU5oVFdFWVAxTjgxTzNncEJqMDZ0amxHVnJKZ3Z2UEtWcUxxOHRnWGwrQ1J2disxSWcvWStzN1gKbEtOUXhRVCtWQm9YUy9nZkFFTXZXeEdBcnlub3lkZjVZQ0RmdTZ4eVU0enkxV1VraklIT2F5TFl1MTl3R20rQgpPTitoRTMrZFF2clVTVlk4K29aWFV1RzNNQTNicFU3ZWk5VHh6WHlwQWJrSmtPdXYrMGgzTEpWckxnMW80MmNXCjRvZi8xaWJxVXRHY2diMXllQk11ZmRuRlJmOENBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdJRU1BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTXlkb3ZIM0YrcVFOLzRYRGRYY3lpTnVtNW5ITUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQmdRQzI4eFJzVHVGQ2cvOEx5bjJGZFpjaTcvZVdEZCs1d3RKWnJ2TW9SallDCkt3b1lHeUdxMkhpL0k4RUdOUEh3eEpSRnQ3NWQ4akRnWjRWNTJTYy80M1VjM3N3VG9IQXp1a2ZYeVVDclRGZlAKNnVaSGlrWlZ0aW1wblhDd1lETVB6VFdMc0d1cnBIWDErRFFyRmVxRFZkSHF6UjFJRHlPd2tJSjVaZGoyRDQxdwo5aHNVN1FCWDkxdGNrSFZtNHNEV0FQaXV1L2loVFc0cmtoVXNUOGw4YlZ3dE9sNWR5YjdSU3VlK0RRWmc5SWhRCmI2aEN4L2VZZGFZWUtrZ1dOTjRzL20wcVRQZVZOQ09TMXhNcEQ1QUErZWlnLzFoc1JlMHhwK3hwamV6Si96VUUKTTVvYWFIaGQ2VWZySjJMaHVKZWY4TUdvL05PdVZkWTA3M2NHNG0ydVZ6UFVwcE5YWFh5MXdhRTU2MnVFVmhWdAppYXpITFMvUzN0a2hiVmhyRGtHWnd2bnhRM0o5NDVEUGxzak5UKzdIMlkzeDdqSWVUMjk2RHBQY2pCajgvUENZCk5xMUoxbU02OWIyNUpKQklIM2FQOW00WXBDbmFFYldCeExWZGNmWURsVllZR1IrVklxL2EzNGdZMFF6dW9ocXEKVDJ3SlR6eTJuNFZPVjhnMmRrcU9zem89Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K" -> null
+            # (2 unchanged attributes hidden)
+
+          - client_certificate_config {
+              - issue_client_certificate = false -> null
+            }
+        }
+
+      - monitoring_config {
+          - enable_components = [
+              - "SYSTEM_COMPONENTS",
+            ] -> null
+
+          - advanced_datapath_observability_config {
+              - enable_metrics = false -> null
+              - enable_relay   = false -> null
+            }
+
+          - managed_prometheus {
+              - enabled = true -> null
+
+              - auto_monitoring_config {
+                  - scope = "ALL" -> null
+                }
+            }
+        }
+
+      - network_policy {
+          - enabled  = false -> null
+          - provider = "PROVIDER_UNSPECIFIED" -> null
+        }
+
+      - node_config {
+          - disk_size_gb                = 50 -> null
+          - disk_type                   = "pd-balanced" -> null
+          - effective_taints            = [] -> null
+          - enable_confidential_storage = false -> null
+          - flex_start                  = false -> null
+          - image_type                  = "COS_CONTAINERD" -> null
+          - labels                      = {
+              - "accelerator-type"   = "cpu-only"
+              - "deployment-tier"    = "experimental-small"
+              - "llm-d.ai/node-role" = "system"
+              - "managed-by"         = "terraform"
+              - "project"            = "llm-d-inference-observatory"
+              - "role"               = "system"
+            } -> null
+          - local_ssd_count             = 0 -> null
+          - logging_variant             = "DEFAULT" -> null
+          - machine_type                = "e2-standard-4" -> null
+          - metadata                    = {
+              - "disable-legacy-endpoints" = "true"
+            } -> null
+          - oauth_scopes                = [
+              - "https://www.googleapis.com/auth/cloud-platform",
+            ] -> null
+          - preemptible                 = false -> null
+          - resource_labels             = {
+              - "goog-gke-node-pool-provisioning-model" = "on-demand"
+            } -> null
+          - resource_manager_tags       = {} -> null
+          - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+          - spot                        = false -> null
+          - storage_pools               = [] -> null
+          - tags                        = [] -> null
+            # (6 unchanged attributes hidden)
+
+          - boot_disk {
+              - disk_type              = "pd-balanced" -> null
+              - provisioned_iops       = 0 -> null
+              - provisioned_throughput = 0 -> null
+              - size_gb                = 50 -> null
+            }
+
+          - kubelet_config {
+              - allowed_unsafe_sysctls                      = [] -> null
+              - container_log_max_files                     = 0 -> null
+              - cpu_cfs_quota                               = false -> null
+              - eviction_max_pod_grace_period_seconds       = 0 -> null
+              - image_gc_high_threshold_percent             = 0 -> null
+              - image_gc_low_threshold_percent              = 0 -> null
+              - insecure_kubelet_readonly_port_enabled      = "FALSE" -> null
+              - max_parallel_image_pulls                    = 3 -> null
+              - pod_pids_limit                              = 0 -> null
+              - shutdown_grace_period_critical_pods_seconds = 0 -> null
+              - shutdown_grace_period_seconds               = 0 -> null
+              - single_process_oom_kill                     = false -> null
+                # (5 unchanged attributes hidden)
+            }
+
+          - node_image_config {
+              - image         = "gke-1364-gke2046003-cos-129-19506-448-20-c-pre" -> null
+              - image_project = "gke-node-images" -> null
+            }
+
+          - shielded_instance_config {
+              - enable_integrity_monitoring = true -> null
+              - enable_secure_boot          = true -> null
+            }
+
+          - windows_node_config {
+                # (1 unchanged attribute hidden)
+            }
+
+          - workload_metadata_config {
+              - mode = "GKE_METADATA" -> null
+            }
+        }
+
+      - node_creation_config {
+          - node_creation_mode = "VIA_KUBELET" -> null
+        }
+
+      - node_pool {
+          - ignore_node_count_changes   = false -> null
+          - initial_node_count          = 1 -> null
+          - instance_group_urls         = [
+              - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observatory-system-pool-b5b60be9-grp",
+            ] -> null
+          - managed_instance_group_urls = [
+              - "https://www.googleapis.com/compute/beta/projects/enes-turan-demo/zones/us-west4-a/instanceGroups/gke-llm-d-observatory-system-pool-b5b60be9-grp",
+            ] -> null
+          - max_pods_per_node           = 110 -> null
+          - name                        = "system-pool" -> null
+          - node_count                  = 1 -> null
+          - node_locations              = [
+              - "us-west4-a",
+            ] -> null
+          - version                     = "1.36.4-gke.2046003" -> null
+            # (1 unchanged attribute hidden)
+
+          - management {
+              - auto_repair  = true -> null
+              - auto_upgrade = true -> null
+            }
+
+          - network_config {
+              - create_pod_range            = false -> null
+              - enable_private_nodes        = false -> null
+              - pod_ipv4_cidr_block         = "10.20.0.0/16" -> null
+              - pod_range                   = "pods" -> null
+              - subnetwork                  = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+                # (1 unchanged attribute hidden)
+            }
+
+          - node_config {
+              - disk_size_gb                = 50 -> null
+              - disk_type                   = "pd-balanced" -> null
+              - effective_taints            = [] -> null
+              - enable_confidential_storage = false -> null
+              - flex_start                  = false -> null
+              - image_type                  = "COS_CONTAINERD" -> null
+              - labels                      = {
+                  - "accelerator-type"   = "cpu-only"
+                  - "deployment-tier"    = "experimental-small"
+                  - "llm-d.ai/node-role" = "system"
+                  - "managed-by"         = "terraform"
+                  - "project"            = "llm-d-inference-observatory"
+                  - "role"               = "system"
+                } -> null
+              - local_ssd_count             = 0 -> null
+              - logging_variant             = "DEFAULT" -> null
+              - machine_type                = "e2-standard-4" -> null
+              - metadata                    = {
+                  - "disable-legacy-endpoints" = "true"
+                } -> null
+              - oauth_scopes                = [
+                  - "https://www.googleapis.com/auth/cloud-platform",
+                ] -> null
+              - preemptible                 = false -> null
+              - resource_labels             = {
+                  - "goog-gke-node-pool-provisioning-model" = "on-demand"
+                } -> null
+              - resource_manager_tags       = {} -> null
+              - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+              - spot                        = false -> null
+              - storage_pools               = [] -> null
+              - tags                        = [] -> null
+                # (6 unchanged attributes hidden)
+
+              - boot_disk {
+                  - disk_type              = "pd-balanced" -> null
+                  - provisioned_iops       = 0 -> null
+                  - provisioned_throughput = 0 -> null
+                  - size_gb                = 50 -> null
+                }
+
+              - kubelet_config {
+                  - allowed_unsafe_sysctls                      = [] -> null
+                  - container_log_max_files                     = 0 -> null
+                  - cpu_cfs_quota                               = false -> null
+                  - eviction_max_pod_grace_period_seconds       = 0 -> null
+                  - image_gc_high_threshold_percent             = 0 -> null
+                  - image_gc_low_threshold_percent              = 0 -> null
+                  - insecure_kubelet_readonly_port_enabled      = "FALSE" -> null
+                  - max_parallel_image_pulls                    = 3 -> null
+                  - pod_pids_limit                              = 0 -> null
+                  - shutdown_grace_period_critical_pods_seconds = 0 -> null
+                  - shutdown_grace_period_seconds               = 0 -> null
+                  - single_process_oom_kill                     = false -> null
+                    # (5 unchanged attributes hidden)
+                }
+
+              - node_image_config {
+                  - image         = "gke-1364-gke2046003-cos-129-19506-448-20-c-pre" -> null
+                  - image_project = "gke-node-images" -> null
+                }
+
+              - shielded_instance_config {
+                  - enable_integrity_monitoring = true -> null
+                  - enable_secure_boot          = true -> null
+                }
+
+              - windows_node_config {
+                    # (1 unchanged attribute hidden)
+                }
+
+              - workload_metadata_config {
+                  - mode = "GKE_METADATA" -> null
+                }
+            }
+
+          - upgrade_settings {
+              - max_surge       = 1 -> null
+              - max_unavailable = 0 -> null
+              - strategy        = "SURGE" -> null
+            }
+        }
+      - node_pool {
+          - ignore_node_count_changes   = false -> null
+          - initial_node_count          = 1 -> null
+          - instance_group_urls         = [
+              - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
+            ] -> null
+          - managed_instance_group_urls = [
+              - "https://www.googleapis.com/compute/beta/projects/enes-turan-demo/zones/us-west4-a/instanceGroups/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
+            ] -> null
+          - max_pods_per_node           = 110 -> null
+          - name                        = "cpu-inference-pool" -> null
+          - node_count                  = 1 -> null
+          - node_locations              = [
+              - "us-west4-a",
+            ] -> null
+          - version                     = "1.36.4-gke.2046003" -> null
+            # (1 unchanged attribute hidden)
+
+          - management {
+              - auto_repair  = true -> null
+              - auto_upgrade = true -> null
+            }
+
+          - network_config {
+              - create_pod_range            = false -> null
+              - enable_private_nodes        = false -> null
+              - pod_ipv4_cidr_block         = "10.20.0.0/16" -> null
+              - pod_range                   = "pods" -> null
+              - subnetwork                  = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+                # (1 unchanged attribute hidden)
+            }
+
+          - node_config {
+              - disk_size_gb                = 100 -> null
+              - disk_type                   = "pd-balanced" -> null
+              - effective_taints            = [] -> null
+              - enable_confidential_storage = false -> null
+              - flex_start                  = false -> null
+              - image_type                  = "COS_CONTAINERD" -> null
+              - labels                      = {
+                  - "accelerator-type"    = "cpu-only"
+                  - "deployment-tier"     = "experimental-small"
+                  - "llm-d.ai/cpu-family" = "intel-sapphire-rapids"
+                  - "llm-d.ai/node-role"  = "inference"
+                  - "managed-by"          = "terraform"
+                  - "project"             = "llm-d-inference-observatory"
+                  - "role"                = "cpu-inference"
+                } -> null
+              - local_ssd_count             = 0 -> null
+              - logging_variant             = "DEFAULT" -> null
+              - machine_type                = "c3-standard-22" -> null
+              - metadata                    = {
+                  - "disable-legacy-endpoints" = "true"
+                } -> null
+              - oauth_scopes                = [
+                  - "https://www.googleapis.com/auth/cloud-platform",
+                ] -> null
+              - preemptible                 = false -> null
+              - resource_labels             = {
+                  - "goog-gke-node-pool-provisioning-model" = "on-demand"
+                } -> null
+              - resource_manager_tags       = {} -> null
+              - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+              - spot                        = false -> null
+              - storage_pools               = [] -> null
+              - tags                        = [] -> null
+                # (6 unchanged attributes hidden)
+
+              - boot_disk {
+                  - disk_type              = "pd-balanced" -> null
+                  - provisioned_iops       = 0 -> null
+                  - provisioned_throughput = 0 -> null
+                  - size_gb                = 100 -> null
+                }
+
+              - kubelet_config {
+                  - allowed_unsafe_sysctls                      = [] -> null
+                  - container_log_max_files                     = 0 -> null
+                  - cpu_cfs_quota                               = false -> null
+                  - eviction_max_pod_grace_period_seconds       = 0 -> null
+                  - image_gc_high_threshold_percent             = 0 -> null
+                  - image_gc_low_threshold_percent              = 0 -> null
+                  - insecure_kubelet_readonly_port_enabled      = "FALSE" -> null
+                  - max_parallel_image_pulls                    = 3 -> null
+                  - pod_pids_limit                              = 0 -> null
+                  - shutdown_grace_period_critical_pods_seconds = 0 -> null
+                  - shutdown_grace_period_seconds               = 0 -> null
+                  - single_process_oom_kill                     = false -> null
+                    # (5 unchanged attributes hidden)
+                }
+
+              - node_image_config {
+                  - image         = "gke-1364-gke2046003-cos-129-19506-448-20-c-pre" -> null
+                  - image_project = "gke-node-images" -> null
+                }
+
+              - shielded_instance_config {
+                  - enable_integrity_monitoring = true -> null
+                  - enable_secure_boot          = true -> null
+                }
+
+              - windows_node_config {
+                    # (1 unchanged attribute hidden)
+                }
+
+              - workload_metadata_config {
+                  - mode = "GKE_METADATA" -> null
+                }
+            }
+
+          - upgrade_settings {
+              - max_surge       = 1 -> null
+              - max_unavailable = 0 -> null
+              - strategy        = "SURGE" -> null
+            }
+        }
+
+      - node_pool_auto_config {
+          - resource_manager_tags = {} -> null
+
+          - node_kubelet_config {
+              - insecure_kubelet_readonly_port_enabled = "FALSE" -> null
+            }
+        }
+
+      - node_pool_defaults {
+          - node_config_defaults {
+              - insecure_kubelet_readonly_port_enabled = "FALSE" -> null
+              - logging_variant                        = "DEFAULT" -> null
+            }
+        }
+
+      - notification_config {
+          - pubsub {
+              - enabled = false -> null
+                # (1 unchanged attribute hidden)
+            }
+        }
+
+      - pod_autoscaling {
+          - hpa_profile = "PERFORMANCE" -> null
+        }
+
+      - pod_security_policy_config {
+          - enabled = false -> null
+        }
+
+      - private_cluster_config {
+          - enable_private_endpoint     = false -> null
+          - enable_private_nodes        = false -> null
+          - private_endpoint            = "10.10.0.2" -> null
+          - public_endpoint             = "34.16.143.208" -> null
+            # (3 unchanged attributes hidden)
+
+          - master_global_access_config {
+              - enabled = false -> null
+            }
+        }
+
+      - protect_config {
+          - workload_vulnerability_mode = "WORKLOAD_VULNERABILITY_MODE_UNSPECIFIED" -> null
+
+          - workload_config {
+              - audit_mode = "BASIC" -> null
+            }
+        }
+
+      - rbac_binding_config {
+          - enable_insecure_binding_system_authenticated   = true -> null
+          - enable_insecure_binding_system_unauthenticated = true -> null
+        }
+
+      - release_channel {
+          - channel = "REGULAR" -> null
+        }
+
+      - secret_manager_config {
+          - enabled = false -> null
+        }
+
+      - secret_sync_config {
+          - enabled = false -> null
+        }
+
+      - security_posture_config {
+          - mode               = "BASIC" -> null
+          - vulnerability_mode = "VULNERABILITY_MODE_UNSPECIFIED" -> null
+        }
+
+      - service_external_ips_config {
+          - enabled = false -> null
+        }
+
+      - workload_identity_config {
+          - workload_pool = "enes-turan-demo.svc.id.goog" -> null
+        }
+    }
+
+  # google_container_node_pool.cpu_inference_pool will be destroyed
+  - resource "google_container_node_pool" "cpu_inference_pool" {
+      - cluster                     = "llm-d-observatory" -> null
+      - deletion_policy             = "DELETE" -> null
+      - id                          = "projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory/nodePools/cpu-inference-pool" -> null
+      - ignore_node_count_changes   = false -> null
+      - initial_node_count          = 1 -> null
+      - instance_group_urls         = [
+          - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
+        ] -> null
+      - location                    = "us-west4-a" -> null
+      - managed_instance_group_urls = [
+          - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroups/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
+        ] -> null
+      - max_pods_per_node           = 110 -> null
+      - name                        = "cpu-inference-pool" -> null
+      - node_count                  = 1 -> null
+      - node_locations              = [
+          - "us-west4-a",
+        ] -> null
+      - project                     = "enes-turan-demo" -> null
+      - version                     = "1.36.4-gke.2046003" -> null
+        # (1 unchanged attribute hidden)
+
+      - management {
+          - auto_repair  = true -> null
+          - auto_upgrade = true -> null
+        }
+
+      - network_config {
+          - create_pod_range            = false -> null
+          - enable_private_nodes        = false -> null
+          - pod_ipv4_cidr_block         = "10.20.0.0/16" -> null
+          - pod_range                   = "pods" -> null
+          - subnetwork                  = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - node_config {
+          - disk_size_gb                = 100 -> null
+          - disk_type                   = "pd-balanced" -> null
+          - effective_taints            = [] -> null
+          - enable_confidential_storage = false -> null
+          - flex_start                  = false -> null
+          - image_type                  = "COS_CONTAINERD" -> null
+          - labels                      = {
+              - "accelerator-type"    = "cpu-only"
+              - "deployment-tier"     = "experimental-small"
+              - "llm-d.ai/cpu-family" = "intel-sapphire-rapids"
+              - "llm-d.ai/node-role"  = "inference"
+              - "managed-by"          = "terraform"
+              - "project"             = "llm-d-inference-observatory"
+              - "role"                = "cpu-inference"
+            } -> null
+          - local_ssd_count             = 0 -> null
+          - logging_variant             = "DEFAULT" -> null
+          - machine_type                = "c3-standard-22" -> null
+          - metadata                    = {
+              - "disable-legacy-endpoints" = "true"
+            } -> null
+          - oauth_scopes                = [
+              - "https://www.googleapis.com/auth/cloud-platform",
+            ] -> null
+          - preemptible                 = false -> null
+          - resource_labels             = {
+              - "goog-gke-node-pool-provisioning-model" = "on-demand"
+            } -> null
+          - resource_manager_tags       = {} -> null
+          - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+          - spot                        = false -> null
+          - storage_pools               = [] -> null
+          - tags                        = [] -> null
+            # (6 unchanged attributes hidden)
+
+          - boot_disk {
+              - disk_type              = "pd-balanced" -> null
+              - provisioned_iops       = 0 -> null
+              - provisioned_throughput = 0 -> null
+              - size_gb                = 100 -> null
+            }
+
+          - kubelet_config {
+              - allowed_unsafe_sysctls                      = [] -> null
+              - container_log_max_files                     = 0 -> null
+              - cpu_cfs_quota                               = false -> null
+              - eviction_max_pod_grace_period_seconds       = 0 -> null
+              - image_gc_high_threshold_percent             = 0 -> null
+              - image_gc_low_threshold_percent              = 0 -> null
+              - insecure_kubelet_readonly_port_enabled      = "FALSE" -> null
+              - max_parallel_image_pulls                    = 3 -> null
+              - pod_pids_limit                              = 0 -> null
+              - shutdown_grace_period_critical_pods_seconds = 0 -> null
+              - shutdown_grace_period_seconds               = 0 -> null
+              - single_process_oom_kill                     = false -> null
+                # (5 unchanged attributes hidden)
+            }
+
+          - node_image_config {
+              - image         = "gke-1364-gke2046003-cos-129-19506-448-20-c-pre" -> null
+              - image_project = "gke-node-images" -> null
+            }
+
+          - shielded_instance_config {
+              - enable_integrity_monitoring = true -> null
+              - enable_secure_boot          = true -> null
+            }
+
+          - windows_node_config {
+                # (1 unchanged attribute hidden)
+            }
+
+          - workload_metadata_config {
+              - mode = "GKE_METADATA" -> null
+            }
+        }
+
+      - upgrade_settings {
+          - max_surge       = 1 -> null
+          - max_unavailable = 0 -> null
+          - strategy        = "SURGE" -> null
+        }
+    }
+
+  # google_container_node_pool.system_pool will be destroyed
+  - resource "google_container_node_pool" "system_pool" {
+      - cluster                     = "llm-d-observatory" -> null
+      - deletion_policy             = "DELETE" -> null
+      - id                          = "projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory/nodePools/system-pool" -> null
+      - ignore_node_count_changes   = false -> null
+      - initial_node_count          = 1 -> null
+      - instance_group_urls         = [
+          - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observatory-system-pool-b5b60be9-grp",
+        ] -> null
+      - location                    = "us-west4-a" -> null
+      - managed_instance_group_urls = [
+          - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroups/gke-llm-d-observatory-system-pool-b5b60be9-grp",
+        ] -> null
+      - max_pods_per_node           = 110 -> null
+      - name                        = "system-pool" -> null
+      - node_count                  = 1 -> null
+      - node_locations              = [
+          - "us-west4-a",
+        ] -> null
+      - project                     = "enes-turan-demo" -> null
+      - version                     = "1.36.4-gke.2046003" -> null
+        # (1 unchanged attribute hidden)
+
+      - management {
+          - auto_repair  = true -> null
+          - auto_upgrade = true -> null
+        }
+
+      - network_config {
+          - create_pod_range            = false -> null
+          - enable_private_nodes        = false -> null
+          - pod_ipv4_cidr_block         = "10.20.0.0/16" -> null
+          - pod_range                   = "pods" -> null
+          - subnetwork                  = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - node_config {
+          - disk_size_gb                = 50 -> null
+          - disk_type                   = "pd-balanced" -> null
+          - effective_taints            = [] -> null
+          - enable_confidential_storage = false -> null
+          - flex_start                  = false -> null
+          - image_type                  = "COS_CONTAINERD" -> null
+          - labels                      = {
+              - "accelerator-type"   = "cpu-only"
+              - "deployment-tier"    = "experimental-small"
+              - "llm-d.ai/node-role" = "system"
+              - "managed-by"         = "terraform"
+              - "project"            = "llm-d-inference-observatory"
+              - "role"               = "system"
+            } -> null
+          - local_ssd_count             = 0 -> null
+          - logging_variant             = "DEFAULT" -> null
+          - machine_type                = "e2-standard-4" -> null
+          - metadata                    = {
+              - "disable-legacy-endpoints" = "true"
+            } -> null
+          - oauth_scopes                = [
+              - "https://www.googleapis.com/auth/cloud-platform",
+            ] -> null
+          - preemptible                 = false -> null
+          - resource_labels             = {
+              - "goog-gke-node-pool-provisioning-model" = "on-demand"
+            } -> null
+          - resource_manager_tags       = {} -> null
+          - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+          - spot                        = false -> null
+          - storage_pools               = [] -> null
+          - tags                        = [] -> null
+            # (6 unchanged attributes hidden)
+
+          - boot_disk {
+              - disk_type              = "pd-balanced" -> null
+              - provisioned_iops       = 0 -> null
+              - provisioned_throughput = 0 -> null
+              - size_gb                = 50 -> null
+            }
+
+          - kubelet_config {
+              - allowed_unsafe_sysctls                      = [] -> null
+              - container_log_max_files                     = 0 -> null
+              - cpu_cfs_quota                               = false -> null
+              - eviction_max_pod_grace_period_seconds       = 0 -> null
+              - image_gc_high_threshold_percent             = 0 -> null
+              - image_gc_low_threshold_percent              = 0 -> null
+              - insecure_kubelet_readonly_port_enabled      = "FALSE" -> null
+              - max_parallel_image_pulls                    = 3 -> null
+              - pod_pids_limit                              = 0 -> null
+              - shutdown_grace_period_critical_pods_seconds = 0 -> null
+              - shutdown_grace_period_seconds               = 0 -> null
+              - single_process_oom_kill                     = false -> null
+                # (5 unchanged attributes hidden)
+            }
+
+          - node_image_config {
+              - image         = "gke-1364-gke2046003-cos-129-19506-448-20-c-pre" -> null
+              - image_project = "gke-node-images" -> null
+            }
+
+          - shielded_instance_config {
+              - enable_integrity_monitoring = true -> null
+              - enable_secure_boot          = true -> null
+            }
+
+          - windows_node_config {
+                # (1 unchanged attribute hidden)
+            }
+
+          - workload_metadata_config {
+              - mode = "GKE_METADATA" -> null
+            }
+        }
+
+      - upgrade_settings {
+          - max_surge       = 1 -> null
+          - max_unavailable = 0 -> null
+          - strategy        = "SURGE" -> null
+        }
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/artifactregistry.reader"] will be destroyed
+  - resource "google_project_iam_member" "node_sa_roles" {
+      - etag    = "BwZexKT0/7w=" -> null
+      - id      = "enes-turan-demo/roles/artifactregistry.reader/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - project = "enes-turan-demo" -> null
+      - role    = "roles/artifactregistry.reader" -> null
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/cloudtrace.agent"] will be destroyed
+  - resource "google_project_iam_member" "node_sa_roles" {
+      - etag    = "BwZexKT0/7w=" -> null
+      - id      = "enes-turan-demo/roles/cloudtrace.agent/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - project = "enes-turan-demo" -> null
+      - role    = "roles/cloudtrace.agent" -> null
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/container.defaultNodeServiceAccount"] will be destroyed
+  - resource "google_project_iam_member" "node_sa_roles" {
+      - etag    = "BwZexKT0/7w=" -> null
+      - id      = "enes-turan-demo/roles/container.defaultNodeServiceAccount/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - project = "enes-turan-demo" -> null
+      - role    = "roles/container.defaultNodeServiceAccount" -> null
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/logging.logWriter"] will be destroyed
+  - resource "google_project_iam_member" "node_sa_roles" {
+      - etag    = "BwZexKT0/7w=" -> null
+      - id      = "enes-turan-demo/roles/logging.logWriter/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - project = "enes-turan-demo" -> null
+      - role    = "roles/logging.logWriter" -> null
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/monitoring.metricWriter"] will be destroyed
+  - resource "google_project_iam_member" "node_sa_roles" {
+      - etag    = "BwZexKT0/7w=" -> null
+      - id      = "enes-turan-demo/roles/monitoring.metricWriter/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - project = "enes-turan-demo" -> null
+      - role    = "roles/monitoring.metricWriter" -> null
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/monitoring.viewer"] will be destroyed
+  - resource "google_project_iam_member" "node_sa_roles" {
+      - etag    = "BwZexKT0/7w=" -> null
+      - id      = "enes-turan-demo/roles/monitoring.viewer/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - project = "enes-turan-demo" -> null
+      - role    = "roles/monitoring.viewer" -> null
+    }
+
+  # google_project_iam_member.node_sa_roles["roles/stackdriver.resourceMetadata.writer"] will be destroyed
+  - resource "google_project_iam_member" "node_sa_roles" {
+      - etag    = "BwZexKT0/7w=" -> null
+      - id      = "enes-turan-demo/roles/stackdriver.resourceMetadata.writer/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - project = "enes-turan-demo" -> null
+      - role    = "roles/stackdriver.resourceMetadata.writer" -> null
+    }
+
+  # google_project_service.required["artifactregistry.googleapis.com"] will be destroyed
+  - resource "google_project_service" "required" {
+      - deletion_policy    = "DELETE" -> null
+      - disable_on_destroy = false -> null
+      - id                 = "enes-turan-demo/artifactregistry.googleapis.com" -> null
+      - project            = "enes-turan-demo" -> null
+      - service            = "artifactregistry.googleapis.com" -> null
+    }
+
+  # google_project_service.required["cloudtrace.googleapis.com"] will be destroyed
+  - resource "google_project_service" "required" {
+      - deletion_policy    = "DELETE" -> null
+      - disable_on_destroy = false -> null
+      - id                 = "enes-turan-demo/cloudtrace.googleapis.com" -> null
+      - project            = "enes-turan-demo" -> null
+      - service            = "cloudtrace.googleapis.com" -> null
+    }
+
+  # google_project_service.required["compute.googleapis.com"] will be destroyed
+  - resource "google_project_service" "required" {
+      - deletion_policy    = "DELETE" -> null
+      - disable_on_destroy = false -> null
+      - id                 = "enes-turan-demo/compute.googleapis.com" -> null
+      - project            = "enes-turan-demo" -> null
+      - service            = "compute.googleapis.com" -> null
+    }
+
+  # google_project_service.required["container.googleapis.com"] will be destroyed
+  - resource "google_project_service" "required" {
+      - deletion_policy    = "DELETE" -> null
+      - disable_on_destroy = false -> null
+      - id                 = "enes-turan-demo/container.googleapis.com" -> null
+      - project            = "enes-turan-demo" -> null
+      - service            = "container.googleapis.com" -> null
+    }
+
+  # google_project_service.required["iam.googleapis.com"] will be destroyed
+  - resource "google_project_service" "required" {
+      - deletion_policy    = "DELETE" -> null
+      - disable_on_destroy = false -> null
+      - id                 = "enes-turan-demo/iam.googleapis.com" -> null
+      - project            = "enes-turan-demo" -> null
+      - service            = "iam.googleapis.com" -> null
+    }
+
+  # google_project_service.required["logging.googleapis.com"] will be destroyed
+  - resource "google_project_service" "required" {
+      - deletion_policy    = "DELETE" -> null
+      - disable_on_destroy = false -> null
+      - id                 = "enes-turan-demo/logging.googleapis.com" -> null
+      - project            = "enes-turan-demo" -> null
+      - service            = "logging.googleapis.com" -> null
+    }
+
+  # google_project_service.required["monitoring.googleapis.com"] will be destroyed
+  - resource "google_project_service" "required" {
+      - deletion_policy    = "DELETE" -> null
+      - disable_on_destroy = false -> null
+      - id                 = "enes-turan-demo/monitoring.googleapis.com" -> null
+      - project            = "enes-turan-demo" -> null
+      - service            = "monitoring.googleapis.com" -> null
+    }
+
+  # google_service_account.node_sa will be destroyed
+  - resource "google_service_account" "node_sa" {
+      - account_id      = "llm-d-observatory-node-sa" -> null
+      - deletion_policy = "DELETE" -> null
+      - disabled        = false -> null
+      - display_name    = "GKE CPU Node Service Account for llm-d-observatory" -> null
+      - email           = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - id              = "projects/enes-turan-demo/serviceAccounts/llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - member          = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - name            = "projects/enes-turan-demo/serviceAccounts/llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+      - project         = "enes-turan-demo" -> null
+      - unique_id       = "101601670921364617979" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+Plan: 0 to add, 0 to change, 24 to destroy.
+
+Changes to Outputs:
+  - artifact_registry_repository_url = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory" -> null
+  - cluster_endpoint                 = (sensitive value) -> null
+  - cluster_name                     = "llm-d-observatory" -> null
+  - frontend_image_uri               = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0" -> null
+  - node_service_account_email       = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+  - observer_image_uri               = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0" -> null
+  - project_id                       = "enes-turan-demo" -> null
+  - region                           = "us-west4" -> null
+  - subnet_name                      = "llm-d-observatory-nodes" -> null
+  - vpc_network_name                 = "llm-d-observatory-vpc" -> null
+  - zone                             = "us-west4-a" -> null
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.

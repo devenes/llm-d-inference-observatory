@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-10-27T02:39:00+03:00",
+  "project_id": "enes-turan-demo",
+  "region": "us-west4",
+  "zone": "us-west4-a",
+  "cluster_name": "llm-d-observatory",
+  "gke_version": "v1.36.4-gke.2046003",
+  "deployed_versions": {
+    "observer_api_image": "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0@sha256:6c190d9c3fa53820ec71d1752763f275d78edc8d05a8ebe43a11bbb8866a90ab",
+    "observatory_frontend_image": "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0@sha256:8d13db7b9be94c1d940819dae6842ef3e5ccbe8c07187c0c17b5ea73044a035b",
+    "llm_d_router_chart": "oci://ghcr.io/llm-d/charts/llm-d-router-standalone:v1.0.0",
+    "llm_d_epp_image": "ghcr.io/llm-d/llm-d-router-endpoint-picker:v1.0.0",
+    "envoy_image": "docker.io/envoyproxy/envoy:distroless-v1.33.2",
+    "vllm_cpu_image": "docker.io/vllm/vllm-openai-cpu:v0.31.0",
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "otel_collector_image": "otel/opentelemetry-collector-contrib:0.114.0",
+    "jaeger_image": "jaegertracing/all-in-one:1.62.0",
+    "prometheus_image": "prom/prometheus:v2.55.1"
+  },
+  "final_test_suite_results": {
+    "go_fmt_vet_race_unit_tests": {
+      "command": "make test-go",
+      "status": "PASSED",
+      "details": "gofmt -l . (0 unformatted), go vet ./..., go test -v -race ./... (11 tests passed across 10 packages)"
+    },
+    "frontend_typecheck_lint_unit_build": {
+      "command": "make test-frontend && (cd frontend && pnpm build)",
+      "status": "PASSED",
+      "details": "tsc --noEmit (0 errors), eslint . (0 warnings/errors), vitest run (6/6 passed), vite build succeeded"
+    },
+    "playwright_e2e_suite": {
+      "command": "make test-e2e",
+      "status": "PASSED",
+      "details": "4/4 Chromium E2E test suites passed (Interactive Topology journey & connection inspector, streaming, cancellation, HTTP 429 saturation, partial/delayed trace enrichment, aggregate metrics)"
+    },
+    "helm_and_k8s_manifest_validation": {
+      "command": "make validate-manifests",
+      "status": "PASSED",
+      "details": "Rendered all 3 router modes (optimized-baseline, precise-prefix-cache, flow-control) and validated 67 Kubernetes resource documents across 13 files"
+    },
+    "docker_build_and_compose_smoke": {
+      "command": "make docker-build && make compose-smoke",
+      "status": "PASSED",
+      "details": "Built observer-api and frontend images, started Docker Compose stack, verified /healthz, /readyz, /version, and POST /api/infer"
+    },
+    "terraform_fmt_init_validate_plan": {
+      "command": "make tf-fmt && make tf-validate && make tf-plan",
+      "status": "PASSED",
+      "details": "Terraform configuration formatted, initialized, and validated against hashicorp/google v7.46.2"
+    },
+    "live_gke_smoke_and_telemetry_verification": {
+      "command": "TARGET_URL=http://127.0.0.1:8080 ./scripts/smoke-test.sh --live",
+      "status": "PASSED",
+      "details": "Verified /healthz, /readyz (mock_mode=false), /version, all 3 Prometheus targets UP, Jaeger services ['observer-api','llm-d-router/epp','jaeger-all-in-one'], and live streaming request req_691385da5c3746f6 (True TTFT 40.61 ms, Mean ITL 28.07 ms, 53 prompt tokens vllm_usage / 53 EPP vllm tokens, selected_endpoint 10.20.1.14:8000)"
+    },
+    "markdown_documentation_links": {
+      "status": "PASSED",
+      "details": "Verified 0 broken links across all 13 Markdown documentation files and 5 captured live GKE screenshots in docs/images/"
+    }
+  },
+  "scheduled_terraform_destroy_resources": [
+    "google_artifact_registry_repository.observatory",
+    "google_compute_firewall.allow_internal",
+    "google_compute_network.vpc",
+    "google_compute_router.router",
+    "google_compute_router_nat.nat",
+    "google_compute_subnetwork.nodes",
+    "google_container_cluster.primary",
+    "google_container_node_pool.cpu_inference_pool",
+    "google_container_node_pool.system_pool",
+    "google_project_iam_member.node_sa_roles[\"roles/artifactregistry.reader\"]",
+    "google_project_iam_member.node_sa_roles[\"roles/cloudtrace.agent\"]",
+    "google_project_iam_member.node_sa_roles[\"roles/container.defaultNodeServiceAccount\"]",
+    "google_project_iam_member.node_sa_roles[\"roles/logging.logWriter\"]",
+    "google_project_iam_member.node_sa_roles[\"roles/monitoring.metricWriter\"]",
+    "google_project_iam_member.node_sa_roles[\"roles/monitoring.viewer\"]",
+    "google_project_iam_member.node_sa_roles[\"roles/stackdriver.resourceMetadata.writer\"]",
+    "google_project_service.required[\"artifactregistry.googleapis.com\"]",
+    "google_project_service.required[\"cloudtrace.googleapis.com\"]",
+    "google_project_service.required[\"compute.googleapis.com\"]",
+    "google_project_service.required[\"container.googleapis.com\"]",
+    "google_project_service.required[\"iam.googleapis.com\"]",
+    "google_project_service.required[\"logging.googleapis.com\"]",
+    "google_project_service.required[\"monitoring.googleapis.com\"]",
+    "google_service_account.node_sa"
+  ],
+  "known_limitations": [
+    "Upstream docker.io/vllm/vllm-openai-cpu:v0.31.0 does not bundle Python opentelemetry-sdk packages; distributed traces contain observer-api and llm-d-router/epp spans while vLLM metrics and ZMQ KV events are collected via Prometheus and EPP.",
+    "prefill_duration_ms is explicitly reported as unavailable when no separate model-server prefill span is exported; it is never inferred from TTFT alone.",
+    "First inference request after vLLM CPU pod startup incurs ~85-95s Torch/OneDNN AMX C++ kernel compilation latency before subsequent requests run at ~30-48ms True TTFT."
+  ]
+}
