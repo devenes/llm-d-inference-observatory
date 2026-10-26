@@ -94,6 +94,46 @@ export const ScreenMetrics: React.FC<ScreenMetricsProps> = ({
         </button>
       </section>
 
+      {/* Counter Reconciliation & Token Semantics Reference */}
+      <section
+        aria-label="Counter Reconciliation and Token Measurement Semantics"
+        data-testid="counter-reconciliation-card"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        <div className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 text-xs">
+          <h3 className="font-semibold text-sm mb-1.5">
+            Request Counter Reconciliation (Observer vs. EPP)
+          </h3>
+          <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+            <code className="font-mono">llm_d_epp_request_total</code> counts requests that EPP{' '}
+            <strong>scheduled and routed to a model server</strong> (HTTP <code className="font-mono">200</code>{' '}
+            completed + routed upstream <code className="font-mono">4xx/5xx ModelServerError</code> responses).
+            Requests rejected by EPP <em>prior to routing</em> (such as HTTP <code className="font-mono">429</code>{' '}
+            saturation or HTTP <code className="font-mono">503</code> zero-endpoint{' '}
+            <code className="font-mono">ServiceUnavailable</code>) increment{' '}
+            <code className="font-mono">observer_requests_rejected_prerouting_total</code> and{' '}
+            <code className="font-mono">llm_d_epp_request_error_total</code> without incrementing{' '}
+            <code className="font-mono">llm_d_epp_request_total</code>.
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 text-xs">
+          <h3 className="font-semibold text-sm mb-1.5">
+            Token Count Provenance (vLLM Usage vs. EPP Tokenize vs. Estimate)
+          </h3>
+          <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+            Observer forwards <code className="font-mono">stream_options.include_usage=true</code> so{' '}
+            <code className="font-mono">vLLM</code> returns exact subword{' '}
+            <code className="font-mono">usage.prompt_tokens</code> (source:{' '}
+            <code className="font-mono">vllm_usage</code>, including ChatML template tokens). EPP&apos;s{' '}
+            <code className="font-mono">tokenize</code> span records{' '}
+            <code className="font-mono">llm_d.epp.token_producer.token_count</code> via{' '}
+            <code className="font-mono">/v1/chat/completions/render</code> (<code className="font-mono">backend=vllm</code>)
+            or character estimation (<code className="font-mono">backend=estimate</code>).
+          </p>
+        </div>
+      </section>
+
       {/* Side-by-Side Comparison: Selected Single Request vs Rolling Aggregate Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <section
@@ -139,8 +179,23 @@ export const ScreenMetrics: React.FC<ScreenMetricsProps> = ({
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Input / Output Tokens:</span>
                 <span className="font-mono font-bold">
-                  {activeRecord.timings.prompt_tokens} in / {activeRecord.timings.completion_tokens} out
+                  {activeRecord.timings.prompt_tokens} in ({activeRecord.timings.prompt_tokens_source || 'estimate'}) /{' '}
+                  {activeRecord.timings.completion_tokens} out
                 </span>
+              </div>
+              {activeRecord.timings.epp_token_count !== undefined && (
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">EPP Token Producer:</span>
+                  <span className="font-mono font-bold">
+                    {activeRecord.timings.epp_token_count} tokens ({activeRecord.timings.epp_token_backend || 'epp'})
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Selected Endpoint:</span>
+                <code className="font-mono font-semibold text-emerald-700 dark:text-emerald-300">
+                  {activeRecord.selected_endpoint || 'unobserved'}
+                </code>
               </div>
             </div>
           ) : (

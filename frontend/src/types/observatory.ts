@@ -58,6 +58,10 @@ export interface TimingBreakdown {
   itl_samples_ms: number[];
   prompt_tokens: number;
   completion_tokens: number;
+  prompt_tokens_source?: string;
+  completion_tokens_source?: string;
+  epp_token_count?: number;
+  epp_token_backend?: string;
 }
 
 export interface SpanNode {
@@ -104,7 +108,9 @@ export interface RequestRecord {
   scenario?: string;
   status: 'in_flight' | 'completed' | 'cancelled' | 'failed' | string;
   http_status: number;
+  failure_scope?: string;
   selected_endpoint?: string;
+  candidate_endpoints?: string[];
   created_at: string;
   completed_at?: string;
   error_message?: string;

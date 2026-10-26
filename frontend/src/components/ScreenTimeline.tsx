@@ -99,6 +99,41 @@ export const ScreenTimeline: React.FC<ScreenTimelineProps> = ({ record }) => {
             <p className="text-[11px] text-slate-500 mt-1">{record.timings.prefill_duration_ms.explanation}</p>
           </div>
         </div>
+
+        {/* Endpoint Selection & Token Provenance Honesty Strip */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 text-xs">
+          <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
+            <div className="font-semibold mb-1">
+              Actual Selected Endpoint vs. Candidate Rankings
+            </div>
+            <div data-testid="timeline-selected-endpoint" className="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300 break-all">
+              Selected (x-gateway-destination-endpoint): {record.selected_endpoint || 'Unavailable (never inferred from candidate rankings)'}
+            </div>
+            {record.candidate_endpoints && record.candidate_endpoints.length > 0 && (
+              <div className="font-mono text-[11px] text-slate-600 dark:text-slate-400 mt-1 break-all">
+                EPP Candidate Rankings (pick_endpoints): [{record.candidate_endpoints.join(', ')}]
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
+            <div className="font-semibold mb-1">
+              Token Count Provenance (vLLM Usage vs. EPP Token Producer)
+            </div>
+            <div data-testid="timeline-token-provenance" className="font-mono text-xs">
+              Input: <strong>{record.timings.prompt_tokens}</strong> tokens (source:{' '}
+              <code>{record.timings.prompt_tokens_source || 'observer_char_estimate'}</code>) | Output:{' '}
+              <strong>{record.timings.completion_tokens}</strong> tokens (source:{' '}
+              <code>{record.timings.completion_tokens_source || 'sse_chunk_count'}</code>)
+            </div>
+            <div className="font-mono text-[11px] text-slate-600 dark:text-slate-400 mt-1">
+              EPP tokenize span:{' '}
+              {record.timings.epp_token_count !== undefined
+                ? `${record.timings.epp_token_count} tokens (backend: ${record.timings.epp_token_backend || 'epp'})`
+                : 'Not recorded on trace'}
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Responsive Accessible Lifecycle Table (modern-web-guidance: responsive-table) */}

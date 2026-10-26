@@ -1,4 +1,5 @@
-## Precise Prefix-Cache Aware router configuration using ZMQ KV-Events (:5556 PUB / :5559 replay).
+## Precise Prefix-Cache Aware router configuration using ZMQ KV-Events (:5556 PUB / :5559 replay)
+## and vLLM /v1/*/render exact tokenization, with KV block index metrics and flowControl enabled.
 router:
   extraServicePorts:
     - name: http
@@ -7,39 +8,91 @@ router:
       targetPort: 8081
 
   epp:
+    flags:
+      ha-enable-leader-election: false
+      v: 2
     pluginsConfigFile: "precise-prefix-cache-plugins.yaml"
     pluginsCustomConfig:
       precise-prefix-cache-plugins.yaml: |
         apiVersion: llm-d.ai/v1
         kind: EndpointPickerConfig
+        featureGates:
+          - flowControl
         plugins:
           - type: token-producer
+            parameters:
+              modelName: Qwen/Qwen2.5-0.5B-Instruct
+              vllm:
+                endpointDiscovery:
+                  attemptTimeout: 5s
+                messagesRenderMode: auto
+                responsesRenderMode: auto
           - type: endpoint-notification-source
           - type: precise-prefix-cache-producer
             parameters:
+              tokenProcessorConfig:
+                blockSizeTokens: 64
+                hashAlgorithm: "xxh64"
+              speculativeIndexing: true
               indexerConfig:
-                tokenProcessorConfig:
-                  blockSizeTokens: 64
-                  hashAlgorithm: "xxh64"
+                kvBlockIndexConfig:
+                  enableMetrics: true
               kvEventsConfig:
-                zmqEndpoint: "tcp://*:5556"
+                engineType: "vllm"
                 topicFilter: "kv@"
                 concurrency: 4
                 discoverPods: true
                 podDiscoveryConfig:
                   socketPort: 5556
-              speculativeIndexing: true
+                  replaySocketPort: 5559
           - type: inflight-load-producer
+            parameters:
+              prefixMatchInfoProducerName: precise-prefix-cache-producer
           - type: prefix-cache-affinity-filter
             parameters:
+              prefixMatchInfoProducerName: precise-prefix-cache-producer
               peakPrefillThroughput: 350
           - type: token-load-scorer
+          - type: round-robin-fairness-policy
+          - type: fcfs-ordering-policy
+          - type: concurrency-detector
+            parameters:
+              maxConcurrency: 2
+              concurrencyMode: requests
+              headroom: 0.0
+        dataLayer:
+          sources:
+            - pluginRef: endpoint-notification-source
+              extractors:
+                - pluginRef: precise-prefix-cache-producer
         schedulingProfiles:
           - name: default
             plugins:
               - pluginRef: prefix-cache-affinity-filter
               - pluginRef: token-load-scorer
+        flowControl:
+          maxBytes: "1Gi"
+          maxRequests: "100"
+          defaultRequestTTL: "90s"
+          saturationDetector:
+            pluginRef: concurrency-detector
+          priorityBands:
+            - priority: 100
+              maxRequests: "50"
+              fairnessPolicyRef: round-robin-fairness-policy
+              orderingPolicyRef: fcfs-ordering-policy
+            - priority: 0
+              maxRequests: "30"
+              fairnessPolicyRef: round-robin-fairness-policy
+              orderingPolicyRef: fcfs-ordering-policy
+            - priority: -10
+              maxRequests: "6"
+              fairnessPolicyRef: round-robin-fairness-policy
+              orderingPolicyRef: fcfs-ordering-policy
 
   modelServers:
+    type: vllm
+    targetPorts:
+      - number: 8000
     matchLabels:
       llm-d.ai/guide: "optimized-baseline"

@@ -341,6 +341,11 @@ func (s *Simulator) completeSimulated(reqID, traceID string, startTime time.Time
 		rec.SelectedEndpoint = selectedEndpoint
 		rec.CompletedAt = &now
 		events.FinalizeTimings(rec, &headersDur, ttftDur, &totalDur, itlSamplesMs, promptTokens, completionTokens, prefillSpanMs)
+		rec.Timings.PromptTokensSource = "simulated"
+		rec.Timings.CompletionTokensSource = "simulated"
+		tokCopy := promptTokens
+		rec.Timings.EPPTokenCount = &tokCopy
+		rec.Timings.EPPTokenBackend = "simulated"
 	})
 
 	s.hub.Emit(reqID, events.EventRequestCompleted, "observer-api", "observer-api",

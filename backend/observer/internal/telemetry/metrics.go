@@ -55,6 +55,8 @@ type MetricsCollector struct {
 	completedRequests int64
 	cancelledRequests int64
 	failedRequests    int64
+	failedPreRouting  int64
+	failedUpstream    int64
 	promptTokensTotal int64
 	outputTokensTotal int64
 	ttftSamplesMs     []float64
@@ -106,8 +108,15 @@ func (mc *MetricsCollector) RecordCompletion(status string, ttftMs, meanITLMs, d
 		mc.completedRequests++
 	case "cancelled":
 		mc.cancelledRequests++
+	case "failed_upstream":
+		mc.failedRequests++
+		mc.failedUpstream++
+	case "failed_prerouting":
+		mc.failedRequests++
+		mc.failedPreRouting++
 	default:
 		mc.failedRequests++
+		mc.failedPreRouting++
 	}
 	mc.promptTokensTotal += int64(promptTokens)
 	mc.outputTokensTotal += int64(outputTokens)
@@ -126,6 +135,17 @@ func (mc *MetricsCollector) RecordCompletion(status string, ttftMs, meanITLMs, d
 	}
 }
 
+// RecordFailure records a failed request and classifies whether EPP routed it to an upstream model server
+// (routedToUpstream=true, which increments llm_d_epp_request_total and llm_d_epp_request_error_total) or
+// rejected it prior to routing (routedToUpstream=false, e.g. HTTP 429/503, which only increments llm_d_epp_request_error_total).
+func (mc *MetricsCollector) RecordFailure(routedToUpstream bool) {
+	if routedToUpstream {
+		mc.RecordCompletion("failed_upstream", nil, nil, nil, nil, 0, 0)
+		return
+	}
+	mc.RecordCompletion("failed_prerouting", nil, nil, nil, nil, 0, 0)
+}
+
 // RenderPrometheus outputs Observer API metrics in standard Prometheus text exposition format.
 func (mc *MetricsCollector) RenderPrometheus() string {
 	mc.mu.RLock()
@@ -137,6 +157,11 @@ func (mc *MetricsCollector) RenderPrometheus() string {
 	fmt.Fprintf(&b, "observer_requests_total{status=\"completed\"} %d\n", mc.completedRequests)
 	fmt.Fprintf(&b, "observer_requests_total{status=\"cancelled\"} %d\n", mc.cancelledRequests)
 	fmt.Fprintf(&b, "observer_requests_total{status=\"failed\"} %d\n", mc.failedRequests)
+
+	b.WriteString("# HELP observer_requests_failed_by_scope_total Failed requests split by pre-routing rejection vs routed upstream model-server error.\n")
+	b.WriteString("# TYPE observer_requests_failed_by_scope_total counter\n")
+	fmt.Fprintf(&b, "observer_requests_failed_by_scope_total{scope=\"prerouting_rejected\"} %d\n", mc.failedPreRouting)
+	fmt.Fprintf(&b, "observer_requests_failed_by_scope_total{scope=\"routed_upstream_error\"} %d\n", mc.failedUpstream)
 
 	b.WriteString("# HELP observer_requests_in_flight Current number of in-flight inference requests.\n")
 	b.WriteString("# TYPE observer_requests_in_flight gauge\n")
@@ -165,6 +190,8 @@ func (mc *MetricsCollector) GetSummary(ctx context.Context) MetricsSummary {
 	completed := float64(mc.completedRequests)
 	cancelled := float64(mc.cancelledRequests)
 	failed := float64(mc.failedRequests)
+	failedPreRouting := float64(mc.failedPreRouting)
+	failedUpstream := float64(mc.failedUpstream)
 	promptToks := float64(mc.promptTokensTotal)
 	outputToks := float64(mc.outputTokensTotal)
 	ttftP50 := percentile(mc.ttftSamplesMs, 0.50)
@@ -266,13 +293,33 @@ func (mc *MetricsCollector) GetSummary(ctx context.Context) MetricsSummary {
 		},
 		{
 			Name:            "observer_requests_failed_total",
-			Label:           "Failed / Rejected Requests",
+			Label:           "Failed / Rejected Requests (Total)",
 			Category:        "observer",
 			Value:           &failed,
 			Unit:            "requests",
 			ObservationKind: aggKind,
 			Source:          "observer-api",
-			Explanation:     "Cumulative HTTP 4xx/5xx or upstream error responses.",
+			Explanation:     "Total HTTP 4xx/5xx failures: equals Pre-Routing Rejections (not in llm_d_epp_request_total) + Routed Model-Server Errors (counted in llm_d_epp_request_total).",
+		},
+		{
+			Name:            "observer_requests_rejected_prerouting_total",
+			Label:           "Pre-Routing Rejections (429 / 503)",
+			Category:        "observer",
+			Value:           &failedPreRouting,
+			Unit:            "requests",
+			ObservationKind: aggKind,
+			Source:          "observer-api",
+			Explanation:     "Requests rejected by EPP admission/scheduling before reaching a model server (e.g., HTTP 429 saturation or HTTP 503 zero endpoints). Counted in llm_d_epp_request_error_total, excluded from llm_d_epp_request_total.",
+		},
+		{
+			Name:            "observer_requests_upstream_error_total",
+			Label:           "Routed Model-Server Errors (4xx / 5xx)",
+			Category:        "observer",
+			Value:           &failedUpstream,
+			Unit:            "requests",
+			ObservationKind: aggKind,
+			Source:          "observer-api",
+			Explanation:     "Requests routed by EPP to a vLLM pod that returned HTTP 4xx/5xx (e.g., HTTP 404 ModelServerError). Counted in BOTH llm_d_epp_request_total and llm_d_epp_request_error_total.",
 		},
 		{
 			Name:            "observer_prompt_tokens_total",
@@ -306,17 +353,17 @@ func (mc *MetricsCollector) GetSummary(ctx context.Context) MetricsSummary {
 	} else if mc.cfg.MockMode {
 		eppStatus = "simulated"
 		vllmStatus = "simulated"
-		series = append(series, simulatedUpstreamSeries(completed, failed, inFlight, promptToks)...)
+		series = append(series, simulatedUpstreamSeries(completed, failed, failedPreRouting, failedUpstream, inFlight, promptToks)...)
 	} else {
-		eppMap, eppErr := mc.scrapePrometheus(ctx, mc.cfg.EPPMetricsURL, mc.cfg.EPPBearerToken)
+		eppRes, eppErr := mc.scrapePrometheus(ctx, mc.cfg.EPPMetricsURL, mc.cfg.EPPBearerToken)
 		if eppErr == nil {
 			eppStatus = "scraped"
 		}
-		vllmMap, vllmErr := mc.scrapePrometheus(ctx, mc.cfg.VLLMMetricsURL, "")
+		vllmRes, vllmErr := mc.scrapePrometheus(ctx, mc.cfg.VLLMMetricsURL, "")
 		if vllmErr == nil {
 			vllmStatus = "scraped"
 		}
-		series = append(series, buildLiveUpstreamSeries(eppMap, eppErr == nil, vllmMap, vllmErr == nil)...)
+		series = append(series, buildLiveUpstreamSeries(eppRes, eppErr == nil, vllmRes, vllmErr == nil)...)
 	}
 
 	return MetricsSummary{
@@ -333,9 +380,21 @@ func (mc *MetricsCollector) GetSummary(ctx context.Context) MetricsSummary {
 	}
 }
 
-func (mc *MetricsCollector) scrapePrometheus(ctx context.Context, targetURL, bearerToken string) (map[string]float64, error) {
+type promScrapeResult struct {
+	Values     map[string]float64
+	Registered map[string]bool
+}
+
+func newPromScrapeResult() promScrapeResult {
+	return promScrapeResult{
+		Values:     make(map[string]float64),
+		Registered: make(map[string]bool),
+	}
+}
+
+func (mc *MetricsCollector) scrapePrometheus(ctx context.Context, targetURL, bearerToken string) (promScrapeResult, error) {
 	if targetURL == "" {
-		return nil, fmt.Errorf("empty metrics URL")
+		return newPromScrapeResult(), fmt.Errorf("empty metrics URL")
 	}
 	if bearerToken == "" && strings.Contains(targetURL, ":9090") {
 		if b, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/token"); err == nil {
@@ -349,7 +408,7 @@ func (mc *MetricsCollector) scrapePrometheus(ctx context.Context, targetURL, bea
 		port := u.Port()
 		if host != "" && host != "localhost" && net.ParseIP(host) == nil {
 			if ips, lookupErr := net.DefaultResolver.LookupHost(ctx, host); lookupErr == nil && len(ips) > 1 {
-				combined := make(map[string]float64)
+				combined := newPromScrapeResult()
 				successCount := 0
 				for _, ip := range ips {
 					podURL := *u
@@ -361,8 +420,11 @@ func (mc *MetricsCollector) scrapePrometheus(ctx context.Context, targetURL, bea
 					m, sErr := mc.scrapeSingleEndpoint(ctx, podURL.String(), bearerToken)
 					if sErr == nil {
 						successCount++
-						for k, v := range m {
-							combined[k] += v
+						for k, v := range m.Values {
+							combined.Values[k] += v
+						}
+						for k := range m.Registered {
+							combined.Registered[k] = true
 						}
 					}
 				}
@@ -376,49 +438,69 @@ func (mc *MetricsCollector) scrapePrometheus(ctx context.Context, targetURL, bea
 	return mc.scrapeSingleEndpoint(ctx, targetURL, bearerToken)
 }
 
-func (mc *MetricsCollector) scrapeSingleEndpoint(ctx context.Context, targetURL, bearerToken string) (map[string]float64, error) {
+func (mc *MetricsCollector) scrapeSingleEndpoint(ctx context.Context, targetURL, bearerToken string) (promScrapeResult, error) {
+	out := newPromScrapeResult()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, targetURL, nil)
 	if err != nil {
-		return nil, err
+		return out, err
 	}
 	if bearerToken != "" {
 		req.Header.Set("Authorization", "Bearer "+bearerToken)
 	}
 	resp, err := mc.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return out, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("HTTP %d from %s", resp.StatusCode, targetURL)
+		return out, fmt.Errorf("HTTP %d from %s", resp.StatusCode, targetURL)
 	}
 
-	out := make(map[string]float64)
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
+		if line == "" {
+			continue
+		}
+		if strings.HasPrefix(line, "#") {
+			// Record registered metric family names from # HELP / # TYPE lines
+			fields := strings.Fields(line)
+			if len(fields) >= 3 && (fields[1] == "HELP" || fields[1] == "TYPE") {
+				out.Registered[fields[2]] = true
+			}
 			continue
 		}
 		fields := strings.Fields(line)
 		if len(fields) < 2 {
 			continue
 		}
-		name := fields[0]
-		if idx := strings.IndexByte(name, '{'); idx != -1 {
-			name = name[:idx]
+		rawToken := fields[0]
+		name := rawToken
+		labels := ""
+		if idx := strings.IndexByte(rawToken, '{'); idx != -1 {
+			name = rawToken[:idx]
+			labels = rawToken[idx:]
 		}
+		out.Registered[name] = true
+
+		// llm_d_epp_flow_control_pool_saturation emits both stage="decode" and stage="effective";
+		// only aggregate stage="effective" (when stage label is present) so saturation is not doubled.
+		if name == "llm_d_epp_flow_control_pool_saturation" && strings.Contains(labels, "stage=") && !strings.Contains(labels, `stage="effective"`) {
+			continue
+		}
+
 		val, err := strconv.ParseFloat(fields[len(fields)-1], 64)
 		if err == nil {
-			out[name] += val
+			out.Values[name] += val
 		}
 	}
 	return out, scanner.Err()
 }
 
-func simulatedUpstreamSeries(completed, failed, inFlight, promptToks float64) []MetricSeries {
+func simulatedUpstreamSeries(completed, failed, failedPreRouting, failedUpstream, inFlight, promptToks float64) []MetricSeries {
 	readyEndpoints := 2.0
-	eppReqTotal := completed + failed
+	eppReqTotal := completed + failedUpstream
+	eppErrTotal := failed
 	kvLookupHits := math.Floor(completed * 14.0)
 	predictedCachedToks := math.Floor(promptToks * 0.65)
 	fcQueueSize := 0.0
@@ -454,7 +536,17 @@ func simulatedUpstreamSeries(completed, failed, inFlight, promptToks float64) []
 			Unit:            "requests",
 			ObservationKind: events.ObservationSimulated,
 			Source:          "llm-d-router-epp (:9090/metrics)",
-			Explanation:     "Aggregate requests processed by the llm-d Endpoint Picker ext_proc filter.",
+			Explanation:     "Requests scheduled and routed by EPP to a model server (includes HTTP 200 and routed upstream 4xx/5xx; excludes pre-routing 429/503 rejections).",
+		},
+		{
+			Name:            "llm_d_epp_request_error_total",
+			Label:           "EPP Request & Routing Errors",
+			Category:        "epp",
+			Value:           &eppErrTotal,
+			Unit:            "requests",
+			ObservationKind: events.ObservationSimulated,
+			Source:          "llm-d-router-epp (:9090/metrics)",
+			Explanation:     "Total EPP errors across pre-routing rejections (ServiceUnavailable / Rejected) and routed ModelServerError responses.",
 		},
 		{
 			Name:            "llm_d_epp_kv_cache_index_lookup_hits_total",
@@ -494,7 +586,7 @@ func simulatedUpstreamSeries(completed, failed, inFlight, promptToks float64) []
 			Unit:            "ratio",
 			ObservationKind: events.ObservationSimulated,
 			Source:          "llm-d-router-epp (:9090/metrics)",
-			Explanation:     "Aggregate saturation ratio across the InferencePool calculated by EPP concurrency detector.",
+			Explanation:     "Aggregate effective saturation ratio across the InferencePool calculated by EPP concurrency detector.",
 		},
 		{
 			Name:            "vllm:num_requests_running",
@@ -574,36 +666,77 @@ func unavailableUpstreamSeries() []MetricSeries {
 	return out
 }
 
-func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[string]float64, vllmOK bool) []MetricSeries {
-	lookup := func(m map[string]float64, ok bool, key string) (*float64, events.ObservationKind) {
-		if !ok || m == nil {
+func hasMetric(res promScrapeResult, keys ...string) bool {
+	for _, k := range keys {
+		if _, ok := res.Values[k]; ok {
+			return true
+		}
+		if res.Registered[k] {
+			return true
+		}
+	}
+	return false
+}
+
+func buildLiveUpstreamSeries(eppRes promScrapeResult, eppOK bool, vllmRes promScrapeResult, vllmOK bool) []MetricSeries {
+	// Distinguish missing series (unavailable) from genuine zero values (aggregate).
+	// In Prometheus client_golang, CounterVec and GaugeVec collectors only emit sample lines after
+	// their label vector is first initialized, whereas active subsystems register companion metrics.
+	lookup := func(res promScrapeResult, ok bool, key string, subsystemActive bool) (*float64, events.ObservationKind) {
+		if !ok {
 			return nil, events.ObservationUnavailable
 		}
-		v, exists := m[key]
-		if !exists {
-			return nil, events.ObservationUnavailable
+		if v, exists := res.Values[key]; exists {
+			val := math.Round(v*100) / 100
+			return &val, events.ObservationAggregate
 		}
-		val := math.Round(v*100) / 100
-		return &val, events.ObservationAggregate
+		if res.Registered[key] || subsystemActive {
+			zero := 0.0
+			return &zero, events.ObservationAggregate
+		}
+		return nil, events.ObservationUnavailable
 	}
 
-	readyVal, readyKind := lookup(eppMap, eppOK, "llm_d_epp_ready_endpoints")
-	reqVal, reqKind := lookup(eppMap, eppOK, "llm_d_epp_request_total")
-	kvHitsVal, kvHitsKind := lookup(eppMap, eppOK, "llm_d_epp_kv_cache_index_lookup_hits_total")
-	predCachedVal, predCachedKind := lookup(eppMap, eppOK, "llm_d_epp_prefix_predicted_cached_tokens_sum")
-	fcQueueVal, fcQueueKind := lookup(eppMap, eppOK, "llm_d_epp_flow_control_queue_size")
-	fcSatVal, fcSatKind := lookup(eppMap, eppOK, "llm_d_epp_flow_control_pool_saturation")
-	vllmRunVal, vllmRunKind := lookup(vllmMap, vllmOK, "vllm:num_requests_running")
-	vllmWaitVal, vllmWaitKind := lookup(vllmMap, vllmOK, "vllm:num_requests_waiting")
+	eppCoreActive := eppOK && hasMetric(eppRes, "llm_d_epp_ready_endpoints", "llm_d_epp_request_total", "llm_d_epp_request_processing_duration_seconds_count")
+	flowControlActive := eppOK && hasMetric(
+		eppRes,
+		"llm_d_epp_flow_control_pool_saturation",
+		"llm_d_epp_flow_control_queue_size",
+		"llm_d_epp_flow_control_queue_bytes",
+		"llm_d_epp_flow_control_request_dispatch_duration_seconds_count",
+		"llm_d_epp_flow_control_request_enqueue_duration_seconds_count",
+	)
+	kvIndexerActive := eppOK && hasMetric(
+		eppRes,
+		"llm_d_epp_kv_cache_index_lookup_hits_total",
+		"llm_d_epp_kv_cache_index_admissions_total",
+		"llm_d_epp_kv_cache_index_evictions_total",
+		"llm_d_epp_prefix_predicted_cached_tokens_count",
+		"llm_d_epp_prefix_predicted_cached_tokens_sum",
+	)
+
+	readyVal, readyKind := lookup(eppRes, eppOK, "llm_d_epp_ready_endpoints", false)
+	reqVal, reqKind := lookup(eppRes, eppOK, "llm_d_epp_request_total", eppCoreActive)
+	errVal, errKind := lookup(eppRes, eppOK, "llm_d_epp_request_error_total", eppCoreActive)
+	kvHitsVal, kvHitsKind := lookup(eppRes, eppOK, "llm_d_epp_kv_cache_index_lookup_hits_total", kvIndexerActive)
+	predCachedVal, predCachedKind := lookup(eppRes, eppOK, "llm_d_epp_prefix_predicted_cached_tokens_sum", kvIndexerActive || eppCoreActive)
+	fcQueueVal, fcQueueKind := lookup(eppRes, eppOK, "llm_d_epp_flow_control_queue_size", flowControlActive)
+	fcSatVal, fcSatKind := lookup(eppRes, eppOK, "llm_d_epp_flow_control_pool_saturation", flowControlActive)
+	vllmRunVal, vllmRunKind := lookup(vllmRes, vllmOK, "vllm:num_requests_running", false)
+	vllmWaitVal, vllmWaitKind := lookup(vllmRes, vllmOK, "vllm:num_requests_waiting", false)
 
 	var vllmHitRateVal *float64
 	vllmHitRateKind := events.ObservationUnavailable
-	if vllmOK && vllmMap != nil {
-		hits := vllmMap["vllm:prefix_cache_hits_total"]
-		queries := vllmMap["vllm:prefix_cache_queries_total"]
+	if vllmOK {
+		hits := vllmRes.Values["vllm:prefix_cache_hits_total"]
+		queries := vllmRes.Values["vllm:prefix_cache_queries_total"]
 		if queries > 0 {
 			rate := math.Round((hits/queries)*10000) / 100
 			vllmHitRateVal = &rate
+			vllmHitRateKind = events.ObservationAggregate
+		} else if hasMetric(vllmRes, "vllm:prefix_cache_queries_total", "vllm:prefix_cache_queries") {
+			zero := 0.0
+			vllmHitRateVal = &zero
 			vllmHitRateKind = events.ObservationAggregate
 		}
 	}
@@ -627,7 +760,17 @@ func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[
 			Unit:            "requests",
 			ObservationKind: reqKind,
 			Source:          "llm-d-router-epp (:9090/metrics)",
-			Explanation:     "Aggregate requests processed by the llm-d Endpoint Picker.",
+			Explanation:     "Requests scheduled and routed by EPP to a model server (includes HTTP 200 and routed upstream 4xx/5xx; excludes pre-routing 429/503 rejections).",
+		},
+		{
+			Name:            "llm_d_epp_request_error_total",
+			Label:           "EPP Request & Routing Errors",
+			Category:        "epp",
+			Value:           errVal,
+			Unit:            "requests",
+			ObservationKind: errKind,
+			Source:          "llm-d-router-epp (:9090/metrics)",
+			Explanation:     "Total EPP errors across pre-routing rejections (ServiceUnavailable / Rejected) and routed ModelServerError responses.",
 		},
 		{
 			Name:            "llm_d_epp_kv_cache_index_lookup_hits_total",
@@ -637,7 +780,7 @@ func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[
 			Unit:            "blocks",
 			ObservationKind: kvHitsKind,
 			Source:          "llm-d-router-epp (:9090/metrics)",
-			Explanation:     "Aggregate 64-token KV block lookup hits in the EPP prefix cache indexer.",
+			Explanation:     "Aggregate 64-token KV block lookup hits in the EPP precise prefix-cache indexer (0 when no >=64-token block has matched yet).",
 		},
 		{
 			Name:            "llm_d_epp_prefix_predicted_cached_tokens_sum",
@@ -657,7 +800,7 @@ func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[
 			Unit:            "requests",
 			ObservationKind: fcQueueKind,
 			Source:          "llm-d-router-epp (:9090/metrics)",
-			Explanation:     "System-wide gauge of requests buffered in EPP priority-band queues.",
+			Explanation:     "System-wide gauge of requests currently buffered in EPP priority-band queues (genuine 0 when queues are empty).",
 		},
 		{
 			Name:            "llm_d_epp_flow_control_pool_saturation",
@@ -667,7 +810,7 @@ func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[
 			Unit:            "ratio",
 			ObservationKind: fcSatKind,
 			Source:          "llm-d-router-epp (:9090/metrics)",
-			Explanation:     "Aggregate saturation ratio across the InferencePool calculated by EPP concurrency detector.",
+			Explanation:     "Aggregate effective saturation ratio (stage=\"effective\") across the InferencePool calculated by EPP concurrency detector.",
 		},
 		{
 			Name:            "vllm:num_requests_running",

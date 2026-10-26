@@ -16,13 +16,24 @@ import (
 	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/config"
 	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/events"
 	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/telemetry"
+	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/upstream"
 )
 
 func TestRealUpstreamStreamForwardingAndTrueTTFT(t *testing.T) {
-	var receivedTraceparent, receivedObjective string
+	var (
+		receivedTraceparent string
+		receivedObjective   string
+		receivedIncludeUsg  bool
+	)
 	upstreamMock := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		receivedTraceparent = r.Header.Get("traceparent")
 		receivedObjective = r.Header.Get("x-llm-d-inference-objective")
+		reqBytes, _ := io.ReadAll(r.Body)
+		var payload map[string]any
+		_ = json.Unmarshal(reqBytes, &payload)
+		if so, ok := payload["stream_options"].(map[string]any); ok && so["include_usage"] == true {
+			receivedIncludeUsg = true
+		}
 
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("x-went-into-resp-headers", "true")
@@ -42,6 +53,9 @@ func TestRealUpstreamStreamForwardingAndTrueTTFT(t *testing.T) {
 		flusher.Flush()
 		time.Sleep(8 * time.Millisecond)
 		_, _ = fmt.Fprintf(w, "data: {\"choices\":[{\"delta\":{\"content\":\"llm-d!\"}}]}\n\n")
+		flusher.Flush()
+		// Send final vLLM usage chunk (enabled by stream_options.include_usage=true)
+		_, _ = fmt.Fprintf(w, "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":96,\"completion_tokens\":2,\"total_tokens\":98}}\n\n")
 		flusher.Flush()
 		_, _ = fmt.Fprintf(w, "data: [DONE]\n\n")
 		flusher.Flush()
@@ -87,6 +101,9 @@ func TestRealUpstreamStreamForwardingAndTrueTTFT(t *testing.T) {
 	if receivedObjective != "premium-traffic" {
 		t.Fatalf("expected x-llm-d-inference-objective=premium-traffic, got %q", receivedObjective)
 	}
+	if !receivedIncludeUsg {
+		t.Fatal("expected stream_options.include_usage=true to be sent on streaming request")
+	}
 
 	rec, ok := hub.GetRequest(reqID)
 	if !ok {
@@ -94,6 +111,15 @@ func TestRealUpstreamStreamForwardingAndTrueTTFT(t *testing.T) {
 	}
 	if rec.Status != "completed" {
 		t.Fatalf("expected status completed, got %s", rec.Status)
+	}
+	if rec.SelectedEndpoint != "10.20.0.14:8000" {
+		t.Fatalf("expected selected_endpoint=10.20.0.14:8000, got %q", rec.SelectedEndpoint)
+	}
+	if rec.Timings.PromptTokens != 96 || rec.Timings.PromptTokensSource != "vllm_usage" {
+		t.Fatalf("expected prompt_tokens=96 from vllm_usage, got %d (%s)", rec.Timings.PromptTokens, rec.Timings.PromptTokensSource)
+	}
+	if rec.Timings.CompletionTokens != 2 || rec.Timings.CompletionTokensSource != "vllm_usage" {
+		t.Fatalf("expected completion_tokens=2 from vllm_usage, got %d (%s)", rec.Timings.CompletionTokens, rec.Timings.CompletionTokensSource)
 	}
 	if rec.Timings.TTFTMs.ObservationKind != events.ObservationMeasured || rec.Timings.TTFTMs.Value == nil {
 		t.Fatalf("expected measured TTFTMs, got %+v", rec.Timings.TTFTMs)
@@ -224,5 +250,53 @@ func TestSecurityBoundariesAndMockScenarios(t *testing.T) {
 	trResp.Body.Close()
 	if tr.ObservationKind != events.ObservationSimulated || len(tr.Spans) == 0 {
 		t.Fatalf("expected simulated trace spans, got %+v", tr)
+	}
+}
+
+func TestNeverInferSelectedEndpointFromCandidateRankings(t *testing.T) {
+	spansOnlyCandidates := []events.SpanNode{
+		{
+			SpanID:        "span_picker",
+			OperationName: "llm_d.epp.scheduling.pick_endpoints",
+			Component:     "epp",
+			Attributes: map[string]any{
+				"llm_d.epp.picker.top_endpoints": `["llm-d-observatory/pod-a-rank-0","llm-d-observatory/pod-b-rank-0"]`,
+			},
+		},
+		{
+			SpanID:        "span_tok",
+			OperationName: "tokenize",
+			Component:     "epp",
+			Attributes: map[string]any{
+				"llm_d.epp.token_producer.backend":     "vllm",
+				"llm_d.epp.token_producer.token_count": float64(96),
+			},
+		},
+	}
+
+	if ep := upstream.ExtractEndpointFromSpans(spansOnlyCandidates); ep != "" {
+		t.Fatalf("ExtractEndpointFromSpans must NEVER infer selected endpoint from candidate rankings alone, got %q", ep)
+	}
+
+	candidates := upstream.ExtractCandidateEndpointsFromSpans(spansOnlyCandidates)
+	if len(candidates) != 2 || candidates[0] != "llm-d-observatory/pod-a-rank-0" {
+		t.Fatalf("expected 2 candidate endpoints from top_endpoints, got %v", candidates)
+	}
+
+	tokCount, tokBackend := upstream.ExtractEPPTokenInfoFromSpans(spansOnlyCandidates)
+	if tokCount == nil || *tokCount != 96 || tokBackend != "vllm" {
+		t.Fatalf("expected epp token info (96, vllm), got (%v, %q)", tokCount, tokBackend)
+	}
+
+	spansWithExplicitSelection := append(spansOnlyCandidates, events.SpanNode{
+		SpanID:        "span_obs",
+		OperationName: "observer.infer",
+		Component:     "observer-api",
+		Attributes: map[string]any{
+			"llm_d.selected_endpoint": "llm-d-observatory/pod-b (10.20.1.15:8000)",
+		},
+	})
+	if ep := upstream.ExtractEndpointFromSpans(spansWithExplicitSelection); ep != "llm-d-observatory/pod-b (10.20.1.15:8000)" {
+		t.Fatalf("expected explicit selected endpoint from span attribute, got %q", ep)
 	}
 }

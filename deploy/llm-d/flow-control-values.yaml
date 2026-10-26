@@ -15,6 +15,9 @@ router:
       targetPort: 8081
 
   epp:
+    flags:
+      ha-enable-leader-election: false
+      v: 2
     pluginsConfigFile: "flow-control-plugins.yaml"
     pluginsCustomConfig:
       flow-control-plugins.yaml: |
@@ -23,6 +26,32 @@ router:
         featureGates:
           - flowControl
         plugins:
+          - type: token-producer
+            parameters:
+              modelName: Qwen/Qwen2.5-0.5B-Instruct
+              vllm:
+                endpointDiscovery:
+                  attemptTimeout: 5s
+                messagesRenderMode: auto
+                responsesRenderMode: auto
+          - type: endpoint-notification-source
+          - type: precise-prefix-cache-producer
+            parameters:
+              tokenProcessorConfig:
+                blockSizeTokens: 64
+                hashAlgorithm: xxh64
+              speculativeIndexing: true
+              indexerConfig:
+                kvBlockIndexConfig:
+                  enableMetrics: true
+              kvEventsConfig:
+                engineType: "vllm"
+                topicFilter: "kv@"
+                concurrency: 4
+                discoverPods: true
+                podDiscoveryConfig:
+                  socketPort: 5556
+                  replaySocketPort: 5559
           - type: queue-scorer
           - type: kv-cache-utilization-scorer
           - type: prefix-cache-scorer
@@ -33,6 +62,12 @@ router:
               maxConcurrency: 2
               concurrencyMode: requests
               headroom: 0.0
+
+        dataLayer:
+          sources:
+            - pluginRef: endpoint-notification-source
+              extractors:
+                - pluginRef: precise-prefix-cache-producer
 
         schedulingProfiles:
           - name: default
@@ -65,5 +100,8 @@ router:
               orderingPolicyRef: fcfs-ordering-policy
 
   modelServers:
+    type: vllm
+    targetPorts:
+      - number: 8000
     matchLabels:
       llm-d.ai/guide: "optimized-baseline"

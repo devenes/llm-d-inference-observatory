@@ -49,7 +49,7 @@ spec:
             - name: OBSERVER_ALLOWED_UPSTREAM_HOSTS
               value: "llm-d-router-epp,llm-d-router-epp.llm-d-observatory.svc.cluster.local,localhost,127.0.0.1"
             - name: OBSERVER_ALLOWED_MODELS
-              value: "Qwen/Qwen2.5-0.5B-Instruct,meta-llama/Llama-3.2-3B-Instruct"
+              value: "Qwen/Qwen2.5-0.5B-Instruct"
             - name: OBSERVER_DEFAULT_MODEL
               value: "Qwen/Qwen2.5-0.5B-Instruct"
             - name: OBSERVER_ROUTER_MODE

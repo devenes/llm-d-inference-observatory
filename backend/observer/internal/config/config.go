@@ -53,7 +53,6 @@ func Default() Config {
 		},
 		AllowedModels: []string{
 			"Qwen/Qwen2.5-0.5B-Instruct",
-			"meta-llama/Llama-3.2-3B-Instruct",
 		},
 		DefaultModel:        "Qwen/Qwen2.5-0.5B-Instruct",
 		RouterMode:          "optimized-baseline",

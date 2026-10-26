@@ -90,12 +90,22 @@ func TestW3CTraceContextPropagationAndJaegerFetch(t *testing.T) {
 
 func TestMetricsClassificationAndPrometheusScraping(t *testing.T) {
 	eppSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("llm_d_epp_ready_endpoints 2\nllm_d_epp_request_total 15\nllm_d_epp_flow_control_queue_size 1\n"))
+		_, _ = w.Write([]byte(strings.Join([]string{
+			"# HELP llm_d_epp_ready_endpoints Ready endpoints",
+			"# TYPE llm_d_epp_ready_endpoints gauge",
+			"llm_d_epp_ready_endpoints 2",
+			"llm_d_epp_request_total 29",
+			"llm_d_epp_request_error_total{error_code=\"ModelServerError\"} 4",
+			"llm_d_epp_request_error_total{error_code=\"ServiceUnavailable\"} 1",
+			"llm_d_epp_flow_control_pool_saturation{inference_pool=\"llm-d-router\",stage=\"decode\"} 0.5",
+			"llm_d_epp_flow_control_pool_saturation{inference_pool=\"llm-d-router\",stage=\"effective\"} 0.5",
+			"llm_d_epp_kv_cache_index_admissions_total 36",
+		}, "\n") + "\n"))
 	}))
 	defer eppSrv.Close()
 
 	vllmSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("vllm:num_requests_running 2\nvllm:num_requests_waiting 0\n"))
+		_, _ = w.Write([]byte("vllm:num_requests_running 2\nvllm:num_requests_waiting 0\nvllm:prefix_cache_queries_total 0\nvllm:prefix_cache_hits_total 0\n"))
 	}))
 	defer vllmSrv.Close()
 
@@ -111,6 +121,10 @@ func TestMetricsClassificationAndPrometheusScraping(t *testing.T) {
 	dur := 1093.3
 	tps := 40.48
 	mc.RecordCompletion("completed", &ttft, &itl, &dur, &tps, 28, 20)
+	mc.IncInFlight()
+	mc.RecordFailure(true) // Routed ModelServerError (e.g. HTTP 404)
+	mc.IncInFlight()
+	mc.RecordFailure(false) // Pre-routing rejection (e.g. HTTP 503 ServiceUnavailable)
 
 	summary := mc.GetSummary(context.Background())
 	if summary.ObservationScope != events.ObservationAggregate {
@@ -120,8 +134,78 @@ func TestMetricsClassificationAndPrometheusScraping(t *testing.T) {
 		t.Fatalf("expected both endpoints to be scraped, got epp=%s vllm=%s", summary.EPPScrapeStatus, summary.VLLMScrapeStatus)
 	}
 
+	byName := make(map[string]MetricSeries, len(summary.Series))
+	for _, s := range summary.Series {
+		byName[s.Name] = s
+	}
+
+	// 1. Verify stage="effective" filtering on llm_d_epp_flow_control_pool_saturation (0.5, not 1.0)
+	sat := byName["llm_d_epp_flow_control_pool_saturation"]
+	if sat.ObservationKind != events.ObservationAggregate || sat.Value == nil || *sat.Value != 0.5 {
+		t.Fatalf("expected llm_d_epp_flow_control_pool_saturation=0.5 (stage=effective), got %+v", sat)
+	}
+
+	// 2. Verify genuine 0 value for llm_d_epp_flow_control_queue_size when flowControl subsystem is active
+	qSize := byName["llm_d_epp_flow_control_queue_size"]
+	if qSize.ObservationKind != events.ObservationAggregate || qSize.Value == nil || *qSize.Value != 0 {
+		t.Fatalf("expected genuine 0 for llm_d_epp_flow_control_queue_size when flowControl is active, got %+v", qSize)
+	}
+
+	// 3. Verify genuine 0 value for llm_d_epp_kv_cache_index_lookup_hits_total when KV indexer is active
+	kvHits := byName["llm_d_epp_kv_cache_index_lookup_hits_total"]
+	if kvHits.ObservationKind != events.ObservationAggregate || kvHits.Value == nil || *kvHits.Value != 0 {
+		t.Fatalf("expected genuine 0 for llm_d_epp_kv_cache_index_lookup_hits_total when KV indexer is active, got %+v", kvHits)
+	}
+
+	// 4. Verify request counter breakdown (pre-routing rejection vs routed upstream error)
+	preRej := byName["observer_requests_rejected_prerouting_total"]
+	upErr := byName["observer_requests_upstream_error_total"]
+	eppErr := byName["llm_d_epp_request_error_total"]
+	if preRej.Value == nil || *preRej.Value != 1 || upErr.Value == nil || *upErr.Value != 1 {
+		t.Fatalf("expected 1 prerouting rejection and 1 routed upstream error, got pre=%+v up=%+v", preRej, upErr)
+	}
+	if eppErr.Value == nil || *eppErr.Value != 5 {
+		t.Fatalf("expected llm_d_epp_request_error_total=5, got %+v", eppErr)
+	}
+
 	promText := mc.RenderPrometheus()
 	if !strings.Contains(promText, `observer_requests_total{status="completed"} 1`) {
 		t.Fatalf("expected completed counter in prometheus output, got:\n%s", promText)
+	}
+	if !strings.Contains(promText, `observer_requests_failed_by_scope_total{scope="prerouting_rejected"} 1`) ||
+		!strings.Contains(promText, `observer_requests_failed_by_scope_total{scope="routed_upstream_error"} 1`) {
+		t.Fatalf("expected failure scope counters in prometheus output, got:\n%s", promText)
+	}
+}
+
+func TestMissingMetricsRemainUnavailableWhenSubsystemsDisabled(t *testing.T) {
+	eppSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Only core endpoint gauge exposed; flowControl and precise-prefix-cache-producer disabled
+		_, _ = w.Write([]byte("llm_d_epp_ready_endpoints 2\n"))
+	}))
+	defer eppSrv.Close()
+
+	cfg := config.Default()
+	cfg.MockMode = false
+	cfg.EPPMetricsURL = eppSrv.URL
+	cfg.VLLMMetricsURL = "http://127.0.0.1:1/unreachable"
+
+	mc := NewMetricsCollector(cfg)
+	summary := mc.GetSummary(context.Background())
+
+	byName := make(map[string]MetricSeries, len(summary.Series))
+	for _, s := range summary.Series {
+		byName[s.Name] = s
+	}
+
+	for _, disabledMetric := range []string{
+		"llm_d_epp_flow_control_queue_size",
+		"llm_d_epp_flow_control_pool_saturation",
+		"llm_d_epp_kv_cache_index_lookup_hits_total",
+	} {
+		ms := byName[disabledMetric]
+		if ms.ObservationKind != events.ObservationUnavailable || ms.Value != nil {
+			t.Fatalf("expected %s to be unavailable when subsystem is disabled, got %+v", disabledMetric, ms)
+		}
 	}
 }

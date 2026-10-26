@@ -38,7 +38,30 @@ helm upgrade --install "${RELEASE_NAME}" \
   -f "${REPO_ROOT}/deploy/llm-d/base.values.yaml" \
   -f "${MODE_VALUES}" \
   --wait --timeout 300s
+
+echo "[deploy-gke] 3b. Configuring Envoy to expose x-gateway-destination-endpoint response header..."
+kubectl get configmap envoy -n "${NAMESPACE}" -o json | python3 -c '
+import json, sys
+cm = json.load(sys.stdin)
+envoy_yaml = cm.get("data", {}).get("envoy.yaml", "")
+target = """                            upgrade_configs:
+                              - upgrade_type: websocket
+                          typed_per_filter_config:"""
+replacement = """                            upgrade_configs:
+                              - upgrade_type: websocket
+                          response_headers_to_add:
+                            - header:
+                                key: x-gateway-destination-endpoint
+                                value: "%REQ(x-gateway-destination-endpoint)%"
+                              append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                          typed_per_filter_config:"""
+if "response_headers_to_add:" not in envoy_yaml and target in envoy_yaml:
+    cm["data"]["envoy.yaml"] = envoy_yaml.replace(target, replacement, 1)
+json.dump(cm, sys.stdout)
+' | kubectl apply -f -
+
 kubectl set env deployment/"${RELEASE_NAME}"-epp -c epp OTEL_BSP_SCHEDULE_DELAY=200 -n "${NAMESPACE}"
+kubectl rollout restart deployment/"${RELEASE_NAME}"-epp -n "${NAMESPACE}"
 kubectl rollout status deployment/"${RELEASE_NAME}"-epp -n "${NAMESPACE}" --timeout=120s
 
 echo "[deploy-gke] 4. Deploying vLLM CPU Model Server and Observatory..."

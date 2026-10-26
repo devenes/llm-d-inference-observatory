@@ -375,14 +375,25 @@ func (s *Server) handleGetRequestTrace(w http.ResponseWriter, r *http.Request) {
 		if err == nil && len(spans) > 0 {
 			nowStr := time.Now().UTC().Format(time.RFC3339Nano)
 			ep := upstream.ExtractEndpointFromSpans(spans)
+			candidates := upstream.ExtractCandidateEndpointsFromSpans(spans)
+			eppTokCount, eppTokBackend := upstream.ExtractEPPTokenInfoFromSpans(spans)
 			s.hub.UpdateRequest(reqID, func(updated *events.RequestRecord) {
 				updated.Trace.Status = "enriched"
 				updated.Trace.ObservationKind = events.ObservationObserved
 				updated.Trace.EnrichedAt = nowStr
 				updated.Trace.ErrorMessage = ""
 				updated.Trace.Spans = spans
-				if ep != "" {
+				if updated.SelectedEndpoint == "" && ep != "" {
 					updated.SelectedEndpoint = ep
+				}
+				if len(candidates) > 0 {
+					updated.CandidateEndpoints = candidates
+				}
+				if eppTokCount != nil {
+					updated.Timings.EPPTokenCount = eppTokCount
+				}
+				if eppTokBackend != "" {
+					updated.Timings.EPPTokenBackend = eppTokBackend
 				}
 			})
 			rec, _ = s.hub.GetRequest(reqID)

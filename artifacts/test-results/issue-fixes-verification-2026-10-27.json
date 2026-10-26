@@ -1,0 +1,1313 @@
+{
+  "verified_at": "2026-10-26T22:57:26.438680872Z",
+  "config": {
+    "allowed_models": [
+      "Qwen/Qwen2.5-0.5B-Instruct"
+    ],
+    "cluster_name": "llm-d-observatory",
+    "default_model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "max_output_tokens": 1024,
+    "mock_mode": false,
+    "mock_scenarios": [
+      "success",
+      "delay",
+      "saturated",
+      "cancel",
+      "partial_trace",
+      "delayed_trace",
+      "missing_metrics"
+    ],
+    "namespace": "llm-d-observatory",
+    "priority_bands": [
+      "premium-traffic",
+      "standard-traffic",
+      "best-effort-traffic"
+    ],
+    "redact_prompts": true,
+    "router_mode": "optimized-baseline",
+    "router_modes": [
+      "optimized-baseline",
+      "precise-prefix-cache",
+      "flow-control"
+    ],
+    "upstream_url": "http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:80",
+    "version": "v0.1.0"
+  },
+  "metrics_before_traffic": {
+    "observer_ttft_p50_ms": {
+      "value": null,
+      "observation_kind": "aggregate"
+    },
+    "observer_ttft_p95_ms": {
+      "value": null,
+      "observation_kind": "aggregate"
+    },
+    "observer_itl_p50_ms": {
+      "value": null,
+      "observation_kind": "aggregate"
+    },
+    "observer_decode_tokens_per_sec": {
+      "value": null,
+      "observation_kind": "aggregate"
+    },
+    "observer_request_duration_p50_ms": {
+      "value": null,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_in_flight": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_completed_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_cancelled_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_failed_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_rejected_prerouting_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_upstream_error_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_prompt_tokens_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_generation_tokens_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_ready_endpoints": {
+      "value": 2,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_request_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_request_error_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_kv_cache_index_lookup_hits_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_prefix_predicted_cached_tokens_sum": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_flow_control_queue_size": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_flow_control_pool_saturation": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "vllm:num_requests_running": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "vllm:num_requests_waiting": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "vllm:prefix_cache_hit_rate_pct": {
+      "value": 10.51,
+      "observation_kind": "aggregate"
+    }
+  },
+  "metrics_after_traffic": {
+    "observer_ttft_p50_ms": {
+      "value": 40.3,
+      "observation_kind": "aggregate"
+    },
+    "observer_ttft_p95_ms": {
+      "value": 52,
+      "observation_kind": "aggregate"
+    },
+    "observer_itl_p50_ms": {
+      "value": 25.01,
+      "observation_kind": "aggregate"
+    },
+    "observer_decode_tokens_per_sec": {
+      "value": 39.25,
+      "observation_kind": "aggregate"
+    },
+    "observer_request_duration_p50_ms": {
+      "value": 615.72,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_in_flight": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_completed_total": {
+      "value": 2,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_cancelled_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_failed_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_rejected_prerouting_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_requests_upstream_error_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "observer_prompt_tokens_total": {
+      "value": 174,
+      "observation_kind": "aggregate"
+    },
+    "observer_generation_tokens_total": {
+      "value": 48,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_ready_endpoints": {
+      "value": 2,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_request_total": {
+      "value": 2,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_request_error_total": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_kv_cache_index_lookup_hits_total": {
+      "value": 2,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_prefix_predicted_cached_tokens_sum": {
+      "value": 128,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_flow_control_queue_size": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "llm_d_epp_flow_control_pool_saturation": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "vllm:num_requests_running": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "vllm:num_requests_waiting": {
+      "value": 0,
+      "observation_kind": "aggregate"
+    },
+    "vllm:prefix_cache_hit_rate_pct": {
+      "value": 12.99,
+      "observation_kind": "aggregate"
+    }
+  },
+  "cold_request": {
+    "request_id": "req_e8a213c641664efb",
+    "trace_id": "ee935961964f83f971cd579ce9092902",
+    "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+    "candidate_endpoints": [
+      "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0"
+    ],
+    "timings": {
+      "request_start_timestamp": "2026-10-26T22:57:21.487529896Z",
+      "upstream_headers_ms": {
+        "value": 17.87,
+        "unit": "ms",
+        "observation_kind": "measured",
+        "source": "observer-api",
+        "explanation": "Time from request start until HTTP response headers arrive from upstream."
+      },
+      "ttft_ms": {
+        "value": 52,
+        "unit": "ms",
+        "observation_kind": "measured",
+        "source": "observer-api",
+        "explanation": "True Time To First Token: measured arrival of the first non-empty text token chunk at the Observer API."
+      },
+      "prefill_duration_ms": {
+        "value": null,
+        "unit": "ms",
+        "observation_kind": "unavailable",
+        "source": "vllm-model-server",
+        "explanation": "Exact model-server prompt prefill duration. Never inferred from TTFT alone; requires an explicit model-server prefill span."
+      },
+      "total_duration_ms": {
+        "value": 649.16,
+        "unit": "ms",
+        "observation_kind": "measured",
+        "source": "observer-api",
+        "explanation": "End-to-end request duration measured by the Observer API."
+      },
+      "mean_itl_ms": {
+        "value": 25.96,
+        "unit": "ms",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "Mean inter-token latency derived from consecutive streamed token arrival timestamps."
+      },
+      "p95_itl_ms": {
+        "value": 49.39,
+        "unit": "ms",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "95th percentile inter-token latency derived from streamed token arrival intervals."
+      },
+      "decode_tokens_per_sec": {
+        "value": 38.52,
+        "unit": "tok/s",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "Decode throughput derived from post-first-token generation window."
+      },
+      "e2e_tokens_per_sec": {
+        "value": 36.97,
+        "unit": "tok/s",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "End-to-end output token rate derived from total completion tokens divided by total request duration."
+      },
+      "itl_samples_ms": [
+        19.92,
+        18.62,
+        17.08,
+        46.2,
+        16.79,
+        18.32,
+        49.28,
+        16.74,
+        17.18,
+        18.87,
+        47.65,
+        19.73,
+        16.91,
+        17.9,
+        46.48,
+        20.1,
+        22.5,
+        13.49,
+        49.39,
+        16.99,
+        20.46,
+        14.74,
+        51.66
+      ],
+      "prompt_tokens": 87,
+      "completion_tokens": 24,
+      "prompt_tokens_source": "vllm_usage",
+      "completion_tokens_source": "vllm_usage",
+      "epp_token_count": 87,
+      "epp_token_backend": "vllm"
+    },
+    "key_events": [
+      {
+        "schema_version": "1",
+        "request_id": "req_e8a213c641664efb",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "event_id": "evt_357da6cd_004",
+        "sequence": 4,
+        "event_type": "endpoint.selected",
+        "source": "llm-d-router-epp",
+        "source_timestamp": "2026-10-26T22:57:21.529146242Z",
+        "observation_kind": "observed",
+        "component": "inference-pool",
+        "message": "EPP selected model server endpoint llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+        "duration_ns": null,
+        "attributes": {
+          "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+          "x_gateway_destination_endpoint": "10.20.1.15:8000"
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_e8a213c641664efb",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "event_id": "evt_fb54f73d_031",
+        "sequence": 31,
+        "event_type": "request.completed",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T22:57:22.136739514Z",
+        "observation_kind": "measured",
+        "component": "observer-api",
+        "message": "Streaming inference completed (24 tokens in 649.16 ms)",
+        "duration_ns": 649163045,
+        "attributes": {
+          "completion_tokens": 24,
+          "completion_tokens_source": "vllm_usage",
+          "prompt_tokens": 87,
+          "prompt_tokens_source": "vllm_usage",
+          "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+          "total_duration_ms": 649.163045
+        }
+      }
+    ],
+    "spans": [
+      {
+        "span_id": "a183213bdf7153e2",
+        "parent_span_id": "b77fa0bebaaf86c8",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "scorer.token-load-scorer",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501953Z",
+        "end_time": "2026-10-26T22:57:21.501958Z",
+        "duration_ns": 5000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.scorer.candidate_endpoints": 1,
+          "llm_d.epp.scorer.endpoints_scored": 1,
+          "llm_d.epp.scorer.name": "token-load-scorer",
+          "llm_d.epp.scorer.score.avg": 0.9999945163726807,
+          "llm_d.epp.scorer.score.max": 0.9999945163726807,
+          "llm_d.epp.scorer.type": "token-load-scorer",
+          "llm_d.epp.scorer.weight": 1,
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "df58e116e435ef85",
+        "parent_span_id": "71a0271ee6e32d13",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "request",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.499413Z",
+        "end_time": "2026-10-26T22:57:22.136399Z",
+        "duration_ns": 636986000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "otel.scope.name": "llm-d-router/pkg/epp/handlers",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "server"
+        }
+      },
+      {
+        "span_id": "08eb39fd78ea98b6",
+        "parent_span_id": "c0d08b35aba6834e",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "filter_prefix_cache_affinity",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501924Z",
+        "end_time": "2026-10-26T22:57:21.501933Z",
+        "duration_ns": 9000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "33b6a73c-0fc2-487a-b604-d664ae69f065",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.filter.affinity_threshold": 0.8,
+          "llm_d.epp.filter.candidate_endpoints": 2,
+          "llm_d.epp.filter.decision": "sticky",
+          "llm_d.epp.filter.sticky_endpoints": 1,
+          "llm_d.epp.filter.ttft_penalty_ms": 0,
+          "otel.scope.name": "llm-d-router/pkg/epp/framework/plugins/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "b77fa0bebaaf86c8",
+        "parent_span_id": "64e81abdfc5a256c",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "scoring",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501949Z",
+        "end_time": "2026-10-26T22:57:21.50196Z",
+        "duration_ns": 11000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "33b6a73c-0fc2-487a-b604-d664ae69f065",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.scorer.count": 1,
+          "llm_d.epp.scoring.candidate_endpoints": 1,
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "8cbc69a8334f8ae4",
+        "parent_span_id": "2ee36b99b95fe4f3",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "tokenize_render /v1/chat/completions/render",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.499698Z",
+        "end_time": "2026-10-26T22:57:21.501751Z",
+        "duration_ns": 2053000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "http.request.method": "POST",
+          "http.response.status_code": 200,
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "network.protocol.version": "1.1",
+          "otel.scope.name": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp",
+          "otel.scope.version": "0.71.0",
+          "server.address": "10.20.1.14",
+          "server.port": 8000,
+          "span.kind": "client",
+          "url.full": "http://10.20.1.14:8000/v1/chat/completions/render"
+        }
+      },
+      {
+        "span_id": "2ee36b99b95fe4f3",
+        "parent_span_id": "1aa88e006925111c",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "tokenize",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.499683Z",
+        "end_time": "2026-10-26T22:57:21.501792Z",
+        "duration_ns": 2109000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "33b6a73c-0fc2-487a-b604-d664ae69f065",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.token_producer.backend": "vllm",
+          "llm_d.epp.token_producer.token_count": 87,
+          "mm.hash_count": 0,
+          "mm.modality": "none",
+          "otel.scope.name": "llm-d-router/pkg/epp/framework/plugins/requestcontrol",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "4be882adcbb058d1",
+        "parent_span_id": "1aa88e006925111c",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "produce_precise_prefix_cache",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501829Z",
+        "end_time": "2026-10-26T22:57:21.501879Z",
+        "duration_ns": 50000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "33b6a73c-0fc2-487a-b604-d664ae69f065",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.producer.candidate_endpoints": 2,
+          "llm_d.epp.producer.max_match_blocks": 1,
+          "llm_d.epp.producer.total_blocks": 1,
+          "otel.scope.name": "llm-d-router/pkg/epp/framework/plugins/requestcontrol",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "f66601a664706f1e",
+        "parent_span_id": "1aa88e006925111c",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "pre_request_precise_prefix_cache",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501988Z",
+        "end_time": "2026-10-26T22:57:21.502014Z",
+        "duration_ns": 26000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "otel.scope.name": "llm-d-router/pkg/epp/framework/plugins/requestcontrol",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "d2ac01be170141ea",
+        "parent_span_id": "4db91f9407ec242d",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "index_walk",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501855Z",
+        "end_time": "2026-10-26T22:57:21.501862Z",
+        "duration_ns": 7000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.kv_cache.index.walk.key_count": 1,
+          "llm_d.kv_cache.index.walk.keys_present": 1,
+          "otel.scope.name": "llm-d-router/pkg/kvcache/kvblock",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "445f7ffe4c02930b",
+        "parent_span_id": "f66601a664706f1e",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "index_add",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.502002Z",
+        "end_time": "2026-10-26T22:57:21.502006Z",
+        "duration_ns": 4000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.kv_cache.index.add.device_tier_count": 0,
+          "llm_d.kv_cache.index.add.engine_key_count": 0,
+          "llm_d.kv_cache.index.add.pod_entry_count": 1,
+          "llm_d.kv_cache.index.add.request_key_count": 1,
+          "otel.scope.name": "llm-d-router/pkg/kvcache/kvblock",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "71a0271ee6e32d13",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "observer.infer",
+        "service_name": "observer-api",
+        "component": "observer-api",
+        "start_time": "2026-10-26T22:57:21.487505Z",
+        "end_time": "2026-10-26T22:57:22.136983Z",
+        "duration_ns": 649478000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "gen_ai.usage.input_tokens": 87,
+          "gen_ai.usage.output_tokens": 24,
+          "internal.span.format": "otlp",
+          "llm_d.prompt_tokens_source": "vllm_usage",
+          "llm_d.request_id": "req_e8a213c641664efb",
+          "llm_d.router_mode": "optimized-baseline",
+          "llm_d.selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+          "llm_d.stream": true,
+          "otel.scope.name": "github.com/devenes/llm-d-inference-observatory/backend/observer",
+          "span.kind": "server",
+          "x-gateway-destination-endpoint": "10.20.1.15:8000"
+        }
+      },
+      {
+        "span_id": "1aa88e006925111c",
+        "parent_span_id": "df58e116e435ef85",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "request_orchestration",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.499561Z",
+        "end_time": "2026-10-26T22:57:21.502035Z",
+        "duration_ns": 2474000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "otel.scope.name": "llm-d-router/pkg/epp/requestcontrol",
+          "otel.scope.version": "v1.0.0",
+          "request_prio": 0,
+          "span.kind": "server",
+          "target_model": "Qwen/Qwen2.5-0.5B-Instruct"
+        }
+      },
+      {
+        "span_id": "4db91f9407ec242d",
+        "parent_span_id": "4be882adcbb058d1",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "match_block_keys",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.50185Z",
+        "end_time": "2026-10-26T22:57:21.501867Z",
+        "duration_ns": 17000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.kv_cache.prefix_match.key_count": 1,
+          "llm_d.kv_cache.prefix_match.longest_chain": 1,
+          "llm_d.kv_cache.prefix_match.pod_filter_count": 2,
+          "llm_d.kv_cache.prefix_match.pods_matched": 1,
+          "llm_d.kv_cache.prefix_match.walked": true,
+          "otel.scope.name": "llm-d-router/pkg/kvcache",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "c0d08b35aba6834e",
+        "parent_span_id": "64e81abdfc5a256c",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "filter_endpoints",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501917Z",
+        "end_time": "2026-10-26T22:57:21.501945Z",
+        "duration_ns": 28000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "33b6a73c-0fc2-487a-b604-d664ae69f065",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.filter.candidate_endpoints": 2,
+          "llm_d.epp.filter.filtered_endpoints": 1,
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "868095a1a7ed5ccf",
+        "parent_span_id": "64e81abdfc5a256c",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "pick_endpoints",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501963Z",
+        "end_time": "2026-10-26T22:57:21.50197Z",
+        "duration_ns": 7000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "33b6a73c-0fc2-487a-b604-d664ae69f065",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.picker.candidate_endpoints": 1,
+          "llm_d.epp.picker.top_endpoints": "[\"llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0\"]",
+          "llm_d.epp.picker.top_scores": "[0.9999945163726807]",
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "64e81abdfc5a256c",
+        "parent_span_id": "1aa88e006925111c",
+        "trace_id": "ee935961964f83f971cd579ce9092902",
+        "operation_name": "run_scheduler_profile",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:21.501915Z",
+        "end_time": "2026-10-26T22:57:21.50197Z",
+        "duration_ns": 55000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.scheduling.profile.name": "default",
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      }
+    ]
+  },
+  "warm_request": {
+    "request_id": "req_547c60b44b2541f3",
+    "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+    "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+    "candidate_endpoints": [
+      "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0"
+    ],
+    "timings": {
+      "request_start_timestamp": "2026-10-26T22:57:23.928479401Z",
+      "upstream_headers_ms": {
+        "value": 9.72,
+        "unit": "ms",
+        "observation_kind": "measured",
+        "source": "observer-api",
+        "explanation": "Time from request start until HTTP response headers arrive from upstream."
+      },
+      "ttft_ms": {
+        "value": 40.3,
+        "unit": "ms",
+        "observation_kind": "measured",
+        "source": "observer-api",
+        "explanation": "True Time To First Token: measured arrival of the first non-empty text token chunk at the Observer API."
+      },
+      "prefill_duration_ms": {
+        "value": null,
+        "unit": "ms",
+        "observation_kind": "unavailable",
+        "source": "vllm-model-server",
+        "explanation": "Exact model-server prompt prefill duration. Never inferred from TTFT alone; requires an explicit model-server prefill span."
+      },
+      "total_duration_ms": {
+        "value": 615.72,
+        "unit": "ms",
+        "observation_kind": "measured",
+        "source": "observer-api",
+        "explanation": "End-to-end request duration measured by the Observer API."
+      },
+      "mean_itl_ms": {
+        "value": 25.01,
+        "unit": "ms",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "Mean inter-token latency derived from consecutive streamed token arrival timestamps."
+      },
+      "p95_itl_ms": {
+        "value": 49.84,
+        "unit": "ms",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "95th percentile inter-token latency derived from streamed token arrival intervals."
+      },
+      "decode_tokens_per_sec": {
+        "value": 39.97,
+        "unit": "tok/s",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "Decode throughput derived from post-first-token generation window."
+      },
+      "e2e_tokens_per_sec": {
+        "value": 38.98,
+        "unit": "tok/s",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "End-to-end output token rate derived from total completion tokens divided by total request duration."
+      },
+      "itl_samples_ms": [
+        13.85,
+        17.77,
+        35.01,
+        18.01,
+        18.02,
+        16.94,
+        48.32,
+        17.04,
+        18.12,
+        17.01,
+        50.07,
+        16.98,
+        19.6,
+        16.65,
+        49.2,
+        16.99,
+        18.21,
+        16.78,
+        49.84,
+        16.76,
+        18.38,
+        16.81,
+        48.87
+      ],
+      "prompt_tokens": 87,
+      "completion_tokens": 24,
+      "prompt_tokens_source": "vllm_usage",
+      "completion_tokens_source": "vllm_usage",
+      "epp_token_count": 87,
+      "epp_token_backend": "vllm"
+    },
+    "key_events": [
+      {
+        "schema_version": "1",
+        "request_id": "req_547c60b44b2541f3",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "event_id": "evt_4997683b_004",
+        "sequence": 4,
+        "event_type": "endpoint.selected",
+        "source": "llm-d-router-epp",
+        "source_timestamp": "2026-10-26T22:57:23.938393875Z",
+        "observation_kind": "observed",
+        "component": "inference-pool",
+        "message": "EPP selected model server endpoint llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+        "duration_ns": null,
+        "attributes": {
+          "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+          "x_gateway_destination_endpoint": "10.20.1.15:8000"
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_547c60b44b2541f3",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "event_id": "evt_f12f784e_031",
+        "sequence": 31,
+        "event_type": "request.completed",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T22:57:24.544265304Z",
+        "observation_kind": "measured",
+        "component": "observer-api",
+        "message": "Streaming inference completed (24 tokens in 615.72 ms)",
+        "duration_ns": 615716855,
+        "attributes": {
+          "completion_tokens": 24,
+          "completion_tokens_source": "vllm_usage",
+          "prompt_tokens": 87,
+          "prompt_tokens_source": "vllm_usage",
+          "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+          "total_duration_ms": 615.716855
+        }
+      }
+    ],
+    "spans": [
+      {
+        "span_id": "f612cd32f5e22af7",
+        "parent_span_id": "b5ee05bd434a90b8",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "request_orchestration",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.933409Z",
+        "end_time": "2026-10-26T22:57:23.935819Z",
+        "duration_ns": 2410000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "otel.scope.name": "llm-d-router/pkg/epp/requestcontrol",
+          "otel.scope.version": "v1.0.0",
+          "request_prio": 0,
+          "span.kind": "server",
+          "target_model": "Qwen/Qwen2.5-0.5B-Instruct"
+        }
+      },
+      {
+        "span_id": "49b1b484236ed73c",
+        "parent_span_id": "f612cd32f5e22af7",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "run_scheduler_profile",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935725Z",
+        "end_time": "2026-10-26T22:57:23.935773Z",
+        "duration_ns": 48000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.scheduling.profile.name": "default",
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "b5ee05bd434a90b8",
+        "parent_span_id": "0e89faec808f8181",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "request",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.93331Z",
+        "end_time": "2026-10-26T22:57:24.543641Z",
+        "duration_ns": 610331000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "otel.scope.name": "llm-d-router/pkg/epp/handlers",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "server"
+        }
+      },
+      {
+        "span_id": "0e89faec808f8181",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "observer.infer",
+        "service_name": "observer-api",
+        "component": "observer-api",
+        "start_time": "2026-10-26T22:57:23.928472Z",
+        "end_time": "2026-10-26T22:57:24.544331Z",
+        "duration_ns": 615859000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "gen_ai.usage.input_tokens": 87,
+          "gen_ai.usage.output_tokens": 24,
+          "internal.span.format": "otlp",
+          "llm_d.prompt_tokens_source": "vllm_usage",
+          "llm_d.request_id": "req_547c60b44b2541f3",
+          "llm_d.router_mode": "precise-prefix-cache",
+          "llm_d.selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15:8000)",
+          "llm_d.stream": true,
+          "otel.scope.name": "github.com/devenes/llm-d-inference-observatory/backend/observer",
+          "span.kind": "server",
+          "x-gateway-destination-endpoint": "10.20.1.15:8000"
+        }
+      },
+      {
+        "span_id": "bde84a8da543e587",
+        "parent_span_id": "1c76f7f4d8a112c7",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "filter_prefix_cache_affinity",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935736Z",
+        "end_time": "2026-10-26T22:57:23.935744Z",
+        "duration_ns": 8000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "2cab248a-8fcd-4120-a711-5bb18401c481",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.filter.affinity_threshold": 0.8,
+          "llm_d.epp.filter.candidate_endpoints": 2,
+          "llm_d.epp.filter.decision": "sticky",
+          "llm_d.epp.filter.sticky_endpoints": 1,
+          "llm_d.epp.filter.ttft_penalty_ms": 0,
+          "otel.scope.name": "llm-d-router/pkg/epp/framework/plugins/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "7a6abfa7251a321e",
+        "parent_span_id": "49b1b484236ed73c",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "pick_endpoints",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935768Z",
+        "end_time": "2026-10-26T22:57:23.935773Z",
+        "duration_ns": 5000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "2cab248a-8fcd-4120-a711-5bb18401c481",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.picker.candidate_endpoints": 1,
+          "llm_d.epp.picker.top_endpoints": "[\"llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0\"]",
+          "llm_d.epp.picker.top_scores": "[0.9999945163726807]",
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "1c76f7f4d8a112c7",
+        "parent_span_id": "49b1b484236ed73c",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "filter_endpoints",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935729Z",
+        "end_time": "2026-10-26T22:57:23.935752Z",
+        "duration_ns": 23000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "2cab248a-8fcd-4120-a711-5bb18401c481",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.filter.candidate_endpoints": 2,
+          "llm_d.epp.filter.filtered_endpoints": 1,
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "426c69cfc2b5c3d8",
+        "parent_span_id": "49b1b484236ed73c",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "scoring",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935754Z",
+        "end_time": "2026-10-26T22:57:23.935764Z",
+        "duration_ns": 10000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "2cab248a-8fcd-4120-a711-5bb18401c481",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.scorer.count": 1,
+          "llm_d.epp.scoring.candidate_endpoints": 1,
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "352afde7ee149a35",
+        "parent_span_id": "f612cd32f5e22af7",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "tokenize",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.933495Z",
+        "end_time": "2026-10-26T22:57:23.935612Z",
+        "duration_ns": 2117000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "2cab248a-8fcd-4120-a711-5bb18401c481",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.token_producer.backend": "vllm",
+          "llm_d.epp.token_producer.token_count": 87,
+          "mm.hash_count": 0,
+          "mm.modality": "none",
+          "otel.scope.name": "llm-d-router/pkg/epp/framework/plugins/requestcontrol",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "38df99cf81fcfee8",
+        "parent_span_id": "f612cd32f5e22af7",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "produce_precise_prefix_cache",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935643Z",
+        "end_time": "2026-10-26T22:57:23.935695Z",
+        "duration_ns": 52000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "gen_ai.request.id": "2cab248a-8fcd-4120-a711-5bb18401c481",
+          "gen_ai.request.model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.producer.candidate_endpoints": 2,
+          "llm_d.epp.producer.max_match_blocks": 1,
+          "llm_d.epp.producer.total_blocks": 1,
+          "otel.scope.name": "llm-d-router/pkg/epp/framework/plugins/requestcontrol",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "699957c27cc36104",
+        "parent_span_id": "7c3b22c79f15812f",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "index_add",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935796Z",
+        "end_time": "2026-10-26T22:57:23.935801Z",
+        "duration_ns": 5000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.kv_cache.index.add.device_tier_count": 0,
+          "llm_d.kv_cache.index.add.engine_key_count": 0,
+          "llm_d.kv_cache.index.add.pod_entry_count": 1,
+          "llm_d.kv_cache.index.add.request_key_count": 1,
+          "otel.scope.name": "llm-d-router/pkg/kvcache/kvblock",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "924f10e86cb656d0",
+        "parent_span_id": "38df99cf81fcfee8",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "match_block_keys",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.93566Z",
+        "end_time": "2026-10-26T22:57:23.935679Z",
+        "duration_ns": 19000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.kv_cache.prefix_match.key_count": 1,
+          "llm_d.kv_cache.prefix_match.longest_chain": 1,
+          "llm_d.kv_cache.prefix_match.pod_filter_count": 2,
+          "llm_d.kv_cache.prefix_match.pods_matched": 1,
+          "llm_d.kv_cache.prefix_match.walked": true,
+          "otel.scope.name": "llm-d-router/pkg/kvcache",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "520c586d8a5162bc",
+        "parent_span_id": "352afde7ee149a35",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "tokenize_render /v1/chat/completions/render",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.93351Z",
+        "end_time": "2026-10-26T22:57:23.935576Z",
+        "duration_ns": 2066000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "http.request.method": "POST",
+          "http.response.status_code": 200,
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "network.protocol.version": "1.1",
+          "otel.scope.name": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp",
+          "otel.scope.version": "0.71.0",
+          "server.address": "10.20.1.15",
+          "server.port": 8000,
+          "span.kind": "client",
+          "url.full": "http://10.20.1.15:8000/v1/chat/completions/render"
+        }
+      },
+      {
+        "span_id": "7c3b22c79f15812f",
+        "parent_span_id": "f612cd32f5e22af7",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "pre_request_precise_prefix_cache",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935787Z",
+        "end_time": "2026-10-26T22:57:23.935806Z",
+        "duration_ns": 19000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "otel.scope.name": "llm-d-router/pkg/epp/framework/plugins/requestcontrol",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "28cc6188fcacbb54",
+        "parent_span_id": "924f10e86cb656d0",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "index_walk",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935665Z",
+        "end_time": "2026-10-26T22:57:23.935671Z",
+        "duration_ns": 6000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.kv_cache.index.walk.key_count": 1,
+          "llm_d.kv_cache.index.walk.keys_present": 1,
+          "otel.scope.name": "llm-d-router/pkg/kvcache/kvblock",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      },
+      {
+        "span_id": "8dff3183e03aae9b",
+        "parent_span_id": "426c69cfc2b5c3d8",
+        "trace_id": "e3edd9aed5895ad57f4af925ce7b0537",
+        "operation_name": "scorer.token-load-scorer",
+        "service_name": "llm-d-router/epp",
+        "component": "epp",
+        "start_time": "2026-10-26T22:57:23.935759Z",
+        "end_time": "2026-10-26T22:57:23.935763Z",
+        "duration_ns": 4000,
+        "observation_kind": "observed",
+        "status": "ok",
+        "attributes": {
+          "internal.span.format": "otlp",
+          "llm_d.epp.fairness.id": "default-flow",
+          "llm_d.epp.fairness.source": "default",
+          "llm_d.epp.scorer.candidate_endpoints": 1,
+          "llm_d.epp.scorer.endpoints_scored": 1,
+          "llm_d.epp.scorer.name": "token-load-scorer",
+          "llm_d.epp.scorer.score.avg": 0.9999945163726807,
+          "llm_d.epp.scorer.score.max": 0.9999945163726807,
+          "llm_d.epp.scorer.type": "token-load-scorer",
+          "llm_d.epp.scorer.weight": 1,
+          "otel.scope.name": "llm-d-router/pkg/epp/scheduling",
+          "otel.scope.version": "v1.0.0",
+          "span.kind": "internal"
+        }
+      }
+    ]
+  },
+  "assertions": {
+    "issue_1_no_unavailable_epp_metrics": true,
+    "issue_1_kv_cache_lookup_hits_positive_on_warm_prompt": true,
+    "issue_2_counter_reconciliation_holds": true,
+    "issue_3_token_counts_reconciled": true,
+    "issue_4_selected_endpoint_observed_not_inferred": true
+  }
+}

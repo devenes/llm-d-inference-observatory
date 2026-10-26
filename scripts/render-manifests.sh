@@ -36,6 +36,25 @@ for mode in optimized-baseline precise-prefix-cache flow-control; do
     -f "${REPO_ROOT}/deploy/llm-d/base.values.yaml" \
     -f "${MODE_FILE}" \
     > "${RENDER_DIR}/llm-d-router-${mode}.yaml"
+
+  python3 -c '
+import pathlib, sys
+p = pathlib.Path(sys.argv[1])
+text = p.read_text()
+target = """                                upgrade_configs:
+                                  - upgrade_type: websocket
+                              typed_per_filter_config:"""
+replacement = """                                upgrade_configs:
+                                  - upgrade_type: websocket
+                              response_headers_to_add:
+                                - header:
+                                    key: x-gateway-destination-endpoint
+                                    value: "%REQ(x-gateway-destination-endpoint)%"
+                                  append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                              typed_per_filter_config:"""
+if "response_headers_to_add:" not in text and target in text:
+    p.write_text(text.replace(target, replacement, 1))
+' "${RENDER_DIR}/llm-d-router-${mode}.yaml"
 done
 
 echo "[render] Successfully rendered all 3 router modes to ${RENDER_DIR}/."

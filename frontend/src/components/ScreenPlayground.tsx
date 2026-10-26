@@ -33,8 +33,8 @@ interface ScreenPlaygroundProps {
 
 const PRESET_PROMPTS = [
   {
-    label: 'Prefix-Cache Routing on CPU',
-    text: 'Explain how the llm-d Endpoint Picker (EPP) uses approximate and ZMQ-backed precise prefix-cache affinity filtering to route requests across vLLM CPU replicas.',
+    label: 'Prefix-Cache Routing on CPU (>=64-tok block)',
+    text: 'Architecture context: On CPU-only Google Kubernetes Engine (c3-standard-22 Intel Sapphire Rapids with AMX BF16), vLLM indexes KV cache in 64-token blocks (--block-size=64) and publishes ZMQ block events on port 5556. Question: Explain how the llm-d Endpoint Picker (EPP) uses ZMQ-backed precise prefix-cache affinity filtering and vLLM render tokenization to route warm requests.',
   },
   {
     label: 'Flow-Control Priority Shedding',
@@ -383,24 +383,48 @@ export const ScreenPlayground: React.FC<ScreenPlaygroundProps> = ({
 
         {/* Request ID & Trace ID Correlation Strip */}
         {activeRecord ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-xs">
-            <div>
-              <span className="block text-[11px] uppercase tracking-wider text-slate-500">Request ID</span>
-              <code data-testid="request-id-value" className="font-mono font-semibold text-sky-700 dark:text-sky-300 break-all">
-                {activeRecord.request_id}
-              </code>
+          <div className="flex flex-col gap-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div>
+                <span className="block text-[11px] uppercase tracking-wider text-slate-500">Request ID</span>
+                <code data-testid="request-id-value" className="font-mono font-semibold text-sky-700 dark:text-sky-300 break-all">
+                  {activeRecord.request_id}
+                </code>
+              </div>
+              <div>
+                <span className="block text-[11px] uppercase tracking-wider text-slate-500">W3C Trace ID</span>
+                <code data-testid="trace-id-value" className="font-mono font-semibold text-indigo-700 dark:text-indigo-300 break-all">
+                  {activeRecord.trace_id || 'unavailable'}
+                </code>
+              </div>
+              <div>
+                <span className="block text-[11px] uppercase tracking-wider text-slate-500">
+                  Actual Selected Endpoint
+                </span>
+                <code data-testid="selected-endpoint-value" className="font-mono font-semibold text-emerald-700 dark:text-emerald-300 break-all">
+                  {activeRecord.selected_endpoint || 'unobserved (not inferred)'}
+                </code>
+              </div>
             </div>
-            <div>
-              <span className="block text-[11px] uppercase tracking-wider text-slate-500">W3C Trace ID</span>
-              <code data-testid="trace-id-value" className="font-mono font-semibold text-indigo-700 dark:text-indigo-300 break-all">
-                {activeRecord.trace_id || 'unavailable'}
-              </code>
-            </div>
-            <div>
-              <span className="block text-[11px] uppercase tracking-wider text-slate-500">Selected Endpoint</span>
-              <code data-testid="selected-endpoint-value" className="font-mono text-slate-700 dark:text-slate-300 break-all">
-                {activeRecord.selected_endpoint || 'pending / unobserved'}
-              </code>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 dark:border-slate-800 pt-2 text-[11px] text-slate-600 dark:text-slate-400 font-mono">
+              <span data-testid="playground-token-provenance">
+                Tokens: <strong>{activeRecord.timings.prompt_tokens}</strong> in (
+                {activeRecord.timings.prompt_tokens_source || 'observer_char_estimate'})
+                {activeRecord.timings.epp_token_count !== undefined && (
+                  <>
+                    {' '}
+                    | EPP tokenize: <strong>{activeRecord.timings.epp_token_count}</strong> (
+                    {activeRecord.timings.epp_token_backend || 'epp'})
+                  </>
+                )}{' '}
+                | <strong>{activeRecord.timings.completion_tokens}</strong> out (
+                {activeRecord.timings.completion_tokens_source || 'sse_chunk_count'})
+              </span>
+              {activeRecord.candidate_endpoints && activeRecord.candidate_endpoints.length > 0 && (
+                <span data-testid="playground-candidate-endpoints">
+                  EPP Candidates (pick_endpoints): [{activeRecord.candidate_endpoints.join(', ')}]
+                </span>
+              )}
             </div>
           </div>
         ) : (

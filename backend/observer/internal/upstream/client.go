@@ -4,18 +4,25 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/config"
 	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/events"
 	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/redact"
 	"github.com/devenes/llm-d-inference-observatory/backend/observer/internal/telemetry"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // ChatMessage represents an OpenAI-compatible chat message.
@@ -55,11 +62,15 @@ func (r InferRequest) ExtractPromptText() string {
 
 // Client forwards real OpenAI-compatible requests to the allowlisted llm-d upstream.
 type Client struct {
-	cfg        config.Config
-	httpClient *http.Client
-	hub        *events.Hub
-	tracer     *telemetry.TracerManager
-	metrics    *telemetry.MetricsCollector
+	cfg          config.Config
+	httpClient   *http.Client
+	k8sClient    *http.Client
+	hub          *events.Hub
+	tracer       *telemetry.TracerManager
+	metrics      *telemetry.MetricsCollector
+	podIPMu      sync.RWMutex
+	podIPMap     map[string]string
+	podIPUpdated time.Time
 }
 
 // NewClient constructs a real upstream client with streaming support and no response buffering timeout traps.
@@ -73,16 +84,122 @@ func NewClient(cfg config.Config, hub *events.Hub, tracer *telemetry.TracerManag
 				ResponseHeaderTimeout: cfg.RequestTimeout,
 			},
 		},
-		hub:     hub,
-		tracer:  tracer,
-		metrics: metrics,
+		k8sClient: &http.Client{
+			Timeout: 800 * time.Millisecond,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		},
+		hub:      hub,
+		tracer:   tracer,
+		metrics:  metrics,
+		podIPMap: make(map[string]string),
 	}
+}
+
+// resolveEndpoint maps an x-gateway-destination-endpoint IP:Port (e.g. "10.20.1.14:8000")
+// to its Kubernetes Pod name in the target namespace when running in-cluster.
+func (c *Client) resolveEndpoint(ctx context.Context, rawEndpoint string) string {
+	rawEndpoint = strings.TrimSpace(rawEndpoint)
+	if rawEndpoint == "" {
+		return ""
+	}
+	host := rawEndpoint
+	if h, _, err := net.SplitHostPort(rawEndpoint); err == nil && h != "" {
+		host = h
+	}
+	if net.ParseIP(host) == nil {
+		return rawEndpoint
+	}
+
+	c.podIPMu.RLock()
+	podName, ok := c.podIPMap[host]
+	fresh := time.Since(c.podIPUpdated) < 15*time.Second
+	c.podIPMu.RUnlock()
+
+	if !ok && !fresh {
+		c.refreshPodIPMap(ctx)
+		c.podIPMu.RLock()
+		podName, ok = c.podIPMap[host]
+		c.podIPMu.RUnlock()
+	}
+
+	if ok && podName != "" {
+		return fmt.Sprintf("%s (%s)", podName, rawEndpoint)
+	}
+	return rawEndpoint
+}
+
+func (c *Client) refreshPodIPMap(ctx context.Context) {
+	k8sHost := strings.TrimSpace(os.Getenv("KUBERNETES_SERVICE_HOST"))
+	k8sPort := strings.TrimSpace(os.Getenv("KUBERNETES_SERVICE_PORT"))
+	if k8sHost == "" {
+		return
+	}
+	if k8sPort == "" {
+		k8sPort = "443"
+	}
+	tokenBytes, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/token")
+	if err != nil {
+		return
+	}
+	ns := c.cfg.Namespace
+	if ns == "" {
+		ns = "llm-d-observatory"
+	}
+
+	apiURL := fmt.Sprintf("https://%s/api/v1/namespaces/%s/pods", net.JoinHostPort(k8sHost, k8sPort), ns)
+	qCtx, cancel := context.WithTimeout(ctx, 750*time.Millisecond)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(qCtx, http.MethodGet, apiURL, nil)
+	if err != nil {
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+strings.TrimSpace(string(tokenBytes)))
+
+	resp, err := c.k8sClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return
+	}
+
+	var podList struct {
+		Items []struct {
+			Metadata struct {
+				Name      string `json:"name"`
+				Namespace string `json:"namespace"`
+			} `json:"metadata"`
+			Status struct {
+				PodIP string `json:"podIP"`
+			} `json:"status"`
+		} `json:"items"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&podList); err != nil {
+		return
+	}
+
+	c.podIPMu.Lock()
+	defer c.podIPMu.Unlock()
+	for _, item := range podList.Items {
+		if item.Status.PodIP != "" && item.Metadata.Name != "" {
+			fullName := item.Metadata.Name
+			if item.Metadata.Namespace != "" {
+				fullName = item.Metadata.Namespace + "/" + item.Metadata.Name
+			}
+			c.podIPMap[item.Status.PodIP] = fullName
+		}
+	}
+	c.podIPUpdated = time.Now()
 }
 
 // Forward executes an OpenAI chat completion call against the configured llm-d upstream and streams or writes the response.
 func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time, inferReq InferRequest, w http.ResponseWriter, streamToClient bool) {
 	if err := c.cfg.ValidateUpstreamURL(c.cfg.UpstreamURL); err != nil {
-		c.failRequest(reqID, startTime, http.StatusBadGateway, "upstream URL failed allowlist validation: "+err.Error(), w, streamToClient)
+		c.failRequest(reqID, startTime, http.StatusBadGateway, "upstream URL failed allowlist validation: "+err.Error(), false, "", w, streamToClient)
 		return
 	}
 
@@ -90,6 +207,12 @@ func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time,
 		"model":    inferReq.Model,
 		"messages": inferReq.Messages,
 		"stream":   inferReq.Stream,
+	}
+	if inferReq.Stream {
+		// Request exact tokenizer usage (prompt_tokens, completion_tokens) in the final SSE chunk from vLLM.
+		upstreamPayload["stream_options"] = map[string]any{
+			"include_usage": true,
+		}
 	}
 	if inferReq.MaxTokens > 0 {
 		upstreamPayload["max_tokens"] = inferReq.MaxTokens
@@ -100,14 +223,14 @@ func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time,
 
 	bodyBytes, err := json.Marshal(upstreamPayload)
 	if err != nil {
-		c.failRequest(reqID, startTime, http.StatusInternalServerError, "failed to encode upstream request", w, streamToClient)
+		c.failRequest(reqID, startTime, http.StatusInternalServerError, "failed to encode upstream request", false, "", w, streamToClient)
 		return
 	}
 
 	targetEndpoint := strings.TrimRight(c.cfg.UpstreamURL, "/") + "/v1/chat/completions"
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, targetEndpoint, bytes.NewReader(bodyBytes))
 	if err != nil {
-		c.failRequest(reqID, startTime, http.StatusInternalServerError, "failed to create upstream request", w, streamToClient)
+		c.failRequest(reqID, startTime, http.StatusInternalServerError, "failed to create upstream request", false, "", w, streamToClient)
 		return
 	}
 
@@ -142,7 +265,7 @@ func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time,
 			c.cancelRequest(reqID, startTime, 0, 0, nil)
 			return
 		}
-		c.failRequest(reqID, startTime, http.StatusBadGateway, fmt.Sprintf("upstream connection error: %v", err), w, streamToClient)
+		c.failRequest(reqID, startTime, http.StatusBadGateway, fmt.Sprintf("upstream connection error: %v", err), false, "", w, streamToClient)
 		return
 	}
 	defer resp.Body.Close()
@@ -150,10 +273,27 @@ func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time,
 	headersDur := time.Since(startTime)
 	headersDurNs := headersDur.Nanoseconds()
 
-	// Inspect real llm-d / EPP headers when present. Never fabricate EPP events if headers are absent.
+	// Inspect real llm-d / EPP headers when present. Never fabricate EPP events or infer endpoints from rankings.
 	droppedReason := resp.Header.Get("x-llm-d-request-dropped-reason")
 	eppRespMarker := resp.Header.Get("x-went-into-resp-headers")
-	selectedEndpoint := resp.Header.Get("x-gateway-destination-endpoint")
+	rawSelectedEndpoint := strings.TrimSpace(resp.Header.Get("x-gateway-destination-endpoint"))
+	selectedEndpoint := c.resolveEndpoint(ctx, rawSelectedEndpoint)
+	routedToUpstream := eppRespMarker == "true" || rawSelectedEndpoint != ""
+
+	if selectedEndpoint != "" {
+		if span := trace.SpanFromContext(ctx); span != nil && span.IsRecording() {
+			attrs := []attribute.KeyValue{
+				attribute.String("llm_d.selected_endpoint", selectedEndpoint),
+			}
+			if rawSelectedEndpoint != "" {
+				attrs = append(attrs, attribute.String("x-gateway-destination-endpoint", rawSelectedEndpoint))
+			}
+			span.SetAttributes(attrs...)
+		}
+		c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
+			rec.SelectedEndpoint = selectedEndpoint
+		})
+	}
 
 	if droppedReason != "" || resp.StatusCode == http.StatusTooManyRequests {
 		c.hub.Emit(reqID, events.EventQueueObserved, "llm-d-router-epp", "epp",
@@ -176,14 +316,13 @@ func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time,
 		c.hub.Emit(reqID, events.EventEndpointSelected, "llm-d-router-epp", "inference-pool",
 			fmt.Sprintf("EPP selected model server endpoint %s", selectedEndpoint),
 			events.ObservationObserved, nil, map[string]any{
-				"selected_endpoint": selectedEndpoint,
+				"selected_endpoint":              selectedEndpoint,
+				"x_gateway_destination_endpoint": rawSelectedEndpoint,
 			})
 	} else if eppRespMarker == "true" {
-		selectedEndpoint = "InferencePool/llm-d-router (ext_proc)"
 		c.hub.Emit(reqID, events.EventEndpointSelected, "llm-d-router-epp", "inference-pool",
-			"EPP ext_proc selected InferencePool endpoint and routed request (confirmed via x-went-into-resp-headers=true)",
+			"EPP ext_proc routed request through InferencePool (x-went-into-resp-headers=true; destination IP header not exposed)",
 			events.ObservationObserved, nil, map[string]any{
-				"selected_endpoint":        selectedEndpoint,
 				"x_went_into_resp_headers": eppRespMarker,
 			})
 	}
@@ -191,7 +330,7 @@ func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time,
 	if resp.StatusCode >= 400 {
 		errBody, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
 		msg := fmt.Sprintf("upstream returned HTTP %d: %s", resp.StatusCode, strings.TrimSpace(string(errBody)))
-		c.failRequest(reqID, startTime, resp.StatusCode, msg, w, streamToClient)
+		c.failRequest(reqID, startTime, resp.StatusCode, msg, routedToUpstream, selectedEndpoint, w, streamToClient)
 		return
 	}
 
@@ -200,6 +339,7 @@ func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time,
 		events.ObservationMeasured, &headersDurNs, map[string]any{
 			"http_status":        resp.StatusCode,
 			"content_type":       resp.Header.Get("Content-Type"),
+			"selected_endpoint":  selectedEndpoint,
 			"headers_latency_ms": float64(headersDur.Nanoseconds()) / 1e6,
 		})
 
@@ -231,10 +371,12 @@ func (c *Client) handleStreamingResponse(ctx context.Context, reqID string, star
 	scanner.Buffer(make([]byte, 0, 64*1024), 512*1024)
 
 	var (
-		ttftDur          *time.Duration
-		lastTokenTime    time.Time
-		itlSamplesMs     []float64
-		completionTokens int
+		ttftDur                *time.Duration
+		lastTokenTime          time.Time
+		itlSamplesMs           []float64
+		completionTokens       int
+		promptTokensSource     = "observer_char_estimate"
+		completionTokensSource = "sse_chunk_count"
 	)
 
 	for scanner.Scan() {
@@ -260,7 +402,10 @@ func (c *Client) handleStreamingResponse(ctx context.Context, reqID string, star
 			c.hub.Emit(reqID, events.EventModelStreamCompleted, "vllm-model-server", "model-server",
 				"Received [DONE] sentinel from upstream SSE token stream",
 				events.ObservationObserved, &streamDoneDur, map[string]any{
-					"completion_tokens": completionTokens,
+					"completion_tokens":        completionTokens,
+					"prompt_tokens":            promptTokens,
+					"prompt_tokens_source":     promptTokensSource,
+					"completion_tokens_source": completionTokensSource,
 				})
 			break
 		}
@@ -285,9 +430,11 @@ func (c *Client) handleStreamingResponse(ctx context.Context, reqID string, star
 		if chunk.Usage != nil {
 			if chunk.Usage.PromptTokens > 0 {
 				promptTokens = chunk.Usage.PromptTokens
+				promptTokensSource = "vllm_usage"
 			}
 			if chunk.Usage.CompletionTokens > 0 {
 				completionTokens = chunk.Usage.CompletionTokens
+				completionTokensSource = "vllm_usage"
 			}
 		}
 		if len(chunk.Choices) == 0 {
@@ -333,6 +480,14 @@ func (c *Client) handleStreamingResponse(ctx context.Context, reqID string, star
 		return
 	}
 
+	if span := trace.SpanFromContext(ctx); span != nil && span.IsRecording() {
+		span.SetAttributes(
+			attribute.Int("gen_ai.usage.input_tokens", promptTokens),
+			attribute.Int("gen_ai.usage.output_tokens", completionTokens),
+			attribute.String("llm_d.prompt_tokens_source", promptTokensSource),
+		)
+	}
+
 	totalDur := time.Since(startTime)
 	totalNs := totalDur.Nanoseconds()
 	completedAt := time.Now().UTC()
@@ -340,17 +495,24 @@ func (c *Client) handleStreamingResponse(ctx context.Context, reqID string, star
 	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
 		rec.Status = "completed"
 		rec.HTTPStatus = http.StatusOK
-		rec.SelectedEndpoint = selectedEndpoint
+		if selectedEndpoint != "" {
+			rec.SelectedEndpoint = selectedEndpoint
+		}
 		rec.CompletedAt = &completedAt
 		events.FinalizeTimings(rec, &headersDur, ttftDur, &totalDur, itlSamplesMs, promptTokens, completionTokens, nil)
+		rec.Timings.PromptTokensSource = promptTokensSource
+		rec.Timings.CompletionTokensSource = completionTokensSource
 	})
 
 	c.hub.Emit(reqID, events.EventRequestCompleted, "observer-api", "observer-api",
 		fmt.Sprintf("Streaming inference completed (%d tokens in %.2f ms)", completionTokens, float64(totalNs)/1e6),
 		events.ObservationMeasured, &totalNs, map[string]any{
-			"prompt_tokens":     promptTokens,
-			"completion_tokens": completionTokens,
-			"total_duration_ms": float64(totalNs) / 1e6,
+			"prompt_tokens":            promptTokens,
+			"prompt_tokens_source":     promptTokensSource,
+			"completion_tokens":        completionTokens,
+			"completion_tokens_source": completionTokensSource,
+			"selected_endpoint":        selectedEndpoint,
+			"total_duration_ms":        float64(totalNs) / 1e6,
 		})
 
 	if rec, ok := c.hub.GetRequest(reqID); ok {
@@ -366,7 +528,7 @@ func (c *Client) handleNonStreamingResponse(ctx context.Context, reqID string, s
 			c.cancelRequest(reqID, startTime, promptTokens, 0, nil)
 			return
 		}
-		c.failRequest(reqID, startTime, http.StatusBadGateway, "failed reading upstream response body", w, false)
+		c.failRequest(reqID, startTime, http.StatusBadGateway, "failed reading upstream response body", true, selectedEndpoint, w, false)
 		return
 	}
 
@@ -383,13 +545,25 @@ func (c *Client) handleNonStreamingResponse(ctx context.Context, reqID string, s
 	}
 	_ = json.Unmarshal(bodyBytes, &parsed)
 	completionTokens := 0
+	promptTokensSource := "observer_char_estimate"
+	completionTokensSource := "observer_char_estimate"
 	if parsed.Usage != nil {
 		if parsed.Usage.PromptTokens > 0 {
 			promptTokens = parsed.Usage.PromptTokens
+			promptTokensSource = "vllm_usage"
 		}
 		completionTokens = parsed.Usage.CompletionTokens
+		completionTokensSource = "vllm_usage"
 	} else if len(parsed.Choices) > 0 {
 		completionTokens = redact.EstimateTokens(parsed.Choices[0].Message.Content)
+	}
+
+	if span := trace.SpanFromContext(ctx); span != nil && span.IsRecording() {
+		span.SetAttributes(
+			attribute.Int("gen_ai.usage.input_tokens", promptTokens),
+			attribute.Int("gen_ai.usage.output_tokens", completionTokens),
+			attribute.String("llm_d.prompt_tokens_source", promptTokensSource),
+		)
 	}
 
 	totalDur := time.Since(startTime)
@@ -399,17 +573,24 @@ func (c *Client) handleNonStreamingResponse(ctx context.Context, reqID string, s
 	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
 		rec.Status = "completed"
 		rec.HTTPStatus = http.StatusOK
-		rec.SelectedEndpoint = selectedEndpoint
+		if selectedEndpoint != "" {
+			rec.SelectedEndpoint = selectedEndpoint
+		}
 		rec.CompletedAt = &completedAt
 		events.FinalizeTimings(rec, &headersDur, nil, &totalDur, nil, promptTokens, completionTokens, nil)
+		rec.Timings.PromptTokensSource = promptTokensSource
+		rec.Timings.CompletionTokensSource = completionTokensSource
 	})
 
 	c.hub.Emit(reqID, events.EventRequestCompleted, "observer-api", "observer-api",
 		fmt.Sprintf("Non-streaming inference completed (%d tokens in %.2f ms)", completionTokens, float64(totalNs)/1e6),
 		events.ObservationMeasured, &totalNs, map[string]any{
-			"prompt_tokens":     promptTokens,
-			"completion_tokens": completionTokens,
-			"total_duration_ms": float64(totalNs) / 1e6,
+			"prompt_tokens":            promptTokens,
+			"prompt_tokens_source":     promptTokensSource,
+			"completion_tokens":        completionTokens,
+			"completion_tokens_source": completionTokensSource,
+			"selected_endpoint":        selectedEndpoint,
+			"total_duration_ms":        float64(totalNs) / 1e6,
 		})
 
 	if rec, ok := c.hub.GetRequest(reqID); ok {
@@ -469,31 +650,48 @@ func (c *Client) enrichTraceAsync(reqID, traceID string) {
 		return
 	}
 
-	spanEndpoint := ExtractEndpointFromSpans(spans)
+	spanEndpoint := c.resolveEndpoint(context.Background(), ExtractEndpointFromSpans(spans))
+	candidateEndpoints := ExtractCandidateEndpointsFromSpans(spans)
+	eppTokCount, eppTokBackend := ExtractEPPTokenInfoFromSpans(spans)
 	nowStr := time.Now().UTC().Format(time.RFC3339Nano)
+	var finalSelected string
 	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
 		rec.Trace.Status = "enriched"
 		rec.Trace.ObservationKind = events.ObservationObserved
 		rec.Trace.EnrichedAt = nowStr
 		rec.Trace.ErrorMessage = ""
 		rec.Trace.Spans = spans
-		if spanEndpoint != "" {
+		if rec.SelectedEndpoint == "" && spanEndpoint != "" {
 			rec.SelectedEndpoint = spanEndpoint
 		}
+		if len(candidateEndpoints) > 0 {
+			rec.CandidateEndpoints = candidateEndpoints
+		}
+		if eppTokCount != nil {
+			rec.Timings.EPPTokenCount = eppTokCount
+		}
+		if eppTokBackend != "" {
+			rec.Timings.EPPTokenBackend = eppTokBackend
+		}
+		finalSelected = rec.SelectedEndpoint
 	})
 
 	c.hub.Emit(reqID, events.EventTraceEnriched, "jaeger-query", "otel-collector",
 		fmt.Sprintf("Correlated %d distributed OpenTelemetry trace spans from Jaeger", len(spans)),
 		events.ObservationObserved, nil, map[string]any{
-			"span_count":        len(spans),
-			"trace_id":          traceID,
-			"selected_endpoint": spanEndpoint,
+			"span_count":          len(spans),
+			"trace_id":            traceID,
+			"selected_endpoint":   finalSelected,
+			"candidate_endpoints": candidateEndpoints,
+			"epp_token_count":     eppTokCount,
+			"epp_token_backend":   eppTokBackend,
 		})
 }
 
-// ExtractEndpointFromSpans inspects EPP spans (including pick_endpoints llm_d.epp.picker.top_endpoints) for the selected endpoint.
+// ExtractEndpointFromSpans inspects spans for an explicit selected endpoint attribute.
+// It NEVER infers the selected endpoint from candidate rankings (llm_d.epp.picker.top_endpoints).
 func ExtractEndpointFromSpans(spans []events.SpanNode) string {
-	keys := []string{"selected_endpoint", "target_pod", "endpoint", "llm_d.selected_endpoint", "x-gateway-destination-endpoint"}
+	keys := []string{"llm_d.selected_endpoint", "selected_endpoint", "x-gateway-destination-endpoint", "x_gateway_destination_endpoint", "target_pod", "endpoint"}
 	for _, sp := range spans {
 		for _, k := range keys {
 			if v, ok := sp.Attributes[k]; ok {
@@ -502,17 +700,58 @@ func ExtractEndpointFromSpans(spans []events.SpanNode) string {
 				}
 			}
 		}
+	}
+	return ""
+}
+
+// ExtractCandidateEndpointsFromSpans extracts EPP candidate rankings from llm_d.epp.picker.top_endpoints
+// without treating candidate rankings as the selected endpoint.
+func ExtractCandidateEndpointsFromSpans(spans []events.SpanNode) []string {
+	for _, sp := range spans {
 		if v, ok := sp.Attributes["llm_d.epp.picker.top_endpoints"]; ok {
 			if s, isStr := v.(string); isStr && strings.TrimSpace(s) != "" {
 				var list []string
 				if err := json.Unmarshal([]byte(s), &list); err == nil && len(list) > 0 {
-					return list[0]
+					return list
 				}
-				return strings.TrimSpace(s)
+				return []string{strings.TrimSpace(s)}
 			}
 		}
 	}
-	return ""
+	return nil
+}
+
+// ExtractEPPTokenInfoFromSpans extracts llm_d.epp.token_producer.token_count and backend from EPP's tokenize span.
+func ExtractEPPTokenInfoFromSpans(spans []events.SpanNode) (*int, string) {
+	var (
+		tokCount *int
+		backend  string
+	)
+	for _, sp := range spans {
+		if v, ok := sp.Attributes["llm_d.epp.token_producer.backend"]; ok {
+			if s, isStr := v.(string); isStr && strings.TrimSpace(s) != "" {
+				backend = strings.TrimSpace(s)
+			}
+		}
+		if v, ok := sp.Attributes["llm_d.epp.token_producer.token_count"]; ok {
+			switch val := v.(type) {
+			case float64:
+				iv := int(val)
+				tokCount = &iv
+			case int:
+				iv := val
+				tokCount = &iv
+			case int64:
+				iv := int(val)
+				tokCount = &iv
+			case string:
+				if parsed, err := strconv.Atoi(strings.TrimSpace(val)); err == nil {
+					tokCount = &parsed
+				}
+			}
+		}
+	}
+	return tokCount, backend
 }
 
 func (c *Client) cancelRequest(reqID string, startTime time.Time, promptTokens, completionTokens int, ttftDur *time.Duration) {
@@ -536,15 +775,24 @@ func (c *Client) cancelRequest(reqID string, startTime time.Time, promptTokens, 
 	}
 }
 
-func (c *Client) failRequest(reqID string, startTime time.Time, statusCode int, errMsg string, w http.ResponseWriter, streamToClient bool) {
+func (c *Client) failRequest(reqID string, startTime time.Time, statusCode int, errMsg string, routedToUpstream bool, selectedEndpoint string, w http.ResponseWriter, streamToClient bool) {
 	totalDur := time.Since(startTime)
 	totalNs := totalDur.Nanoseconds()
 	now := time.Now().UTC()
 	cleanMsg := redact.ScrubString(errMsg)
 
+	failureScope := "rejected_prerouting"
+	if routedToUpstream {
+		failureScope = "routed_upstream_error"
+	}
+
 	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
 		rec.Status = "failed"
 		rec.HTTPStatus = statusCode
+		rec.FailureScope = failureScope
+		if selectedEndpoint != "" {
+			rec.SelectedEndpoint = selectedEndpoint
+		}
 		rec.ErrorMessage = cleanMsg
 		rec.CompletedAt = &now
 		events.FinalizeTimings(rec, nil, nil, &totalDur, nil, 0, 0, nil)
@@ -553,9 +801,11 @@ func (c *Client) failRequest(reqID string, startTime time.Time, statusCode int, 
 	c.hub.Emit(reqID, events.EventRequestFailed, "observer-api", "gateway-proxy",
 		cleanMsg,
 		events.ObservationObserved, &totalNs, map[string]any{
-			"http_status": statusCode,
+			"http_status":       statusCode,
+			"failure_scope":     failureScope,
+			"selected_endpoint": selectedEndpoint,
 		})
-	c.metrics.RecordCompletion("failed", nil, nil, nil, nil, 0, 0)
+	c.metrics.RecordFailure(routedToUpstream)
 
 	if w != nil {
 		if streamToClient {

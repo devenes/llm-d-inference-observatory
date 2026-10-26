@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -417,6 +418,18 @@ func ComputeTopology(rec *RequestRecord) []NodeState {
 		}
 	}
 
+	// If request has an explicit SelectedEndpoint, ensure inference-pool and model-server reflect it.
+	if rec.SelectedEndpoint != "" {
+		byID["epp"].Status = "observed"
+		byID["epp"].ObservationKind = kind
+		byID["inference-pool"].Status = "observed"
+		byID["inference-pool"].ObservationKind = kind
+		byID["inference-pool"].Detail = fmt.Sprintf("Selected endpoint %s from InferencePool", rec.SelectedEndpoint)
+		if byID["model-server"].Status == "observed" && !strings.Contains(byID["model-server"].Detail, rec.SelectedEndpoint) {
+			byID["model-server"].Detail = fmt.Sprintf("%s [endpoint: %s]", byID["model-server"].Detail, rec.SelectedEndpoint)
+		}
+	}
+
 	// If request completed or failed without EPP observation, mark un-observed intermediate hops appropriately.
 	if rec.Status == "completed" || rec.Status == "failed" || rec.Status == "cancelled" {
 		if byID["epp"].Status == "configured" {
@@ -454,6 +467,14 @@ func cloneRecord(in *RequestRecord) *RequestRecord {
 	if in.CompletedAt != nil {
 		t := *in.CompletedAt
 		out.CompletedAt = &t
+	}
+	if in.Timings.EPPTokenCount != nil {
+		c := *in.Timings.EPPTokenCount
+		out.Timings.EPPTokenCount = &c
+	}
+	if len(in.CandidateEndpoints) > 0 {
+		out.CandidateEndpoints = make([]string, len(in.CandidateEndpoints))
+		copy(out.CandidateEndpoints, in.CandidateEndpoints)
 	}
 	out.Events = make([]EventEnvelope, len(in.Events))
 	copy(out.Events, in.Events)

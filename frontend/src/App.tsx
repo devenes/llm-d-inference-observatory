@@ -27,7 +27,7 @@ const DEFAULT_CONFIG: ServerConfig = {
   version: 'v0.1.0',
   mock_mode: true,
   redact_prompts: true,
-  allowed_models: ['Qwen/Qwen2.5-0.5B-Instruct', 'meta-llama/Llama-3.2-3B-Instruct'],
+  allowed_models: ['Qwen/Qwen2.5-0.5B-Instruct'],
   default_model: 'Qwen/Qwen2.5-0.5B-Instruct',
   router_mode: 'optimized-baseline',
   max_output_tokens: 1024,
