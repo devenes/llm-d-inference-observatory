@@ -1,0 +1,111 @@
+{
+  "timestamp": "2026-10-27T00:44:00+03:00",
+  "project_id": "enes-turan-demo",
+  "region": "us-west4",
+  "zone": "us-west4-a",
+  "cluster_name": "llm-d-observatory",
+  "kubernetes_version": "v1.36.4-gke.2046003",
+  "namespace": "llm-d-observatory",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "overall_status": "PASS",
+  "scenarios": [
+    {
+      "id": "L01",
+      "name": "Basic live inference",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L01-basic-inference.json",
+      "summary": "Real prompt submitted via Observer API -> Envoy/EPP -> vLLM CPU model server (req_dc3fd5e94ff64a6c, req_ed12fcbe48744bb2). Returned HTTP 200 with real model completion, x-went-into-resp-headers=true, and 9-10 correlated OTel spans."
+    },
+    {
+      "id": "L02",
+      "name": "Live streaming",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L01-L04-live-results.json",
+      "summary": "SSE streaming request (req_44041d5a6f3f4f60) measured True TTFT = 32.72 ms, mean ITL = 26.66 ms, and 36 incremental token chunk events while prefill_duration_ms remained explicitly unavailable."
+    },
+    {
+      "id": "L03",
+      "name": "Event and trace correlation",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L01-L04-live-results.json",
+      "summary": "Verified 100% correlation of request_id and W3C trace_id across Observer API events and Jaeger OTel spans across observer-api and llm-d-router/epp (observer.infer, request, request_orchestration, tokenize, run_scheduler_profile, filter_endpoints, filter_prefix_cache_affinity, scoring, scorer.token-load-scorer, pick_endpoints)."
+    },
+    {
+      "id": "L04",
+      "name": "EPP routing observation",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L01-L04-live-results.json",
+      "summary": "Observed real EPP candidate endpoint filtering (candidate_endpoints=2, filtered_endpoints=2), prefix-cache affinity filtering, token-load scoring, and selected endpoint extraction from pick_endpoints span (llm_d.epp.picker.top_endpoints)."
+    },
+    {
+      "id": "L05",
+      "name": "Long prompt vs. short prompt",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L05-prompt-length-comparison.json",
+      "summary": "Short prompt (27 chars) True TTFT = 30.38 ms vs. long prompt (2532 chars) True TTFT = 38.45 ms; vllm:prompt_tokens_total incremented from 1072 -> 1109 -> 1502 while prefill_duration_ms remained explicitly marked unavailable."
+    },
+    {
+      "id": "L06",
+      "name": "Long generation",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L06-long-generation-streaming.json",
+      "summary": "96-token streaming generation (req_d6ebde2328ca4e14) measured True TTFT = 30.89 ms, mean ITL = 27.83 ms, p95 ITL = 53.13 ms, decode throughput = 35.94 tok/s across 95 inter-token intervals."
+    },
+    {
+      "id": "L07",
+      "name": "Concurrency and queueing (Flow Control)",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L07-flow-control-queueing.json",
+      "summary": "12-request concurrent burst under router_mode=flow-control (maxConcurrency=2 per replica = 4 pool concurrency) drove llm_d_epp_flow_control_queue_size to 8, llm_d_epp_flow_control_pool_saturation to 2.0, and capped vllm:num_requests_running at 4.0 while emitting 11 OTel spans per request including scorer.queue-scorer and scorer.kv-cache-utilization-scorer."
+    },
+    {
+      "id": "L08",
+      "name": "Multiple model-server replicas",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L08-multi-replica-distribution.json",
+      "summary": "8 concurrent distinct-prefix requests distributed evenly across both vLLM CPU pods: experimental-small-vllm-decode-6c9bdb656c-hlbrc (10.20.1.14) delta = +4.0 and experimental-small-vllm-decode-6c9bdb656c-sfm46 (10.20.1.15) delta = +4.0."
+    },
+    {
+      "id": "L09",
+      "name": "Backend failure and recovery",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L09-backend-failure-recovery.json",
+      "summary": "Single-replica label removal reduced llm_d_epp_ready_endpoints from 2 -> 1 and failed over cleanly to hlbrc (HTTP 200); removing the second endpoint triggered HTTP 503 with status=failed and request.failed event; restoring labels recovered ready_endpoints=2 and healthy HTTP 200 inference."
+    },
+    {
+      "id": "L10",
+      "name": "Client cancellation",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L10-client-cancellation.json",
+      "summary": "Mid-stream client disconnect after 3 SSE chunks transitioned request req_9678ff3828294f25 to status=cancelled, emitted request.cancelled lifecycle event, and incremented observer_requests_total{status=\"cancelled\"} to 1."
+    },
+    {
+      "id": "L11",
+      "name": "Metrics",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L11-live-metrics.json",
+      "summary": "Verified live scraping of EPP (:9090/metrics with ServiceAccount bearer token) and all vLLM CPU pods (:8000/metrics via headless DNS resolution) with epp_scrape_status=scraped, vllm_scrape_status=scraped, and 20 aggregate metric series."
+    },
+    {
+      "id": "L12",
+      "name": "UI and local mode distinction",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L12-live-ui-verification.json",
+      "summary": "Headless Chromium Playwright verification against live GKE frontend (http://127.0.0.1:8088/) confirmed 0 mock-mode banners, 0 simulated badges, live token streaming (req_7034617ff00641b3), Trace Status: enriched, Prefill Duration: Unavailable, and interactive topology/metrics views."
+    },
+    {
+      "id": "L13",
+      "name": "Performance benchmark",
+      "status": "PASS",
+      "artifact": "artifacts/benchmarks/live-gke-benchmark-report.json",
+      "summary": "Live GKE benchmark (2 warmup + 8 measured streaming requests at concurrency 2): 8/8 completed, 0 failures, TTFB p50 = 201.01 ms (p95 = 593.39 ms), True TTFT p50 = 273.88 ms (p95 = 643.54 ms), E2E latency p50 = 1376.34 ms (p95 = 1524.37 ms), aggregate throughput = 22.18 tok/s."
+    },
+    {
+      "id": "L14",
+      "name": "Resource health",
+      "status": "PASS",
+      "artifact": "artifacts/test-results/L14-resource-health.json",
+      "summary": "All 8 Pods in namespace llm-d-observatory are Running and Ready with 0 restarts; all 3 Prometheus scrape targets (llm-d-router-epp, observer-api, vllm-cpu-model-server) are health=up."
+    }
+  ]
+}

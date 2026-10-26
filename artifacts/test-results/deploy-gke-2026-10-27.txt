@@ -1,0 +1,82 @@
+[deploy-gke] 1. Applying namespace and CRDs...
+namespace/llm-d-observatory created
+customresourcedefinition.apiextensions.k8s.io/inferencepools.inference.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/inferencemodelrewrites.llm-d.ai created
+customresourcedefinition.apiextensions.k8s.io/inferenceobjectives.llm-d.ai created
+[deploy-gke] 2. Applying RBAC, InferenceObjectives, and Telemetry Stack...
+clusterrole.rbac.authorization.k8s.io/llm-d-observatory-metrics-reader created
+clusterrolebinding.rbac.authorization.k8s.io/llm-d-observatory-metrics-reader created
+clusterrolebinding.rbac.authorization.k8s.io/llm-d-observatory-epp-auth-delegator created
+inferenceobjective.llm-d.ai/premium-traffic created
+inferenceobjective.llm-d.ai/standard-traffic created
+inferenceobjective.llm-d.ai/best-effort-traffic created
+deployment.apps/jaeger created
+service/jaeger-collector created
+service/jaeger-query created
+configmap/otel-collector-config created
+deployment.apps/otel-collector created
+service/otel-collector created
+configmap/prometheus-config created
+deployment.apps/prometheus created
+service/prometheus created
+[deploy-gke] 3. Installing llm-d Standalone Router (optimized-baseline)...
+Release "llm-d-router" does not exist. Installing it now.
+NAME: llm-d-router
+LAST DEPLOYED: Tue Oct 27 00:10:30 2026
+NAMESPACE: llm-d-observatory
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+[deploy-gke] 4. Deploying vLLM CPU Model Server and Observatory...
+deployment.apps/experimental-small-vllm-decode created
+service/vllm-basic-service created
+serviceaccount/observer-api created
+deployment.apps/observer-api created
+service/observer-api created
+serviceaccount/observatory-frontend created
+deployment.apps/observatory-frontend created
+service/observatory-frontend created
+networkpolicy.networking.k8s.io/restrict-telemetry-and-metrics created
+networkpolicy.networking.k8s.io/restrict-observer-api created
+[deploy-gke] 5. Waiting for deployments to become Ready...
+deployment "jaeger" successfully rolled out
+deployment "otel-collector" successfully rolled out
+Waiting for deployment "prometheus" rollout to finish: 0 out of 1 new replicas have been updated...
+Waiting for deployment "prometheus" rollout to finish: 0 out of 1 new replicas have been updated...
+Waiting for deployment "prometheus" rollout to finish: 0 of 1 updated replicas are available...
+deployment "prometheus" successfully rolled out
+deployment "observer-api" successfully rolled out
+deployment "observatory-frontend" successfully rolled out
+Waiting for deployment "experimental-small-vllm-decode" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "experimental-small-vllm-decode" rollout to finish: 1 of 2 updated replicas are available...
+deployment "experimental-small-vllm-decode" successfully rolled out
+[deploy-gke] PASS: Stack deployed in namespace llm-d-observatory (mode=optimized-baseline).
+NAME                                                  READY   STATUS    RESTARTS   AGE     IP           NODE                                                  NOMINATED NODE   READINESS GATES
+pod/experimental-small-vllm-decode-6c9bdb656c-hlbrc   1/1     Running   0          3m46s   10.20.1.14   gke-llm-d-observator-cpu-inference-po-001432b6-z5w8   <none>           <none>
+pod/experimental-small-vllm-decode-6c9bdb656c-sfm46   1/1     Running   0          3m46s   10.20.1.15   gke-llm-d-observator-cpu-inference-po-001432b6-z5w8   <none>           <none>
+pod/jaeger-78457c7f59-5j8l9                           1/1     Running   0          4m15s   10.20.0.5    gke-llm-d-observatory-system-pool-b5b60be9-07sm       <none>           <none>
+pod/llm-d-router-epp-6f899c48db-b2xk9                 2/2     Running   0          3m59s   10.20.1.13   gke-llm-d-observator-cpu-inference-po-001432b6-z5w8   <none>           <none>
+pod/observatory-frontend-d4f994c76-ztmch              1/1     Running   0          3m39s   10.20.0.8    gke-llm-d-observatory-system-pool-b5b60be9-07sm       <none>           <none>
+pod/observer-api-69b7c9d4dd-j7gsd                     1/1     Running   0          3m43s   10.20.0.7    gke-llm-d-observatory-system-pool-b5b60be9-07sm       <none>           <none>
+pod/otel-collector-6b48bbdb7-crfbz                    1/1     Running   0          4m11s   10.20.0.6    gke-llm-d-observatory-system-pool-b5b60be9-07sm       <none>           <none>
+pod/prometheus-6df58dd8cb-rj67b                       1/1     Running   0          3m27s   10.20.0.9    gke-llm-d-observatory-system-pool-b5b60be9-07sm       <none>           <none>
+
+NAME                                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE     SELECTOR
+service/jaeger-collector                 ClusterIP   10.30.11.183   <none>        4317/TCP,4318/TCP            4m15s   app.kubernetes.io/name=jaeger
+service/jaeger-query                     ClusterIP   10.30.12.115   <none>        16686/TCP                    4m14s   app.kubernetes.io/name=jaeger
+service/llm-d-router-epp                 ClusterIP   10.30.1.172    <none>        9002/TCP,9090/TCP,80/TCP     4m      llm-d-router-gateway=llm-d-router-epp
+service/llm-d-router-epp-model-servers   ClusterIP   None           <none>        8000/TCP                     4m      llm-d.ai/guide=optimized-baseline
+service/observatory-frontend             ClusterIP   10.30.8.118    <none>        8080/TCP                     3m39s   app.kubernetes.io/name=observatory-frontend
+service/observer-api                     ClusterIP   10.30.15.238   <none>        8080/TCP                     3m43s   app.kubernetes.io/name=observer-api
+service/otel-collector                   ClusterIP   10.30.9.93     <none>        4317/TCP,4318/TCP,8889/TCP   4m12s   app.kubernetes.io/name=otel-collector
+service/prometheus                       ClusterIP   10.30.15.218   <none>        9090/TCP                     4m9s    app.kubernetes.io/name=prometheus
+service/vllm-basic-service               ClusterIP   10.30.12.157   <none>        8000/TCP                     3m47s   app.kubernetes.io/name=vllm-cpu-model-server
+
+NAME                                                     AGE
+inferencepool.inference.networking.k8s.io/llm-d-router   4m
+
+NAME                                              INFERENCE POOLS   PRIORITY   AGE
+inferenceobjective.llm-d.ai/best-effort-traffic   llm-d-router      -10        4m19s
+inferenceobjective.llm-d.ai/premium-traffic       llm-d-router      100        4m20s
+inferenceobjective.llm-d.ai/standard-traffic      llm-d-router      0          4m19s

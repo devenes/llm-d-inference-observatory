@@ -5,7 +5,10 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"net"
 	"net/http"
+	"net/url"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -334,6 +337,46 @@ func (mc *MetricsCollector) scrapePrometheus(ctx context.Context, targetURL, bea
 	if targetURL == "" {
 		return nil, fmt.Errorf("empty metrics URL")
 	}
+	if bearerToken == "" && strings.Contains(targetURL, ":9090") {
+		if b, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/token"); err == nil {
+			bearerToken = strings.TrimSpace(string(b))
+		}
+	}
+
+	// If targetURL points to a Kubernetes headless service (multiple Pod A records), scrape and sum across all pod IPs.
+	if u, err := url.Parse(targetURL); err == nil {
+		host := u.Hostname()
+		port := u.Port()
+		if host != "" && host != "localhost" && net.ParseIP(host) == nil {
+			if ips, lookupErr := net.DefaultResolver.LookupHost(ctx, host); lookupErr == nil && len(ips) > 1 {
+				combined := make(map[string]float64)
+				successCount := 0
+				for _, ip := range ips {
+					podURL := *u
+					if port != "" {
+						podURL.Host = net.JoinHostPort(ip, port)
+					} else {
+						podURL.Host = ip
+					}
+					m, sErr := mc.scrapeSingleEndpoint(ctx, podURL.String(), bearerToken)
+					if sErr == nil {
+						successCount++
+						for k, v := range m {
+							combined[k] += v
+						}
+					}
+				}
+				if successCount > 0 {
+					return combined, nil
+				}
+			}
+		}
+	}
+
+	return mc.scrapeSingleEndpoint(ctx, targetURL, bearerToken)
+}
+
+func (mc *MetricsCollector) scrapeSingleEndpoint(ctx context.Context, targetURL, bearerToken string) (map[string]float64, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, targetURL, nil)
 	if err != nil {
 		return nil, err
@@ -547,9 +590,23 @@ func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[
 	readyVal, readyKind := lookup(eppMap, eppOK, "llm_d_epp_ready_endpoints")
 	reqVal, reqKind := lookup(eppMap, eppOK, "llm_d_epp_request_total")
 	kvHitsVal, kvHitsKind := lookup(eppMap, eppOK, "llm_d_epp_kv_cache_index_lookup_hits_total")
+	predCachedVal, predCachedKind := lookup(eppMap, eppOK, "llm_d_epp_prefix_predicted_cached_tokens_sum")
 	fcQueueVal, fcQueueKind := lookup(eppMap, eppOK, "llm_d_epp_flow_control_queue_size")
+	fcSatVal, fcSatKind := lookup(eppMap, eppOK, "llm_d_epp_flow_control_pool_saturation")
 	vllmRunVal, vllmRunKind := lookup(vllmMap, vllmOK, "vllm:num_requests_running")
 	vllmWaitVal, vllmWaitKind := lookup(vllmMap, vllmOK, "vllm:num_requests_waiting")
+
+	var vllmHitRateVal *float64
+	vllmHitRateKind := events.ObservationUnavailable
+	if vllmOK && vllmMap != nil {
+		hits := vllmMap["vllm:prefix_cache_hits_total"]
+		queries := vllmMap["vllm:prefix_cache_queries_total"]
+		if queries > 0 {
+			rate := math.Round((hits/queries)*10000) / 100
+			vllmHitRateVal = &rate
+			vllmHitRateKind = events.ObservationAggregate
+		}
+	}
 
 	return []MetricSeries{
 		{
@@ -583,6 +640,16 @@ func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[
 			Explanation:     "Aggregate 64-token KV block lookup hits in the EPP prefix cache indexer.",
 		},
 		{
+			Name:            "llm_d_epp_prefix_predicted_cached_tokens_sum",
+			Label:           "EPP Predicted Cached Tokens",
+			Category:        "epp",
+			Value:           predCachedVal,
+			Unit:            "tokens",
+			ObservationKind: predCachedKind,
+			Source:          "llm-d-router-epp (:9090/metrics)",
+			Explanation:     "Cumulative prompt tokens predicted by EPP to hit existing vLLM prefix caches.",
+		},
+		{
 			Name:            "llm_d_epp_flow_control_queue_size",
 			Label:           "EPP Flow-Control Queue Depth",
 			Category:        "epp",
@@ -591,6 +658,16 @@ func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[
 			ObservationKind: fcQueueKind,
 			Source:          "llm-d-router-epp (:9090/metrics)",
 			Explanation:     "System-wide gauge of requests buffered in EPP priority-band queues.",
+		},
+		{
+			Name:            "llm_d_epp_flow_control_pool_saturation",
+			Label:           "EPP InferencePool Saturation",
+			Category:        "epp",
+			Value:           fcSatVal,
+			Unit:            "ratio",
+			ObservationKind: fcSatKind,
+			Source:          "llm-d-router-epp (:9090/metrics)",
+			Explanation:     "Aggregate saturation ratio across the InferencePool calculated by EPP concurrency detector.",
 		},
 		{
 			Name:            "vllm:num_requests_running",
@@ -611,6 +688,16 @@ func buildLiveUpstreamSeries(eppMap map[string]float64, eppOK bool, vllmMap map[
 			ObservationKind: vllmWaitKind,
 			Source:          "vllm-model-server (:8000/metrics)",
 			Explanation:     "Aggregate gauge of requests waiting in the vLLM internal scheduler queue.",
+		},
+		{
+			Name:            "vllm:prefix_cache_hit_rate_pct",
+			Label:           "vLLM Prefix Cache Hit Rate",
+			Category:        "vllm",
+			Value:           vllmHitRateVal,
+			Unit:            "%",
+			ObservationKind: vllmHitRateKind,
+			Source:          "vllm-model-server (:8000/metrics)",
+			Explanation:     "Ratio of vllm:prefix_cache_hits_total to vllm:prefix_cache_queries_total across CPU model servers.",
 		},
 	}
 }

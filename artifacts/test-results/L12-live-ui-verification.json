@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "url": "http://127.0.0.1:8088/",
+  "mock_mode_banner_count": 0,
+  "mock_scenario_select_count": 0,
+  "simulated_badges_on_timeline": 0,
+  "request_id": "req_7034617ff00641b3",
+  "streamed_output": "Prefix-cache affinity routing enhances the efficiency and scalability of multi-turn large language model (LLM) chat applications by dynamically adjusting",
+  "contains_simulated_marker": false,
+  "prefill_duration_ui_value": "Unavailable",
+  "trace_enrichment_status": "Trace Status:\nenriched",
+  "topology_canvas_visible": true,
+  "aggregate_metrics_notice_present": true
+}

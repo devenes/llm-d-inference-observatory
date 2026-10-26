@@ -1,0 +1,14 @@
+[
+  {
+    "pod": "experimental-small-vllm-decode-6c9bdb656c-hlbrc",
+    "status": 200,
+    "warmup_seconds": 199.39,
+    "reply": "OK (Yes"
+  },
+  {
+    "pod": "experimental-small-vllm-decode-6c9bdb656c-sfm46",
+    "status": 200,
+    "warmup_seconds": 199.12,
+    "reply": "OK (Yes"
+  }
+]

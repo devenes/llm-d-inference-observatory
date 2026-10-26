@@ -35,7 +35,7 @@ spec:
       containers:
         - name: frontend
           image: us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080

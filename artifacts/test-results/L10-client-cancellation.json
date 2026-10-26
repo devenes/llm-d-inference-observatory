@@ -1,0 +1,1148 @@
+{
+  "status": "PASS",
+  "request_id": "req_d0e92feb0c4e482a",
+  "chunks_read_before_abort": 3,
+  "recorded_status": "cancelled",
+  "event_types": [
+    "request.accepted",
+    "gateway.forwarded",
+    "routing.started",
+    "endpoint.selected",
+    "model.request.started",
+    "model.first_token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "model.token",
+    "request.cancelled"
+  ],
+  "prometheus_metric_line": "observer_requests_total{status=\"cancelled\"} 1",
+  "request_detail": {
+    "request_id": "req_d0e92feb0c4e482a",
+    "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "router_mode": "optimized-baseline",
+    "priority_band": "standard-traffic",
+    "stream": true,
+    "mock_mode": false,
+    "status": "cancelled",
+    "http_status": 499,
+    "created_at": "2026-10-26T21:33:27.159623633Z",
+    "completed_at": "2026-10-26T21:33:28.410141856Z",
+    "prompt_metadata": {
+      "estimated_tokens": 26,
+      "prompt_chars": 101,
+      "prompt_preview": "[REDACTED 101 chars, sha256:0ad6fc5e0debf50d]",
+      "prompt_sha256_prefix": "0ad6fc5e0debf50d",
+      "redacted": true
+    },
+    "timings": {
+      "request_start_timestamp": "2026-10-26T21:33:27.159623633Z",
+      "upstream_headers_ms": {
+        "value": null,
+        "unit": "ms",
+        "observation_kind": "unavailable",
+        "source": "observer-api",
+        "explanation": "Time from request start until HTTP response headers arrive from upstream."
+      },
+      "ttft_ms": {
+        "value": 38.28,
+        "unit": "ms",
+        "observation_kind": "measured",
+        "source": "observer-api",
+        "explanation": "True Time To First Token: measured arrival of the first non-empty text token chunk at the Observer API."
+      },
+      "prefill_duration_ms": {
+        "value": null,
+        "unit": "ms",
+        "observation_kind": "unavailable",
+        "source": "vllm-model-server",
+        "explanation": "Exact model-server prompt prefill duration. Never inferred from TTFT alone; requires an explicit model-server prefill span."
+      },
+      "total_duration_ms": {
+        "value": 1250.51,
+        "unit": "ms",
+        "observation_kind": "measured",
+        "source": "observer-api",
+        "explanation": "End-to-end request duration measured by the Observer API."
+      },
+      "mean_itl_ms": {
+        "value": null,
+        "unit": "ms",
+        "observation_kind": "unavailable",
+        "source": "observer-api",
+        "explanation": "Mean inter-token latency derived from consecutive streamed token arrival timestamps."
+      },
+      "p95_itl_ms": {
+        "value": null,
+        "unit": "ms",
+        "observation_kind": "unavailable",
+        "source": "observer-api",
+        "explanation": "95th percentile inter-token latency derived from streamed token arrival intervals."
+      },
+      "decode_tokens_per_sec": {
+        "value": 37.12,
+        "unit": "tok/s",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "Decode throughput derived from post-first-token generation window."
+      },
+      "e2e_tokens_per_sec": {
+        "value": 36.78,
+        "unit": "tok/s",
+        "observation_kind": "derived",
+        "source": "observer-api",
+        "explanation": "End-to-end output token rate derived from total completion tokens divided by total request duration."
+      },
+      "itl_samples_ms": [],
+      "prompt_tokens": 26,
+      "completion_tokens": 46
+    },
+    "events": [
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_6d971989_001",
+        "sequence": 1,
+        "event_type": "request.accepted",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.159695408Z",
+        "observation_kind": "observed",
+        "component": "observer-api",
+        "message": "Request accepted by Observer API; request_id and W3C trace context assigned",
+        "duration_ns": 0,
+        "attributes": {
+          "max_tokens": 128,
+          "mock_mode": false,
+          "model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "priority_band": "standard-traffic",
+          "prompt_chars": 101,
+          "prompt_sha256": "0ad6fc5e0debf50d",
+          "router_mode": "optimized-baseline",
+          "scenario": "",
+          "stream": true
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_9e2f0618_002",
+        "sequence": 2,
+        "event_type": "gateway.forwarded",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.159874261Z",
+        "observation_kind": "observed",
+        "component": "gateway-proxy",
+        "message": "Forwarded OpenAI chat completion request to llm-d Envoy/EPP router",
+        "duration_ns": 219793,
+        "attributes": {
+          "priority_band": "standard-traffic",
+          "stream": true,
+          "traceparent_sent": true,
+          "upstream_endpoint": "http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:80/v1/chat/completions"
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_6729b521_003",
+        "sequence": 3,
+        "event_type": "routing.started",
+        "source": "llm-d-router-epp",
+        "source_timestamp": "2026-10-26T21:33:27.163934073Z",
+        "observation_kind": "observed",
+        "component": "epp",
+        "message": "EPP external processor evaluated request headers and body",
+        "duration_ns": null,
+        "attributes": {
+          "x_went_into_resp_headers": "true"
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_d171f0b3_004",
+        "sequence": 4,
+        "event_type": "endpoint.selected",
+        "source": "llm-d-router-epp",
+        "source_timestamp": "2026-10-26T21:33:27.163978401Z",
+        "observation_kind": "observed",
+        "component": "inference-pool",
+        "message": "EPP ext_proc selected InferencePool endpoint and routed request (confirmed via x-went-into-resp-headers=true)",
+        "duration_ns": null,
+        "attributes": {
+          "selected_endpoint": "InferencePool/llm-d-router (ext_proc)",
+          "x_went_into_resp_headers": "true"
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_175d5ac5_005",
+        "sequence": 5,
+        "event_type": "model.request.started",
+        "source": "vllm-model-server",
+        "source_timestamp": "2026-10-26T21:33:27.164004Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Upstream HTTP 200 response headers received from model server",
+        "duration_ns": 4279622,
+        "attributes": {
+          "content_type": "text/event-stream; charset=utf-8",
+          "headers_latency_ms": 4.279622,
+          "http_status": 200
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_194f0c8e_006",
+        "sequence": 6,
+        "event_type": "model.first_token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.197920453Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "First non-empty generated token arrived (True TTFT 38.28 ms)",
+        "duration_ns": 38277845,
+        "attributes": {
+          "headers_to_ttft_ms": 33.998223,
+          "token_index": 1,
+          "ttft_ms": 38.277845
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_58f7f185_007",
+        "sequence": 7,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.215421588Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #2 (ITL 17.50 ms)",
+        "duration_ns": 17500495,
+        "attributes": {
+          "itl_ms": 17.500495,
+          "token_index": 2
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_590608a9_008",
+        "sequence": 8,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.234333853Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #3 (ITL 18.91 ms)",
+        "duration_ns": 18913441,
+        "attributes": {
+          "itl_ms": 18.913441,
+          "token_index": 3
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_2b063593_009",
+        "sequence": 9,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.262197375Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #4 (ITL 27.86 ms)",
+        "duration_ns": 27861968,
+        "attributes": {
+          "itl_ms": 27.861968,
+          "token_index": 4
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_b981e271_010",
+        "sequence": 10,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.281379455Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #5 (ITL 19.18 ms)",
+        "duration_ns": 19181739,
+        "attributes": {
+          "itl_ms": 19.181739,
+          "token_index": 5
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_17aa5f6f_011",
+        "sequence": 11,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.318048303Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #6 (ITL 36.66 ms)",
+        "duration_ns": 36664847,
+        "attributes": {
+          "itl_ms": 36.664847,
+          "token_index": 6
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_957a44d1_012",
+        "sequence": 12,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.336910008Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #7 (ITL 18.86 ms)",
+        "duration_ns": 18860195,
+        "attributes": {
+          "itl_ms": 18.860195,
+          "token_index": 7
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_0535682d_013",
+        "sequence": 13,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.367085734Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #8 (ITL 30.18 ms)",
+        "duration_ns": 30179030,
+        "attributes": {
+          "itl_ms": 30.17903,
+          "token_index": 8
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_9d6e026e_014",
+        "sequence": 14,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.405168733Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #9 (ITL 38.08 ms)",
+        "duration_ns": 38084803,
+        "attributes": {
+          "itl_ms": 38.084803,
+          "token_index": 9
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_66aaee9c_015",
+        "sequence": 15,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.426617269Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #10 (ITL 21.44 ms)",
+        "duration_ns": 21442759,
+        "attributes": {
+          "itl_ms": 21.442759,
+          "token_index": 10
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_e3c87dea_016",
+        "sequence": 16,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.452083309Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #11 (ITL 25.47 ms)",
+        "duration_ns": 25473283,
+        "attributes": {
+          "itl_ms": 25.473283,
+          "token_index": 11
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_6f489498_017",
+        "sequence": 17,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.476873854Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #12 (ITL 24.79 ms)",
+        "duration_ns": 24791154,
+        "attributes": {
+          "itl_ms": 24.791154,
+          "token_index": 12
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_4535c31c_018",
+        "sequence": 18,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.510164118Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #13 (ITL 33.29 ms)",
+        "duration_ns": 33292704,
+        "attributes": {
+          "itl_ms": 33.292704,
+          "token_index": 13
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_5419e769_019",
+        "sequence": 19,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.52910189Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #14 (ITL 18.94 ms)",
+        "duration_ns": 18937628,
+        "attributes": {
+          "itl_ms": 18.937628,
+          "token_index": 14
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_b9109e2d_020",
+        "sequence": 20,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.559847375Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #15 (ITL 30.75 ms)",
+        "duration_ns": 30745111,
+        "attributes": {
+          "itl_ms": 30.745111,
+          "token_index": 15
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_793f0122_021",
+        "sequence": 21,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.578942769Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #16 (ITL 19.10 ms)",
+        "duration_ns": 19095157,
+        "attributes": {
+          "itl_ms": 19.095157,
+          "token_index": 16
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_ec06db02_022",
+        "sequence": 22,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.615439637Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #17 (ITL 36.50 ms)",
+        "duration_ns": 36497032,
+        "attributes": {
+          "itl_ms": 36.497032,
+          "token_index": 17
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_f74f80b3_023",
+        "sequence": 23,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.634654614Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #18 (ITL 19.21 ms)",
+        "duration_ns": 19212804,
+        "attributes": {
+          "itl_ms": 19.212804,
+          "token_index": 18
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_1d2cb88c_024",
+        "sequence": 24,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.664462433Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #19 (ITL 29.81 ms)",
+        "duration_ns": 29808313,
+        "attributes": {
+          "itl_ms": 29.808313,
+          "token_index": 19
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_468a160e_025",
+        "sequence": 25,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.683544688Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #20 (ITL 19.04 ms)",
+        "duration_ns": 19039116,
+        "attributes": {
+          "itl_ms": 19.039116,
+          "token_index": 20
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_ca66615b_026",
+        "sequence": 26,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.719212351Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #21 (ITL 35.71 ms)",
+        "duration_ns": 35712237,
+        "attributes": {
+          "itl_ms": 35.712237,
+          "token_index": 21
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_9834c5f9_027",
+        "sequence": 27,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.75249571Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #22 (ITL 33.28 ms)",
+        "duration_ns": 33283997,
+        "attributes": {
+          "itl_ms": 33.283997,
+          "token_index": 22
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_350ecd55_028",
+        "sequence": 28,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.770407433Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #23 (ITL 17.91 ms)",
+        "duration_ns": 17909168,
+        "attributes": {
+          "itl_ms": 17.909168,
+          "token_index": 23
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_c85e62c4_029",
+        "sequence": 29,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.806790968Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #24 (ITL 36.38 ms)",
+        "duration_ns": 36382576,
+        "attributes": {
+          "itl_ms": 36.382576,
+          "token_index": 24
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_19770101_030",
+        "sequence": 30,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.827608074Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #25 (ITL 20.82 ms)",
+        "duration_ns": 20818653,
+        "attributes": {
+          "itl_ms": 20.818653,
+          "token_index": 25
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_b436110a_031",
+        "sequence": 31,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.855735959Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #26 (ITL 28.12 ms)",
+        "duration_ns": 28122050,
+        "attributes": {
+          "itl_ms": 28.12205,
+          "token_index": 26
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_3ece47b9_032",
+        "sequence": 32,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.87763612Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #27 (ITL 21.90 ms)",
+        "duration_ns": 21902900,
+        "attributes": {
+          "itl_ms": 21.9029,
+          "token_index": 27
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_840f79a1_033",
+        "sequence": 33,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.910910523Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #28 (ITL 33.27 ms)",
+        "duration_ns": 33270843,
+        "attributes": {
+          "itl_ms": 33.270843,
+          "token_index": 28
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_12c2bb95_034",
+        "sequence": 34,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.929659964Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #29 (ITL 18.75 ms)",
+        "duration_ns": 18751221,
+        "attributes": {
+          "itl_ms": 18.751221,
+          "token_index": 29
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_c464a6a4_035",
+        "sequence": 35,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.961183806Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #30 (ITL 31.53 ms)",
+        "duration_ns": 31525155,
+        "attributes": {
+          "itl_ms": 31.525155,
+          "token_index": 30
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_2461cf9f_036",
+        "sequence": 36,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:27.980555762Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #31 (ITL 19.37 ms)",
+        "duration_ns": 19370138,
+        "attributes": {
+          "itl_ms": 19.370138,
+          "token_index": 31
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_0eb34b00_037",
+        "sequence": 37,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.017550257Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #32 (ITL 36.99 ms)",
+        "duration_ns": 36991026,
+        "attributes": {
+          "itl_ms": 36.991026,
+          "token_index": 32
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_f6580e70_038",
+        "sequence": 38,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.036190447Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #33 (ITL 18.65 ms)",
+        "duration_ns": 18647269,
+        "attributes": {
+          "itl_ms": 18.647269,
+          "token_index": 33
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_4ea45db7_039",
+        "sequence": 39,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.066334093Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #34 (ITL 30.14 ms)",
+        "duration_ns": 30137167,
+        "attributes": {
+          "itl_ms": 30.137167,
+          "token_index": 34
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_869ed00f_040",
+        "sequence": 40,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.085131842Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #35 (ITL 18.79 ms)",
+        "duration_ns": 18794962,
+        "attributes": {
+          "itl_ms": 18.794962,
+          "token_index": 35
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_136b8b9c_041",
+        "sequence": 41,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.126844437Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #36 (ITL 41.72 ms)",
+        "duration_ns": 41715785,
+        "attributes": {
+          "itl_ms": 41.715785,
+          "token_index": 36
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_586bfc96_042",
+        "sequence": 42,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.152008224Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #37 (ITL 25.16 ms)",
+        "duration_ns": 25163987,
+        "attributes": {
+          "itl_ms": 25.163987,
+          "token_index": 37
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_18ff6e0c_043",
+        "sequence": 43,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.169642662Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #38 (ITL 17.63 ms)",
+        "duration_ns": 17633727,
+        "attributes": {
+          "itl_ms": 17.633727,
+          "token_index": 38
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_b7cdc17f_044",
+        "sequence": 44,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.208066705Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #39 (ITL 38.42 ms)",
+        "duration_ns": 38424358,
+        "attributes": {
+          "itl_ms": 38.424358,
+          "token_index": 39
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_0d1fd39d_045",
+        "sequence": 45,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.227899964Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #40 (ITL 19.84 ms)",
+        "duration_ns": 19838290,
+        "attributes": {
+          "itl_ms": 19.83829,
+          "token_index": 40
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_ac221312_046",
+        "sequence": 46,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.25847874Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #41 (ITL 30.58 ms)",
+        "duration_ns": 30575448,
+        "attributes": {
+          "itl_ms": 30.575448,
+          "token_index": 41
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_03b94db0_047",
+        "sequence": 47,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.278007163Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #42 (ITL 19.54 ms)",
+        "duration_ns": 19537709,
+        "attributes": {
+          "itl_ms": 19.537709,
+          "token_index": 42
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_9160dbc0_048",
+        "sequence": 48,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.313700451Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #43 (ITL 35.68 ms)",
+        "duration_ns": 35680599,
+        "attributes": {
+          "itl_ms": 35.680599,
+          "token_index": 43
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_5c5fd8b8_049",
+        "sequence": 49,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.332530536Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #44 (ITL 18.82 ms)",
+        "duration_ns": 18820920,
+        "attributes": {
+          "itl_ms": 18.82092,
+          "token_index": 44
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_ff305f88_050",
+        "sequence": 50,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.363581164Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #45 (ITL 31.02 ms)",
+        "duration_ns": 31024000,
+        "attributes": {
+          "itl_ms": 31.024,
+          "token_index": 45
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_467c57dc_051",
+        "sequence": 51,
+        "event_type": "model.token",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.383442858Z",
+        "observation_kind": "measured",
+        "component": "model-server",
+        "message": "Streamed token #46 (ITL 19.90 ms)",
+        "duration_ns": 19903776,
+        "attributes": {
+          "itl_ms": 19.903776,
+          "token_index": 46
+        }
+      },
+      {
+        "schema_version": "1",
+        "request_id": "req_d0e92feb0c4e482a",
+        "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+        "event_id": "evt_97a3d73c_052",
+        "sequence": 52,
+        "event_type": "request.cancelled",
+        "source": "observer-api",
+        "source_timestamp": "2026-10-26T21:33:28.410187185Z",
+        "observation_kind": "observed",
+        "component": "observer-api",
+        "message": "Client cancelled in-flight inference request; upstream context aborted",
+        "duration_ns": 1250513955,
+        "attributes": {
+          "tokens_before_cancel": 46
+        }
+      }
+    ],
+    "trace": {
+      "request_id": "req_d0e92feb0c4e482a",
+      "trace_id": "d954302d598bbcdf2e6bc4072549df88",
+      "status": "pending",
+      "observation_kind": "observed",
+      "backend": "jaeger-otlp",
+      "spans": []
+    },
+    "topology": [
+      {
+        "node_id": "browser",
+        "status": "observed",
+        "observation_kind": "observed",
+        "detail": "Client browser submitting OpenAI chat completion request"
+      },
+      {
+        "node_id": "observer-api",
+        "status": "observed",
+        "observation_kind": "observed",
+        "detail": "Go Observer API assigning request_id, W3C traceparent, and SSE lifecycle stream"
+      },
+      {
+        "node_id": "gateway-proxy",
+        "status": "observed",
+        "observation_kind": "observed",
+        "detail": "Forwarded OpenAI chat completion request to llm-d Envoy/EPP router"
+      },
+      {
+        "node_id": "epp",
+        "status": "observed",
+        "observation_kind": "observed",
+        "detail": "EPP external processor evaluated request headers and body"
+      },
+      {
+        "node_id": "inference-pool",
+        "status": "observed",
+        "observation_kind": "observed",
+        "detail": "Selected endpoint InferencePool/llm-d-router (ext_proc) from InferencePool"
+      },
+      {
+        "node_id": "model-server",
+        "status": "observed",
+        "observation_kind": "measured",
+        "detail": "Streamed token #46 (ITL 19.90 ms)"
+      },
+      {
+        "node_id": "otel-collector",
+        "status": "configured",
+        "observation_kind": "unavailable",
+        "detail": "OpenTelemetry Collector (:4317 OTLP) -> Jaeger trace backend"
+      },
+      {
+        "node_id": "prometheus",
+        "status": "configured",
+        "observation_kind": "aggregate",
+        "detail": "Prometheus / GMP scraping EPP (:9090) and vLLM (:8000) aggregate metrics"
+      }
+    ]
+  }
+}

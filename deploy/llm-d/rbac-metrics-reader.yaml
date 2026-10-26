@@ -23,6 +23,9 @@ subjects:
   - kind: ServiceAccount
     name: observer-api
     namespace: llm-d-observatory
+  - kind: ServiceAccount
+    name: default
+    namespace: llm-d-observatory
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

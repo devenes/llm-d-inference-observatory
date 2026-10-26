@@ -1,0 +1,17 @@
+[
+  {
+    "job": "llm-d-router-epp",
+    "health": "up",
+    "lastError": ""
+  },
+  {
+    "job": "observer-api",
+    "health": "up",
+    "lastError": ""
+  },
+  {
+    "job": "vllm-cpu-model-server",
+    "health": "up",
+    "lastError": ""
+  }
+]

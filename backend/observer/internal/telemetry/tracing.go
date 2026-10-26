@@ -60,7 +60,7 @@ func NewTracerManager(ctx context.Context, cfg config.Config) (*TracerManager, e
 			otlptracehttp.WithInsecure(),
 		)
 		if expErr == nil {
-			opts = append(opts, sdktrace.WithBatcher(exp))
+			opts = append(opts, sdktrace.WithBatcher(exp, sdktrace.WithBatchTimeout(200*time.Millisecond)))
 		}
 	}
 
@@ -105,6 +105,14 @@ func (tm *TracerManager) InjectHeaders(ctx context.Context, hdr http.Header) {
 // ExtractContext reads W3C traceparent headers from an incoming HTTP request if present.
 func (tm *TracerManager) ExtractContext(ctx context.Context, hdr http.Header) context.Context {
 	return tm.propagator.Extract(ctx, propagation.HeaderCarrier(hdr))
+}
+
+// ForceFlush flushes any buffered spans immediately so Jaeger can be queried right after a request completes.
+func (tm *TracerManager) ForceFlush(ctx context.Context) error {
+	if tm == nil || tm.provider == nil {
+		return nil
+	}
+	return tm.provider.ForceFlush(ctx)
 }
 
 // Shutdown flushes pending spans cleanly.

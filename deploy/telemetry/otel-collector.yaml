@@ -45,7 +45,7 @@ data:
             action: delete
       batch:
         send_batch_size: 256
-        timeout: 1s
+        timeout: 200ms
 
     exporters:
       otlp/jaeger:

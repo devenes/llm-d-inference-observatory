@@ -35,7 +35,7 @@ spec:
       containers:
         - name: observer-api
           image: us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: OBSERVER_LISTEN_ADDR
               value: ":8080"

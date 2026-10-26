@@ -1,0 +1,30 @@
+4m10s       Normal    SuccessfulCreate    replicaset/experimental-small-vllm-decode-6c9bdb656c   Created pod: experimental-small-vllm-decode-6c9bdb656c-sfm46
+4m9s        Normal    Pulling             pod/experimental-small-vllm-decode-6c9bdb656c-sfm46    Pulling image "docker.io/vllm/vllm-openai-cpu:v0.31.0"
+4m7s        Normal    ScalingReplicaSet   deployment/observer-api                                Scaled up replica set observer-api-69b7c9d4dd from 0 to 1
+4m7s        Normal    SuccessfulCreate    replicaset/observer-api-69b7c9d4dd                     Created pod: observer-api-69b7c9d4dd-j7gsd
+4m6s        Normal    Scheduled           pod/observer-api-69b7c9d4dd-j7gsd                      Successfully assigned llm-d-observatory/observer-api-69b7c9d4dd-j7gsd to gke-llm-d-observatory-system-pool-b5b60be9-07sm
+4m6s        Normal    Pulling             pod/observer-api-69b7c9d4dd-j7gsd                      Pulling image "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0"
+4m4s        Normal    Started             pod/observer-api-69b7c9d4dd-j7gsd                      Container started
+4m4s        Normal    Pulled              pod/observer-api-69b7c9d4dd-j7gsd                      Successfully pulled image "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0" in 1.376s (1.376s including waiting). Image size: 11462589 bytes.
+4m4s        Normal    Created             pod/observer-api-69b7c9d4dd-j7gsd                      Container created
+4m3s        Normal    Scheduled           pod/observatory-frontend-d4f994c76-ztmch               Successfully assigned llm-d-observatory/observatory-frontend-d4f994c76-ztmch to gke-llm-d-observatory-system-pool-b5b60be9-07sm
+4m3s        Normal    SuccessfulCreate    replicaset/observatory-frontend-d4f994c76              Created pod: observatory-frontend-d4f994c76-ztmch
+4m3s        Normal    ScalingReplicaSet   deployment/observatory-frontend                        Scaled up replica set observatory-frontend-d4f994c76 from 0 to 1
+4m2s        Normal    Pulling             pod/observatory-frontend-d4f994c76-ztmch               Pulling image "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0"
+4m          Normal    Started             pod/observatory-frontend-d4f994c76-ztmch               Container started
+4m          Normal    Created             pod/observatory-frontend-d4f994c76-ztmch               Container created
+4m          Normal    Pulled              pod/observatory-frontend-d4f994c76-ztmch               Successfully pulled image "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0" in 1.957s (1.957s including waiting). Image size: 21248308 bytes.
+3m51s       Normal    Scheduled           pod/prometheus-6df58dd8cb-rj67b                        Successfully assigned llm-d-observatory/prometheus-6df58dd8cb-rj67b to gke-llm-d-observatory-system-pool-b5b60be9-07sm
+3m51s       Normal    SuccessfulCreate    replicaset/prometheus-6df58dd8cb                       Created pod: prometheus-6df58dd8cb-rj67b
+3m51s       Normal    Pulling             pod/prometheus-6df58dd8cb-rj67b                        Pulling image "prom/prometheus:v2.55.1"
+3m42s       Normal    Started             pod/prometheus-6df58dd8cb-rj67b                        Container started
+3m42s       Normal    Created             pod/prometheus-6df58dd8cb-rj67b                        Container created
+3m42s       Normal    Pulled              pod/prometheus-6df58dd8cb-rj67b                        Successfully pulled image "prom/prometheus:v2.55.1" in 8.272s (8.272s including waiting). Image size: 114286128 bytes.
+3m35s       Normal    Created             pod/experimental-small-vllm-decode-6c9bdb656c-sfm46    Container created
+3m35s       Normal    Pulled              pod/experimental-small-vllm-decode-6c9bdb656c-hlbrc    Successfully pulled image "docker.io/vllm/vllm-openai-cpu:v0.31.0" in 34.149s (34.149s including waiting). Image size: 1568564985 bytes.
+3m35s       Normal    Created             pod/experimental-small-vllm-decode-6c9bdb656c-hlbrc    Container created
+3m35s       Normal    Started             pod/experimental-small-vllm-decode-6c9bdb656c-hlbrc    Container started
+3m35s       Normal    Pulled              pod/experimental-small-vllm-decode-6c9bdb656c-sfm46    Successfully pulled image "docker.io/vllm/vllm-openai-cpu:v0.31.0" in 34.051s (34.051s including waiting). Image size: 1568564985 bytes.
+3m35s       Normal    Started             pod/experimental-small-vllm-decode-6c9bdb656c-sfm46    Container started
+40s         Warning   Unhealthy           pod/experimental-small-vllm-decode-6c9bdb656c-hlbrc    Startup probe failed: Get "http://10.20.1.14:8000/v1/models": dial tcp 10.20.1.14:8000: connect: connection refused
+40s         Warning   Unhealthy           pod/experimental-small-vllm-decode-6c9bdb656c-sfm46    Startup probe failed: Get "http://10.20.1.15:8000/v1/models": dial tcp 10.20.1.15:8000: connect: connection refused

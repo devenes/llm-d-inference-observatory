@@ -1,0 +1,62 @@
+{
+  "status": "PASS",
+  "request_id": "req_ad83f5a712b6409e",
+  "trace_id": "040b72e6121708fb377b7e487db74d87",
+  "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-hlbrc-rank-0",
+  "completion_tokens": 96,
+  "ttft_ms": {
+    "value": 40.12,
+    "unit": "ms",
+    "observation_kind": "measured",
+    "source": "observer-api",
+    "explanation": "True Time To First Token: measured arrival of the first non-empty text token chunk at the Observer API."
+  },
+  "mean_itl_ms": {
+    "value": 27.83,
+    "unit": "ms",
+    "observation_kind": "derived",
+    "source": "observer-api",
+    "explanation": "Mean inter-token latency derived from consecutive streamed token arrival timestamps."
+  },
+  "p95_itl_ms": {
+    "value": 53.13,
+    "unit": "ms",
+    "observation_kind": "derived",
+    "source": "observer-api",
+    "explanation": "95th percentile inter-token latency derived from streamed token arrival intervals."
+  },
+  "decode_tokens_per_sec": {
+    "value": 35.94,
+    "unit": "tok/s",
+    "observation_kind": "derived",
+    "source": "observer-api",
+    "explanation": "Decode throughput derived from post-first-token generation window."
+  },
+  "e2e_tokens_per_sec": {
+    "value": 35.77,
+    "unit": "tok/s",
+    "observation_kind": "derived",
+    "source": "observer-api",
+    "explanation": "End-to-end output token rate derived from total completion tokens divided by total request duration."
+  },
+  "total_duration_ms": {
+    "value": 2683.74,
+    "unit": "ms",
+    "observation_kind": "measured",
+    "source": "observer-api",
+    "explanation": "End-to-end request duration measured by the Observer API."
+  },
+  "itl_sample_count": 95,
+  "first_10_itl_samples_ms": [
+    22.28,
+    23.08,
+    22.08,
+    22.84,
+    50.26,
+    17.62,
+    23.11,
+    49.9,
+    16.7,
+    18.86
+  ]
+}

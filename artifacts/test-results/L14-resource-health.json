@@ -1,0 +1,158 @@
+{
+  "status": "PASS",
+  "cluster": "llm-d-observatory",
+  "zone": "us-west4-a",
+  "namespace": "llm-d-observatory",
+  "all_pods_running": true,
+  "total_pod_restarts": 0,
+  "pods": [
+    {
+      "name": "experimental-small-vllm-decode-6c9bdb656c-hlbrc",
+      "phase": "Running",
+      "ready": "1/1",
+      "restarts": 0,
+      "pod_ip": "10.20.1.14",
+      "node_name": "gke-llm-d-observator-cpu-inference-po-001432b6-z5w8"
+    },
+    {
+      "name": "experimental-small-vllm-decode-6c9bdb656c-sfm46",
+      "phase": "Running",
+      "ready": "1/1",
+      "restarts": 0,
+      "pod_ip": "10.20.1.15",
+      "node_name": "gke-llm-d-observator-cpu-inference-po-001432b6-z5w8"
+    },
+    {
+      "name": "jaeger-78457c7f59-5j8l9",
+      "phase": "Running",
+      "ready": "1/1",
+      "restarts": 0,
+      "pod_ip": "10.20.0.5",
+      "node_name": "gke-llm-d-observatory-system-pool-b5b60be9-07sm"
+    },
+    {
+      "name": "llm-d-router-epp-794bd6878f-fkvtc",
+      "phase": "Running",
+      "ready": "2/2",
+      "restarts": 0,
+      "pod_ip": "10.20.1.18",
+      "node_name": "gke-llm-d-observator-cpu-inference-po-001432b6-z5w8"
+    },
+    {
+      "name": "observatory-frontend-7fd5d44f8-xwlkh",
+      "phase": "Running",
+      "ready": "1/1",
+      "restarts": 0,
+      "pod_ip": "10.20.0.11",
+      "node_name": "gke-llm-d-observatory-system-pool-b5b60be9-07sm"
+    },
+    {
+      "name": "observer-api-7c654546f-p95tv",
+      "phase": "Running",
+      "ready": "1/1",
+      "restarts": 0,
+      "pod_ip": "10.20.0.15",
+      "node_name": "gke-llm-d-observatory-system-pool-b5b60be9-07sm"
+    },
+    {
+      "name": "otel-collector-6865c4b6cd-n8bpp",
+      "phase": "Running",
+      "ready": "1/1",
+      "restarts": 0,
+      "pod_ip": "10.20.0.12",
+      "node_name": "gke-llm-d-observatory-system-pool-b5b60be9-07sm"
+    },
+    {
+      "name": "prometheus-6df58dd8cb-rj67b",
+      "phase": "Running",
+      "ready": "1/1",
+      "restarts": 0,
+      "pod_ip": "10.20.0.9",
+      "node_name": "gke-llm-d-observatory-system-pool-b5b60be9-07sm"
+    }
+  ],
+  "services": [
+    {
+      "name": "jaeger-collector",
+      "type": "ClusterIP",
+      "cluster_ip": "10.30.11.183"
+    },
+    {
+      "name": "jaeger-query",
+      "type": "ClusterIP",
+      "cluster_ip": "10.30.12.115"
+    },
+    {
+      "name": "llm-d-router-epp",
+      "type": "ClusterIP",
+      "cluster_ip": "10.30.1.172"
+    },
+    {
+      "name": "llm-d-router-epp-model-servers",
+      "type": "ClusterIP",
+      "cluster_ip": "None"
+    },
+    {
+      "name": "observatory-frontend",
+      "type": "ClusterIP",
+      "cluster_ip": "10.30.8.118"
+    },
+    {
+      "name": "observer-api",
+      "type": "ClusterIP",
+      "cluster_ip": "10.30.15.238"
+    },
+    {
+      "name": "otel-collector",
+      "type": "ClusterIP",
+      "cluster_ip": "10.30.9.93"
+    },
+    {
+      "name": "prometheus",
+      "type": "ClusterIP",
+      "cluster_ip": "10.30.15.218"
+    },
+    {
+      "name": "vllm-basic-service",
+      "type": "ClusterIP",
+      "cluster_ip": "10.30.12.157"
+    }
+  ],
+  "inference_pools": [
+    "llm-d-router"
+  ],
+  "inference_objectives": [
+    "best-effort-traffic",
+    "premium-traffic",
+    "standard-traffic"
+  ],
+  "prometheus_active_targets": [
+    {
+      "job": "llm-d-router-epp",
+      "scrapeUrl": "http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:9090/metrics",
+      "health": "up"
+    },
+    {
+      "job": "observer-api",
+      "scrapeUrl": "http://observer-api.llm-d-observatory.svc.cluster.local:8080/metrics",
+      "health": "up"
+    },
+    {
+      "job": "vllm-cpu-model-server",
+      "scrapeUrl": "http://llm-d-router-epp-model-servers.llm-d-observatory.svc.cluster.local:8000/metrics",
+      "health": "up"
+    }
+  ],
+  "frontend_healthz": "{\"status\":\"ok\"}",
+  "observer_healthz": {
+    "status": "ok",
+    "timestamp": "2026-10-26T21:43:36.365845973Z"
+  },
+  "observer_readyz": {
+    "mock_mode": false,
+    "status": "ready",
+    "upstream": "http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:80"
+  },
+  "epp_scrape_status": "scraped",
+  "vllm_scrape_status": "scraped"
+}

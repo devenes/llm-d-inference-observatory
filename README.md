@@ -2,7 +2,7 @@
 
 An interactive learning and observability platform that visualizes the real-time LLM inference lifecycle across **Gateway/Envoy Proxy → Endpoint Picker (EPP) → InferencePool → vLLM CPU Model Server** on CPU-only Google Kubernetes Engine (GKE), alongside a deterministic, offline-capable local demo mode (`OBSERVER_MOCK_MODE=true`).
 
-> **Phase Status:** Preparation and local validation complete. **Zero Google Cloud infrastructure resources were created, modified, or deleted during this phase.** All cloud deployment scripts and Terraform plans are prepared and guarded for a later, separately authorized deployment.
+> **Phase Status:** Live GKE deployment and end-to-end validation (`L01`–`L14`) **COMPLETE (`14/14 PASS`)** on cluster `llm-d-observatory` (`us-west4-a`, GKE `v1.36.4-gke.2046003`, project `enes-turan-demo`). The live cluster remains up and accessible alongside the offline local demo mode (`OBSERVER_MOCK_MODE=true`).
 
 ---
 
@@ -121,7 +121,40 @@ This executes:
 
 ---
 
-## 5. Documentation Index
+## 5. Live GKE Validation Summary (`L01`–`L14`)
+
+All 14 live GKE verification scenarios were executed against the deployed CPU-only GKE cluster (`llm-d-observatory` in `us-west4-a`, `1x c3-standard-22` + `1x e2-standard-4`) and recorded in [`artifacts/test-results/`](file:///Users/enes/GitHub/llm-d-inference-observatory/artifacts/test-results/) and [`artifacts/benchmarks/`](file:///Users/enes/GitHub/llm-d-inference-observatory/artifacts/benchmarks/):
+
+| ID | Scenario | Status | Key Empirical Finding | Artifact |
+| :--- | :--- | :--- | :--- | :--- |
+| **L01** | Basic live inference | **PASS** | Real prompt -> `llm-d` Envoy/EPP -> `vLLM` CPU (`Qwen/Qwen2.5-0.5B-Instruct`), HTTP `200`, `10` correlated OTel spans | `artifacts/test-results/L01-basic-inference.json` |
+| **L02** | Live streaming | **PASS** | SSE streaming (`req_44041d5a6f3f4f60`): True TTFT `32.72 ms`, Mean ITL `26.66 ms`, `36` token chunks | `artifacts/test-results/L01-L04-live-results.json` |
+| **L03** | Event & trace correlation | **PASS** | `100%` `request_id` & W3C `trace_id` match across SSE events and Jaeger spans (`observer-api` + `llm-d-router/epp`) | `artifacts/test-results/L01-L04-live-results.json` |
+| **L04** | EPP routing observation | **PASS** | Observed `filter_endpoints` (`2 -> 2`), `filter_prefix_cache_affinity`, `scorer.token-load-scorer`, and `pick_endpoints` (`selected_endpoint`) | `artifacts/test-results/L01-L04-live-results.json` |
+| **L05** | Long vs. short prompt | **PASS** | Short prompt TTFT `30.38 ms` vs. long prompt TTFT `38.45 ms`; `vllm:prompt_tokens_total` `1072 -> 1109 -> 1502`; `prefill_duration_ms` explicitly `unavailable` | `artifacts/test-results/L05-prompt-length-comparison.json` |
+| **L06** | Long generation (`96` tok) | **PASS** | True TTFT `30.89 ms`, Mean ITL `27.83 ms`, p95 ITL `53.13 ms`, Decode throughput `35.94 tok/s` across `95` intervals | `artifacts/test-results/L06-long-generation-streaming.json` |
+| **L07** | Concurrency & Flow Control | **PASS** | 12-request burst (`router_mode=flow-control`): `llm_d_epp_flow_control_queue_size` peaked at `8`, saturation at `2.0`, `vllm:num_requests_running` capped at `4.0` | `artifacts/test-results/L07-flow-control-queueing.json` |
+| **L08** | Multiple model replicas | **PASS** | 8 concurrent requests split evenly across `hlbrc` (`10.20.1.14`, `+4.0`) and `sfm46` (`10.20.1.15`, `+4.0`) | `artifacts/test-results/L08-multi-replica-distribution.json` |
+| **L09** | Backend failure & recovery | **PASS** | Single-replica failover (`ready_endpoints=1`, HTTP `200`), 0-endpoint failure (HTTP `503`, `status=failed`), and full label recovery (`ready_endpoints=2`, HTTP `200`) | `artifacts/test-results/L09-backend-failure-recovery.json` |
+| **L10** | Client cancellation | **PASS** | Mid-stream disconnect after 3 chunks set `status=cancelled`, emitted `request.cancelled`, and incremented `observer_requests_total{status="cancelled"}` | `artifacts/test-results/L10-client-cancellation.json` |
+| **L11** | Live aggregate metrics | **PASS** | Live scrape of EPP (`:9090/metrics` w/ RBAC bearer token) and all vLLM pods (`:8000/metrics` via headless DNS); `20` aggregate series | `artifacts/test-results/L11-live-metrics.json` |
+| **L12** | UI & local mode distinction | **PASS** | Playwright Chromium test against `http://127.0.0.1:8088/` verified `0` mock banners, `0` simulated badges, and real token streaming | `artifacts/test-results/L12-live-ui-verification.json` |
+| **L13** | Performance benchmark | **PASS** | `8/8` measured streaming requests (`concurrency=2`): TTFB p50 `201.01 ms`, True TTFT p50 `273.88 ms`, E2E p50 `1376.34 ms`, `22.18 tok/s` | `artifacts/benchmarks/live-gke-benchmark-report.json` |
+| **L14** | Resource health | **PASS** | All `8` Pods in `llm-d-observatory` `Running`/`Ready` with `0` restarts; all `3` Prometheus targets `up` | `artifacts/test-results/L14-resource-health.json` |
+
+### Accessing the Live GKE Observatory UI
+
+```bash
+kubectl port-forward -n llm-d-observatory svc/observatory-frontend 8088:8080 &
+kubectl port-forward -n llm-d-observatory svc/observer-api 8080:8080 &
+kubectl port-forward -n llm-d-observatory svc/jaeger-query 16686:16686 &
+kubectl port-forward -n llm-d-observatory svc/prometheus 19090:9090 &
+open http://127.0.0.1:8088
+```
+
+---
+
+## 6. Documentation Index
 
 - [ARCHITECTURE.md](file:///Users/enes/GitHub/llm-d-inference-observatory/ARCHITECTURE.md) — System design, data path vs. control plane vs. telemetry path.
 - [docs/TECH_STACK.md](file:///Users/enes/GitHub/llm-d-inference-observatory/docs/TECH_STACK.md) — Pinned versions, image tags, and reference provenance.

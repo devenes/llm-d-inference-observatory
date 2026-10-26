@@ -178,6 +178,14 @@ func (c *Client) Forward(ctx context.Context, reqID string, startTime time.Time,
 			events.ObservationObserved, nil, map[string]any{
 				"selected_endpoint": selectedEndpoint,
 			})
+	} else if eppRespMarker == "true" {
+		selectedEndpoint = "InferencePool/llm-d-router (ext_proc)"
+		c.hub.Emit(reqID, events.EventEndpointSelected, "llm-d-router-epp", "inference-pool",
+			"EPP ext_proc selected InferencePool endpoint and routed request (confirmed via x-went-into-resp-headers=true)",
+			events.ObservationObserved, nil, map[string]any{
+				"selected_endpoint":        selectedEndpoint,
+				"x_went_into_resp_headers": eppRespMarker,
+			})
 	}
 
 	if resp.StatusCode >= 400 {
@@ -421,32 +429,90 @@ func (c *Client) enrichTraceAsync(reqID, traceID string) {
 	if c.tracer == nil || traceID == "" {
 		return
 	}
-	// Allow collector batch flush window before querying Jaeger.
-	time.Sleep(150 * time.Millisecond)
-	spans, err := c.tracer.FetchJaegerTrace(context.Background(), traceID)
-	if err != nil {
+	_ = c.tracer.ForceFlush(context.Background())
+
+	var (
+		spans   []events.SpanNode
+		lastErr error
+	)
+	backoff := []time.Duration{
+		200 * time.Millisecond,
+		450 * time.Millisecond,
+		800 * time.Millisecond,
+		1200 * time.Millisecond,
+	}
+	for i, wait := range backoff {
+		time.Sleep(wait)
+		s, err := c.tracer.FetchJaegerTrace(context.Background(), traceID)
+		if err == nil && len(s) > 0 {
+			spans = s
+			// If we only got 1 span (observer-api) on an early poll, wait for otel-collector's batch flush of EPP spans.
+			if len(s) == 1 && i < len(backoff)-1 {
+				continue
+			}
+			lastErr = nil
+			break
+		}
+		lastErr = err
+	}
+
+	if len(spans) == 0 {
+		errMsg := "no trace spans returned from Jaeger"
+		if lastErr != nil {
+			errMsg = lastErr.Error()
+		}
 		c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
 			rec.Trace.Status = "unavailable"
 			rec.Trace.ObservationKind = events.ObservationUnavailable
-			rec.Trace.ErrorMessage = err.Error()
+			rec.Trace.ErrorMessage = errMsg
 		})
 		return
 	}
 
+	spanEndpoint := ExtractEndpointFromSpans(spans)
 	nowStr := time.Now().UTC().Format(time.RFC3339Nano)
 	c.hub.UpdateRequest(reqID, func(rec *events.RequestRecord) {
 		rec.Trace.Status = "enriched"
 		rec.Trace.ObservationKind = events.ObservationObserved
 		rec.Trace.EnrichedAt = nowStr
+		rec.Trace.ErrorMessage = ""
 		rec.Trace.Spans = spans
+		if spanEndpoint != "" {
+			rec.SelectedEndpoint = spanEndpoint
+		}
 	})
 
 	c.hub.Emit(reqID, events.EventTraceEnriched, "jaeger-query", "otel-collector",
 		fmt.Sprintf("Correlated %d distributed OpenTelemetry trace spans from Jaeger", len(spans)),
 		events.ObservationObserved, nil, map[string]any{
-			"span_count": len(spans),
-			"trace_id":   traceID,
+			"span_count":        len(spans),
+			"trace_id":          traceID,
+			"selected_endpoint": spanEndpoint,
 		})
+}
+
+// ExtractEndpointFromSpans inspects EPP spans (including pick_endpoints llm_d.epp.picker.top_endpoints) for the selected endpoint.
+func ExtractEndpointFromSpans(spans []events.SpanNode) string {
+	keys := []string{"selected_endpoint", "target_pod", "endpoint", "llm_d.selected_endpoint", "x-gateway-destination-endpoint"}
+	for _, sp := range spans {
+		for _, k := range keys {
+			if v, ok := sp.Attributes[k]; ok {
+				if s, isStr := v.(string); isStr && strings.TrimSpace(s) != "" {
+					return strings.TrimSpace(s)
+				}
+			}
+		}
+		if v, ok := sp.Attributes["llm_d.epp.picker.top_endpoints"]; ok {
+			if s, isStr := v.(string); isStr && strings.TrimSpace(s) != "" {
+				var list []string
+				if err := json.Unmarshal([]byte(s), &list); err == nil && len(list) > 0 {
+					return list[0]
+				}
+				return strings.TrimSpace(s)
+			}
+		}
+	}
+	return ""
 }
 
 func (c *Client) cancelRequest(reqID string, startTime time.Time, promptTokens, completionTokens int, ttftDur *time.Duration) {

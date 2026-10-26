@@ -24,7 +24,11 @@ router:
       samplerArg: "1.0"
 ```
 
-And [vllm-cpu-deployment.yaml](file:///Users/enes/GitHub/llm-d-inference-observatory/deploy/model-server/vllm-cpu-deployment.yaml) passes `--otlp-traces-endpoint=grpc://otel-collector.llm-d-observatory.svc.cluster.local:4317` to `vllm serve`.
+And in [deploy-gke.sh](file:///Users/enes/GitHub/llm-d-inference-observatory/scripts/deploy-gke.sh), `OTEL_BSP_SCHEDULE_DELAY=200` is configured on the `epp` container of `deployment/llm-d-router-epp` so that OpenTelemetry `BatchSpanProcessor` flushes spans every `200 ms` instead of the Go SDK default (`5000 ms`).
+
+> [!NOTE]
+> **Upstream `vllm-openai-cpu:v0.31.0` OTel Image Constraint:**
+> The upstream `docker.io/vllm/vllm-openai-cpu:v0.31.0` container image does not bundle Python `opentelemetry-sdk` packages (`otlp_traces_endpoint=None`), so passing `--otlp-traces-endpoint` causes `vllm serve` to exit at startup. Consequently, per-request distributed spans are emitted by `observer-api` (`observer.infer`) and `llm-d-router/epp` (`9`–`11` child spans per request: `request`, `request_orchestration`, `tokenize`, `run_scheduler_profile`, `filter_endpoints`, `filter_prefix_cache_affinity`, `scoring`, `scorer.token-load-scorer` / `scorer.queue-scorer`, and `pick_endpoints`), while model-server metrics (`vllm:*`) are scraped via Prometheus across all headless service Pod IPs and `prefill_duration_ms` is honestly reported as `unavailable`.
 
 ---
 

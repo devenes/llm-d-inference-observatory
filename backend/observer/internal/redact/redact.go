@@ -82,13 +82,19 @@ func SanitizeAttributes(attrs map[string]any, redactPrompts bool) map[string]any
 }
 
 func isSensitiveKey(lowerKey string, redactPrompts bool) bool {
-	// Never redact numeric LLM token counters, indices, or limits.
+	// Never redact numeric LLM token counters, indices, hashes, content types, or EPP tokenizer/scorer metadata.
 	if strings.HasSuffix(lowerKey, "_tokens") ||
 		strings.HasPrefix(lowerKey, "token_") ||
 		strings.HasPrefix(lowerKey, "tokens_") ||
+		strings.Contains(lowerKey, "token_producer") ||
+		strings.Contains(lowerKey, "token-load") ||
 		strings.HasSuffix(lowerKey, "_chars") ||
 		strings.HasSuffix(lowerKey, "_prefix") ||
-		strings.HasSuffix(lowerKey, "_count") {
+		strings.HasSuffix(lowerKey, "_sha256") ||
+		strings.HasSuffix(lowerKey, "_count") ||
+		lowerKey == "content_type" ||
+		lowerKey == "content-type" ||
+		lowerKey == "content_length" {
 		return false
 	}
 

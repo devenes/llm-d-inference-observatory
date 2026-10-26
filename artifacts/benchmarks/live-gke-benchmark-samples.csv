@@ -1,0 +1,9 @@
+environment,is_simulated,index,request_id,status,http_status,ttfb_ms,ttft_ms,duration_ms,mean_itl_ms,p95_itl_ms,prompt_tokens,completion_tokens,tokens_per_sec,error_message
+live-gke,false,0,req_d8f7ca770c134edd,completed,200,593.39,643.54,1361.93,47.89,72.77,23,16,11.75,
+live-gke,false,1,req_1dd9e9de97eb47ec,completed,200,201.01,230.18,643.55,27.56,48.58,23,16,24.86,
+live-gke,false,2,req_1bb434243a61462a,completed,200,202.82,254.82,1300.52,69.71,132.04,23,16,12.30,
+live-gke,false,3,req_11d417f0fc45498f,completed,200,200.66,266.05,1416.03,76.67,125.62,23,16,11.30,
+live-gke,false,4,req_523b81cc3ec64c33,completed,200,200.51,285.17,1434.24,76.61,156.45,23,16,11.16,
+live-gke,false,5,req_82b21663151a4a13,completed,200,316.30,373.91,1468.69,72.99,124.40,23,16,10.89,
+live-gke,false,6,req_9f999fd8731d4b28,completed,200,200.21,275.36,1376.34,73.40,119.49,23,16,11.63,
+live-gke,false,7,req_c2b3655428bb4490,completed,200,203.63,273.88,1524.37,83.37,117.77,23,16,10.50,

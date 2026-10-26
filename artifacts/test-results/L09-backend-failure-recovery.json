@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "initial_ready_endpoints": 2,
+  "step1_single_replica_failover": {
+    "ready_endpoints": 1,
+    "request": {
+      "http_status": 200,
+      "request_id": "req_c0c8b72b053640a7",
+      "status": "completed",
+      "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-hlbrc-rank-0",
+      "event_types": [
+        "request.accepted",
+        "gateway.forwarded",
+        "routing.started",
+        "endpoint.selected",
+        "model.request.started",
+        "request.completed",
+        "trace.enriched"
+      ]
+    }
+  },
+  "step2_zero_endpoint_failure": {
+    "ready_endpoints": 1,
+    "request": {
+      "http_status": 503,
+      "request_id": "req_55c105b8d075428f",
+      "status": "failed",
+      "selected_endpoint": null,
+      "event_types": [
+        "request.accepted",
+        "gateway.forwarded",
+        "queue.observed",
+        "request.failed"
+      ]
+    }
+  },
+  "step3_restored_recovery": {
+    "ready_endpoints": 2,
+    "request": {
+      "http_status": 200,
+      "request_id": "req_9ffe8b96ea384539",
+      "status": "completed",
+      "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-hlbrc-rank-0",
+      "event_types": [
+        "request.accepted",
+        "gateway.forwarded",
+        "routing.started",
+        "endpoint.selected",
+        "model.request.started",
+        "request.completed",
+        "trace.enriched"
+      ]
+    }
+  }
+}

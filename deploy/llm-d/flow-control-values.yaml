@@ -1,4 +1,12 @@
-## Flow-Control & Priority Band router configuration.
+## Flow Control and Traffic Prioritization configuration for CPU inference (L07).
+## Layer on top of: deploy/llm-d/base.values.yaml
+## Enables the EPP flowControl feature gate with three priority bands:
+## - priority 100 (premium-traffic): interactive / latency-sensitive requests
+## - priority 0   (standard-traffic): default traffic band
+## - priority -10 (best-effort-traffic): background / batch traffic with bounded queue capacity (maxRequests: 6)
+## Calibrates concurrency-detector maxConcurrency=2 per CPU replica so saturation
+## gating engages predictably during concurrent CPU bursts.
+
 router:
   extraServicePorts:
     - name: http
@@ -18,22 +26,14 @@ router:
           - type: queue-scorer
           - type: kv-cache-utilization-scorer
           - type: prefix-cache-scorer
-          - type: metrics-data-source
-            parameters:
-              scheme: "http"
-              path: "/metrics"
-              insecureSkipVerify: true
-          - type: core-metrics-extractor
-          - name: max-Conc
-            type: concurrency-detector
+          - type: round-robin-fairness-policy
+          - type: fcfs-ordering-policy
+          - type: concurrency-detector
             parameters:
               maxConcurrency: 2
               concurrencyMode: requests
               headroom: 0.0
-          - name: rr-fairness
-            type: round-robin-fairness-policy
-          - name: fcfs-ordering
-            type: fcfs-ordering-policy
+
         schedulingProfiles:
           - name: default
             plugins:
@@ -43,27 +43,26 @@ router:
                 weight: 2
               - pluginRef: prefix-cache-scorer
                 weight: 3
-         saturationDetector:
-          pluginRef: max-Conc
+
         flowControl:
-          maxBytes: "10485760"
-          defaultRequestTTL: "60s"
+          maxBytes: "1Gi"
+          maxRequests: "100"
+          defaultRequestTTL: "90s"
+          saturationDetector:
+            pluginRef: concurrency-detector
           priorityBands:
             - priority: 100
-              maxBytes: "5242880"
               maxRequests: "50"
-              fairnessPolicyRef: rr-fairness
-              orderingPolicyRef: fcfs-ordering
+              fairnessPolicyRef: round-robin-fairness-policy
+              orderingPolicyRef: fcfs-ordering-policy
             - priority: 0
-              maxBytes: "3145728"
               maxRequests: "30"
-              fairnessPolicyRef: rr-fairness
-              orderingPolicyRef: fcfs-ordering
+              fairnessPolicyRef: round-robin-fairness-policy
+              orderingPolicyRef: fcfs-ordering-policy
             - priority: -10
-              maxBytes: "524288"
               maxRequests: "6"
-              fairnessPolicyRef: rr-fairness
-              orderingPolicyRef: fcfs-ordering
+              fairnessPolicyRef: round-robin-fairness-policy
+              orderingPolicyRef: fcfs-ordering-policy
 
   modelServers:
     matchLabels:

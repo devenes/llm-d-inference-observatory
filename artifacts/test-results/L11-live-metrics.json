@@ -1,0 +1,248 @@
+{
+  "collected_at": "2026-10-26T21:32:13.977176655Z",
+  "mock_mode": false,
+  "observation_scope": "aggregate",
+  "scope_notice": "Aggregate metrics describe system-wide counters and gauges over a scrape window. Never interpret a global queue gauge (such as llm_d_epp_flow_control_queue_size or vllm:num_requests_waiting) as an exact per-request queue wait duration.",
+  "epp_scrape_status": "scraped",
+  "vllm_scrape_status": "scraped",
+  "series": [
+    {
+      "name": "observer_ttft_p50_ms",
+      "label": "Aggregate Median TTFT (p50)",
+      "category": "observer",
+      "value": 38.18,
+      "unit": "ms",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Rolling median Time To First Token across recent requests measured by Observer API."
+    },
+    {
+      "name": "observer_ttft_p95_ms",
+      "label": "Aggregate Tail TTFT (p95)",
+      "category": "observer",
+      "value": 3078.74,
+      "unit": "ms",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Rolling 95th percentile Time To First Token across recent requests."
+    },
+    {
+      "name": "observer_itl_p50_ms",
+      "label": "Aggregate Median ITL (p50)",
+      "category": "observer",
+      "value": 26.66,
+      "unit": "ms",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Rolling median Inter-Token Latency across recent streaming requests."
+    },
+    {
+      "name": "observer_decode_tokens_per_sec",
+      "label": "Mean Decode Throughput",
+      "category": "observer",
+      "value": 36.51,
+      "unit": "tok/s",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Rolling average token generation speed across completed requests."
+    },
+    {
+      "name": "observer_request_duration_p50_ms",
+      "label": "Median E2E Request Duration",
+      "category": "observer",
+      "value": 766.45,
+      "unit": "ms",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Rolling median end-to-end request duration."
+    },
+    {
+      "name": "observer_requests_in_flight",
+      "label": "Observer In-Flight Requests",
+      "category": "observer",
+      "value": 0,
+      "unit": "requests",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Current active requests held open by the Observer API."
+    },
+    {
+      "name": "observer_requests_completed_total",
+      "label": "Completed Requests",
+      "category": "observer",
+      "value": 12,
+      "unit": "requests",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Cumulative successful inference requests observed since startup."
+    },
+    {
+      "name": "observer_requests_cancelled_total",
+      "label": "Cancelled Requests",
+      "category": "observer",
+      "value": 0,
+      "unit": "requests",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Cumulative client-cancelled inference requests."
+    },
+    {
+      "name": "observer_requests_failed_total",
+      "label": "Failed / Rejected Requests",
+      "category": "observer",
+      "value": 0,
+      "unit": "requests",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Cumulative HTTP 4xx/5xx or upstream error responses."
+    },
+    {
+      "name": "observer_prompt_tokens_total",
+      "label": "Total Input Prompt Tokens",
+      "category": "observer",
+      "value": 1468,
+      "unit": "tokens",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Aggregate input tokens across requests."
+    },
+    {
+      "name": "observer_generation_tokens_total",
+      "label": "Total Output Generation Tokens",
+      "category": "observer",
+      "value": 378,
+      "unit": "tokens",
+      "observation_kind": "aggregate",
+      "source": "observer-api",
+      "explanation": "Aggregate generated output tokens across requests."
+    },
+    {
+      "name": "llm_d_epp_ready_endpoints",
+      "label": "EPP Ready Model Endpoints",
+      "category": "epp",
+      "value": 2,
+      "unit": "pods",
+      "observation_kind": "aggregate",
+      "source": "llm-d-router-epp (:9090/metrics)",
+      "explanation": "Number of ready vLLM pods registered in the InferencePool."
+    },
+    {
+      "name": "llm_d_epp_request_total",
+      "label": "EPP Total Routed Requests",
+      "category": "epp",
+      "value": 10,
+      "unit": "requests",
+      "observation_kind": "aggregate",
+      "source": "llm-d-router-epp (:9090/metrics)",
+      "explanation": "Aggregate requests processed by the llm-d Endpoint Picker."
+    },
+    {
+      "name": "llm_d_epp_kv_cache_index_lookup_hits_total",
+      "label": "EPP KV-Cache Index Block Hits",
+      "category": "epp",
+      "value": null,
+      "unit": "blocks",
+      "observation_kind": "unavailable",
+      "source": "llm-d-router-epp (:9090/metrics)",
+      "explanation": "Aggregate 64-token KV block lookup hits in the EPP prefix cache indexer."
+    },
+    {
+      "name": "llm_d_epp_prefix_predicted_cached_tokens_sum",
+      "label": "EPP Predicted Cached Tokens",
+      "category": "epp",
+      "value": 684,
+      "unit": "tokens",
+      "observation_kind": "aggregate",
+      "source": "llm-d-router-epp (:9090/metrics)",
+      "explanation": "Cumulative prompt tokens predicted by EPP to hit existing vLLM prefix caches."
+    },
+    {
+      "name": "llm_d_epp_flow_control_queue_size",
+      "label": "EPP Flow-Control Queue Depth",
+      "category": "epp",
+      "value": null,
+      "unit": "requests",
+      "observation_kind": "unavailable",
+      "source": "llm-d-router-epp (:9090/metrics)",
+      "explanation": "System-wide gauge of requests buffered in EPP priority-band queues."
+    },
+    {
+      "name": "llm_d_epp_flow_control_pool_saturation",
+      "label": "EPP InferencePool Saturation",
+      "category": "epp",
+      "value": null,
+      "unit": "ratio",
+      "observation_kind": "unavailable",
+      "source": "llm-d-router-epp (:9090/metrics)",
+      "explanation": "Aggregate saturation ratio across the InferencePool calculated by EPP concurrency detector."
+    },
+    {
+      "name": "vllm:num_requests_running",
+      "label": "vLLM Active Running Requests",
+      "category": "vllm",
+      "value": 0,
+      "unit": "requests",
+      "observation_kind": "aggregate",
+      "source": "vllm-model-server (:8000/metrics)",
+      "explanation": "Aggregate gauge of requests executing in the vLLM CPU scheduler."
+    },
+    {
+      "name": "vllm:num_requests_waiting",
+      "label": "vLLM Scheduler Waiting Queue",
+      "category": "vllm",
+      "value": 0,
+      "unit": "requests",
+      "observation_kind": "aggregate",
+      "source": "vllm-model-server (:8000/metrics)",
+      "explanation": "Aggregate gauge of requests waiting in the vLLM internal scheduler queue."
+    },
+    {
+      "name": "vllm:prefix_cache_hit_rate_pct",
+      "label": "vLLM Prefix Cache Hit Rate",
+      "category": "vllm",
+      "value": 27.83,
+      "unit": "%",
+      "observation_kind": "aggregate",
+      "source": "vllm-model-server (:8000/metrics)",
+      "explanation": "Ratio of vllm:prefix_cache_hits_total to vllm:prefix_cache_queries_total across CPU model servers."
+    }
+  ],
+  "recent_ttft_samples_ms": [
+    37.21,
+    3078.74,
+    35.98,
+    38.18,
+    32.72,
+    40.1,
+    94.53,
+    30.38,
+    38.45,
+    40.12
+  ],
+  "recent_itl_samples_ms": [
+    26.66,
+    28.85,
+    28,
+    32.1,
+    26.73,
+    22.89,
+    26.51,
+    25.71,
+    25.15,
+    27.83
+  ],
+  "recent_tps_samples": [
+    36.53,
+    37.49,
+    34.66,
+    35.71,
+    31.15,
+    37.41,
+    37.03,
+    39.33,
+    37.72,
+    35.42,
+    39.75,
+    35.94
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "status": "PASS",
+  "short_prompt": {
+    "request_id": "req_80ec3921bb32482f",
+    "prompt_chars": 27,
+    "estimated_tokens": 7,
+    "ttft_ms": {
+      "value": 30.38,
+      "unit": "ms",
+      "observation_kind": "measured",
+      "source": "observer-api",
+      "explanation": "True Time To First Token: measured arrival of the first non-empty text token chunk at the Observer API."
+    },
+    "prefill_duration_ms": {
+      "value": null,
+      "unit": "ms",
+      "observation_kind": "unavailable",
+      "source": "vllm-model-server",
+      "explanation": "Exact model-server prompt prefill duration. Never inferred from TTFT alone; requires an explicit model-server prefill span."
+    },
+    "total_duration_ms": {
+      "value": 256.26,
+      "unit": "ms",
+      "observation_kind": "measured",
+      "source": "observer-api",
+      "explanation": "End-to-end request duration measured by the Observer API."
+    },
+    "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0"
+  },
+  "long_prompt": {
+    "request_id": "req_0dc3971505454e10",
+    "prompt_chars": 2458,
+    "estimated_tokens": 615,
+    "ttft_ms": {
+      "value": 38.45,
+      "unit": "ms",
+      "observation_kind": "measured",
+      "source": "observer-api",
+      "explanation": "True Time To First Token: measured arrival of the first non-empty text token chunk at the Observer API."
+    },
+    "prefill_duration_ms": {
+      "value": null,
+      "unit": "ms",
+      "observation_kind": "unavailable",
+      "source": "vllm-model-server",
+      "explanation": "Exact model-server prompt prefill duration. Never inferred from TTFT alone; requires an explicit model-server prefill span."
+    },
+    "total_duration_ms": {
+      "value": 415.84,
+      "unit": "ms",
+      "observation_kind": "measured",
+      "source": "observer-api",
+      "explanation": "End-to-end request duration measured by the Observer API."
+    },
+    "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0"
+  },
+  "vllm_prompt_tokens_total": {
+    "before": null,
+    "after_short": null,
+    "after_long": null
+  }
+}

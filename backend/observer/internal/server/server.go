@@ -250,6 +250,10 @@ func (s *Server) handleInfer(forceStream bool) http.HandlerFunc {
 		}
 
 		s.upstream.Forward(reqCtx, reqID, startTime, inferReq, w, inferReq.Stream)
+		spanEnd()
+		if s.tracer != nil {
+			_ = s.tracer.ForceFlush(context.Background())
+		}
 	}
 }
 
@@ -365,15 +369,21 @@ func (s *Server) handleGetRequestTrace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !rec.MockMode && rec.Trace.Status == "pending" && s.tracer != nil && rec.TraceID != "" {
+	if !rec.MockMode && s.tracer != nil && rec.TraceID != "" && (rec.Trace.Status != "enriched" || len(rec.Trace.Spans) <= 1) {
+		_ = s.tracer.ForceFlush(r.Context())
 		spans, err := s.tracer.FetchJaegerTrace(r.Context(), rec.TraceID)
 		if err == nil && len(spans) > 0 {
 			nowStr := time.Now().UTC().Format(time.RFC3339Nano)
+			ep := upstream.ExtractEndpointFromSpans(spans)
 			s.hub.UpdateRequest(reqID, func(updated *events.RequestRecord) {
 				updated.Trace.Status = "enriched"
 				updated.Trace.ObservationKind = events.ObservationObserved
 				updated.Trace.EnrichedAt = nowStr
+				updated.Trace.ErrorMessage = ""
 				updated.Trace.Spans = spans
+				if ep != "" {
+					updated.SelectedEndpoint = ep
+				}
 			})
 			rec, _ = s.hub.GetRequest(reqID)
 		}

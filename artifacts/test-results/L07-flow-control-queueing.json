@@ -1,0 +1,373 @@
+{
+  "status": "PASS",
+  "router_mode": "flow-control",
+  "burst_size": 12,
+  "peak_metrics_during_burst": {
+    "llm_d_epp_flow_control_queue_size": 8,
+    "llm_d_epp_flow_control_pool_saturation": 2,
+    "vllm_num_requests_running": 4,
+    "observer_in_flight_requests": 0
+  },
+  "queue_duration_count_before": null,
+  "queue_duration_count_after": null,
+  "burst_results": [
+    {
+      "idx": 0,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_08bdfc9d270442cd",
+      "elapsed_ms": 12475.98
+    },
+    {
+      "idx": 1,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_da107a82f5f14010",
+      "elapsed_ms": 12475.55
+    },
+    {
+      "idx": 2,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_51cf6b896b584001",
+      "elapsed_ms": 7745.79
+    },
+    {
+      "idx": 3,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_a4d5b211821545c3",
+      "elapsed_ms": 10976.9
+    },
+    {
+      "idx": 4,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_7ca6aa26924b4dd2",
+      "elapsed_ms": 13969.59
+    },
+    {
+      "idx": 5,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_5ec71959f6a64f23",
+      "elapsed_ms": 7774.03
+    },
+    {
+      "idx": 6,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_b74f4f04917e44ef",
+      "elapsed_ms": 13982.03
+    },
+    {
+      "idx": 7,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_e0896816100345cb",
+      "elapsed_ms": 7706.4
+    },
+    {
+      "idx": 8,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_b328c50ff7364db9",
+      "elapsed_ms": 7706.0
+    },
+    {
+      "idx": 9,
+      "priority_band": "best-effort-traffic",
+      "http_status": 200,
+      "request_id": "req_06cbffa2e6eb4d8b",
+      "elapsed_ms": 10980.91
+    },
+    {
+      "idx": 10,
+      "priority_band": "premium-traffic",
+      "http_status": 200,
+      "request_id": "req_dcf1c8487fc84562",
+      "elapsed_ms": 9373.88
+    },
+    {
+      "idx": 11,
+      "priority_band": "premium-traffic",
+      "http_status": 200,
+      "request_id": "req_a9fbce429137414a",
+      "elapsed_ms": 9334.16
+    }
+  ],
+  "sample_records": [
+    {
+      "request_id": "req_08bdfc9d270442cd",
+      "priority_band": "best-effort-traffic",
+      "status": "completed",
+      "http_status": 200,
+      "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-hlbrc-rank-0",
+      "total_duration_ms": 11880.85,
+      "event_types": [
+        "request.accepted",
+        "gateway.forwarded",
+        "routing.started",
+        "endpoint.selected",
+        "model.request.started",
+        "request.completed",
+        "trace.enriched"
+      ],
+      "span_names": [
+        "tokenize",
+        "scorer.kv-cache-utilization-scorer",
+        "scoring",
+        "pick_endpoints",
+        "observer.infer",
+        "request_orchestration",
+        "filter_endpoints",
+        "scorer.queue-scorer",
+        "scorer.prefix-cache-scorer",
+        "run_scheduler_profile",
+        "request"
+      ]
+    },
+    {
+      "request_id": "req_da107a82f5f14010",
+      "priority_band": "best-effort-traffic",
+      "status": "completed",
+      "http_status": 200,
+      "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0",
+      "total_duration_ms": 11881.37,
+      "event_types": [
+        "request.accepted",
+        "gateway.forwarded",
+        "routing.started",
+        "endpoint.selected",
+        "model.request.started",
+        "request.completed",
+        "trace.enriched"
+      ],
+      "span_names": [
+        "filter_endpoints",
+        "scorer.queue-scorer",
+        "scorer.kv-cache-utilization-scorer",
+        "scorer.prefix-cache-scorer",
+        "run_scheduler_profile",
+        "request_orchestration",
+        "request",
+        "tokenize",
+        "scoring",
+        "pick_endpoints",
+        "observer.infer"
+      ]
+    },
+    {
+      "request_id": "req_51cf6b896b584001",
+      "priority_band": "best-effort-traffic",
+      "status": "completed",
+      "http_status": 200,
+      "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0",
+      "total_duration_ms": 7153.38,
+      "event_types": [
+        "request.accepted",
+        "gateway.forwarded",
+        "routing.started",
+        "endpoint.selected",
+        "model.request.started",
+        "request.completed",
+        "trace.enriched"
+      ],
+      "span_names": [
+        "observer.infer",
+        "request",
+        "request_orchestration",
+        "filter_endpoints",
+        "scorer.queue-scorer",
+        "scorer.kv-cache-utilization-scorer",
+        "run_scheduler_profile",
+        "tokenize",
+        "scorer.prefix-cache-scorer",
+        "scoring",
+        "pick_endpoints"
+      ]
+    },
+    {
+      "request_id": "req_dcf1c8487fc84562",
+      "priority_band": "premium-traffic",
+      "status": "completed",
+      "http_status": 200,
+      "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-hlbrc-rank-0",
+      "total_duration_ms": 8778.1,
+      "event_types": [
+        "request.accepted",
+        "gateway.forwarded",
+        "routing.started",
+        "endpoint.selected",
+        "model.request.started",
+        "request.completed",
+        "trace.enriched"
+      ],
+      "span_names": [
+        "tokenize",
+        "scoring",
+        "request_orchestration",
+        "request",
+        "observer.infer",
+        "filter_endpoints",
+        "scorer.queue-scorer",
+        "scorer.kv-cache-utilization-scorer",
+        "scorer.prefix-cache-scorer",
+        "pick_endpoints",
+        "run_scheduler_profile"
+      ]
+    },
+    {
+      "request_id": "req_a9fbce429137414a",
+      "priority_band": "premium-traffic",
+      "status": "completed",
+      "http_status": 200,
+      "selected_endpoint": "llm-d-observatory/experimental-small-vllm-decode-6c9bdb656c-sfm46-rank-0",
+      "total_duration_ms": 8737.36,
+      "event_types": [
+        "request.accepted",
+        "gateway.forwarded",
+        "routing.started",
+        "endpoint.selected",
+        "model.request.started",
+        "request.completed",
+        "trace.enriched"
+      ],
+      "span_names": [
+        "filter_endpoints",
+        "scorer.prefix-cache-scorer",
+        "run_scheduler_profile",
+        "request",
+        "tokenize",
+        "scorer.queue-scorer",
+        "scorer.kv-cache-utilization-scorer",
+        "scoring",
+        "pick_endpoints",
+        "request_orchestration",
+        "observer.infer"
+      ]
+    }
+  ],
+  "metric_snapshots": [
+    {
+      "ts": 1793050693.20413,
+      "epp_queue_size": null,
+      "epp_pool_saturation": 0,
+      "vllm_running": 0,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050694.169376,
+      "epp_queue_size": 8,
+      "epp_pool_saturation": 2,
+      "vllm_running": 2,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050695.141812,
+      "epp_queue_size": 8,
+      "epp_pool_saturation": 2,
+      "vllm_running": 2,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050696.107774,
+      "epp_queue_size": 8,
+      "epp_pool_saturation": 2,
+      "vllm_running": 2,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050697.096159,
+      "epp_queue_size": 8,
+      "epp_pool_saturation": 2,
+      "vllm_running": 2,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050698.0683498,
+      "epp_queue_size": 8,
+      "epp_pool_saturation": 2,
+      "vllm_running": 4,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050699.037599,
+      "epp_queue_size": 8,
+      "epp_pool_saturation": 2,
+      "vllm_running": 4,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050700.01766,
+      "epp_queue_size": 8,
+      "epp_pool_saturation": 2,
+      "vllm_running": 4,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050700.997534,
+      "epp_queue_size": 4,
+      "epp_pool_saturation": 2,
+      "vllm_running": 4,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050701.965247,
+      "epp_queue_size": 3,
+      "epp_pool_saturation": 2,
+      "vllm_running": 2,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050702.947619,
+      "epp_queue_size": 2,
+      "epp_pool_saturation": 2,
+      "vllm_running": 4,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050703.9221382,
+      "epp_queue_size": 0,
+      "epp_pool_saturation": 2,
+      "vllm_running": 4,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050704.897246,
+      "epp_queue_size": 0,
+      "epp_pool_saturation": 2,
+      "vllm_running": 4,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050705.867473,
+      "epp_queue_size": 0,
+      "epp_pool_saturation": 1,
+      "vllm_running": 2,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    },
+    {
+      "ts": 1793050706.8362,
+      "epp_queue_size": 0,
+      "epp_pool_saturation": 0,
+      "vllm_running": 0,
+      "vllm_waiting": 0,
+      "observer_in_flight": 0
+    }
+  ]
+}

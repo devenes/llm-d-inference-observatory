@@ -1,0 +1,4 @@
+{"status":"ok","timestamp":"2026-10-26T21:43:38.254368613Z"}
+{"mock_mode":false,"status":"ready","upstream":"http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:80"}
+{"gaie_version":"v1.6.2","llm_d_version":"v1.0.0","mock_mode":false,"schema_version":"1","service":"llm-d-inference-observatory-api","version":"v0.1.0","vllm_cpu_version":"v0.31.0"}
+[smoke-test] PASS: Endpoint http://127.0.0.1:8080 verified.
