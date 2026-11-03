@@ -1,6 +1,6 @@
 [publish-images] Configuring Docker authentication for us-west4-docker.pkg.dev...
-[publish-images] Building and pushing us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0 (linux/amd64)...
-The push refers to repository [us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api]
+[publish-images] Building and pushing us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api:v0.1.0 (linux/amd64)...
+The push refers to repository [us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api]
 44136fa355b3: Waiting
 a5789fc40e82: Waiting
 990a9c434e5e: Waiting
@@ -358,8 +358,8 @@ f811c1ce9040: Waiting
 f811c1ce9040: Pushed
 1bd2243add1e: Pushed
 v0.1.0: digest: sha256:a73ec7c4c96485db29665852bd7b474c9aaaca05ab40b54308a3c5f6199e4b9b size: 856
-[publish-images] Building and pushing us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0 (linux/amd64)...
-The push refers to repository [us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend]
+[publish-images] Building and pushing us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend:v0.1.0 (linux/amd64)...
+The push refers to repository [us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend]
 102cd66df157: Waiting
 f18232174bc9: Waiting
 44136fa355b3: Waiting
@@ -571,9 +571,9 @@ d828e7f08e72: Pushed
 v0.1.0: digest: sha256:8534fd7eb5d20d24b2a66b1625035276dbf17e7470741e7091f7b1ad4705d5e1 size: 856
 [publish-images] Verifying published images in Artifact Registry...
 IMAGE                                                                           DIGEST                                                                   TAGS    CREATE_TIME          UPDATE_TIME          SIZE
-us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend  sha256:0b3f74ea0774bfdb89ae06b2702f955ece6f8734e7eaa2ccdad46747972f13f0          2026-10-27T00:08:04  2026-10-27T00:08:04  1996
-us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend  sha256:8534fd7eb5d20d24b2a66b1625035276dbf17e7470741e7091f7b1ad4705d5e1  v0.1.0  2026-10-27T00:08:05  2026-10-27T00:08:05  None
-us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend  sha256:8882b0319eab69aa51037a85c95707df57467e0f13f1b379d1be7507bc0377c6          2026-10-27T00:08:04  2026-10-27T00:08:04  21245075
-us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api          sha256:a73ec7c4c96485db29665852bd7b474c9aaaca05ab40b54308a3c5f6199e4b9b  v0.1.0  2026-10-27T00:07:44  2026-10-27T00:07:44  None
-us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api          sha256:b658fba04662d24aa58aca864f66961397b5d9b75b2938f5a0f7c7d005181edc          2026-10-27T00:07:43  2026-10-27T00:07:43  2026
-us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api          sha256:da55848e6aa4380c0fa7da3f99688464e14adcf930bd0b979b7048609512f6b7          2026-10-27T00:07:43  2026-10-27T00:07:43  11458607
+us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend  sha256:0b3f74ea0774bfdb89ae06b2702f955ece6f8734e7eaa2ccdad46747972f13f0          2026-10-27T00:08:04  2026-10-27T00:08:04  1996
+us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend  sha256:8534fd7eb5d20d24b2a66b1625035276dbf17e7470741e7091f7b1ad4705d5e1  v0.1.0  2026-10-27T00:08:05  2026-10-27T00:08:05  None
+us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend  sha256:8882b0319eab69aa51037a85c95707df57467e0f13f1b379d1be7507bc0377c6          2026-10-27T00:08:04  2026-10-27T00:08:04  21245075
+us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api          sha256:a73ec7c4c96485db29665852bd7b474c9aaaca05ab40b54308a3c5f6199e4b9b  v0.1.0  2026-10-27T00:07:44  2026-10-27T00:07:44  None
+us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api          sha256:b658fba04662d24aa58aca864f66961397b5d9b75b2938f5a0f7c7d005181edc          2026-10-27T00:07:43  2026-10-27T00:07:43  2026
+us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api          sha256:da55848e6aa4380c0fa7da3f99688464e14adcf930bd0b979b7048609512f6b7          2026-10-27T00:07:43  2026-10-27T00:07:43  11458607

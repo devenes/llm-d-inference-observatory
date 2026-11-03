@@ -1,20 +1,40 @@
-# llm-d Inference Observatory
+<div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Go](https://img.shields.io/badge/Go-1.24%2B-00ADD8?logo=go&logoColor=white)](backend/observer/go.mod)
-[![React](https://img.shields.io/badge/React-19.3-61DAFB?logo=react&logoColor=black)](frontend/package.json)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](frontend/tsconfig.json)
-[![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.6-844FBA?logo=terraform&logoColor=white)](terraform/versions.tf)
-[![llm-d](https://img.shields.io/badge/llm--d-v1.0.0-0EA5E9)](deploy/versions.env)
-[![vLLM CPU](https://img.shields.io/badge/vLLM_CPU-v0.31.0-10B981)](deploy/versions.env)
+# `llm-d-inference-observatory`
 
-**An interactive observability and educational platform that visualizes the real-time LLM inference lifecycle across `Browser → Observer API → Gateway/Envoy → Endpoint Picker (EPP) → InferencePool → vLLM CPU Model Server` on CPU-only Google Kubernetes Engine (GKE), paired with a deterministic, zero-cloud local simulator (`OBSERVER_MOCK_MODE=true`).**
+**Real-Time Observability & Educational Platform for the `llm-d` & `vLLM` CPU Inference Lifecycle on GKE**
+
+[![Kubernetes](https://img.shields.io/badge/GKE-1.36.4--gke.2046003_(CPU)-326CE5?logo=kubernetes&logoColor=white)](https://cloud.google.com/kubernetes-engine)
+[![Gateway API Inference Extension](https://img.shields.io/badge/InferencePool-v1.6.2-0EA5E9?logo=kubernetes&logoColor=white)](https://gateway-api-inference-extension.sigs.k8s.io/)
+[![llm-d](https://img.shields.io/badge/llm--d_Router_%26_EPP-v1.0.0-10B981)](deploy/versions.env)
+[![vLLM CPU](https://img.shields.io/badge/vLLM_CPU-v0.31.0_(AMX_BF16)-06B6D4)](deploy/versions.env)
+[![Go](https://img.shields.io/badge/Backend-Go_1.24%2B-00ADD8?logo=go&logoColor=white)](backend/observer/go.mod)
+[![React](https://img.shields.io/badge/Frontend-React_19_%2B_TypeScript_5.7-61DAFB?logo=react&logoColor=black)](frontend/package.json)
+[![Observability](https://img.shields.io/badge/Telemetry-OpenTelemetry_%2B_Jaeger_%2B_Prometheus-E6522C?logo=prometheus&logoColor=white)](deploy/telemetry)
+[![Terraform](https://img.shields.io/badge/IaC-Terraform_%3E%3D1.6-844FBA?logo=terraform&logoColor=white)](terraform/versions.tf)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+[**Overview**](#1-overview--key-capabilities) •
+[**Architecture**](#2-system-architecture) •
+[**Request Lifecycle**](#3-inference-request-lifecycle) •
+[**UI Screens**](#4-interactive-screens--live-gke-screenshots) •
+[**Local Quickstart**](#7-installation--local-development) •
+[**GKE Deployment**](#9-gke-deployment-using-terraform) •
+[**Live Verification**](#10-testing--verification-commands) •
+[**Docs**](#12-documentation-index)
+
+</div>
+
+---
+
+An interactive observability and educational platform that visualizes the real-time LLM inference lifecycle across `Browser → Observer API → Gateway/Envoy → Endpoint Picker (EPP) → InferencePool → vLLM CPU Model Server` on CPU-only Google Kubernetes Engine (GKE), paired with a deterministic, zero-cloud local simulator (`OBSERVER_MOCK_MODE=true`).
 
 ![Interactive Topology Overview](docs/images/topology-overview.png)
 
-> [!IMPORTANT]
-> **Cloud Infrastructure & Teardown Status:**
-> Live GKE deployment and all 14 end-to-end verification scenarios (`L01`–`L14`) were executed and verified on cluster `llm-d-observatory` (`us-west4-a`, GKE `v1.36.4-gke.2046003`, project `enes-turan-demo`), after which the cloud infrastructure is torn down via Terraform to prevent ongoing compute costs. Local demo mode (`make dev` or `docker compose up --build`) works offline out of the box; GKE-dependent workflows require provisioning the Terraform infrastructure first (see [Section 11 — GKE Deployment Using Terraform](#11-gke-deployment-using-terraform)).
+> [!TIP]
+> **Two Operating Modes (Local Mock Simulator & Live GKE):**
+> - **Local Simulator Mode (`$0.00/hr`)**: Run `make dev` or `docker compose up --build` locally with zero cloud dependencies (`OBSERVER_MOCK_MODE=true`).
+> - **Live GKE Mode**: Provision the CPU-only GKE cluster (`c3-standard-22` Intel Sapphire Rapids AMX + `e2-standard-4`) via Terraform ([Section 9 — GKE Deployment Using Terraform](#9-gke-deployment-using-terraform)). All 14 live verification scenarios (`L01`–`L14`) are captured in [`artifacts/test-results/`](artifacts/test-results/).
 
 ---
 
@@ -283,7 +303,7 @@ make benchmark-mock
 
 ```bash
 # 1. Configure target GCP project and region
-export PROJECT_ID="enes-turan-demo"
+export PROJECT_ID="your-gcp-project-id"
 export REGION="us-west4"
 export ZONE="us-west4-a"
 export CLUSTER_NAME="llm-d-observatory"

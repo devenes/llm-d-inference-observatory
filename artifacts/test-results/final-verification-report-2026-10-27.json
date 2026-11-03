@@ -1,13 +1,13 @@
 {
   "timestamp": "2026-10-27T02:39:00+03:00",
-  "project_id": "enes-turan-demo",
+  "project_id": "your-gcp-project-id",
   "region": "us-west4",
   "zone": "us-west4-a",
   "cluster_name": "llm-d-observatory",
   "gke_version": "v1.36.4-gke.2046003",
   "deployed_versions": {
-    "observer_api_image": "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0@sha256:6c190d9c3fa53820ec71d1752763f275d78edc8d05a8ebe43a11bbb8866a90ab",
-    "observatory_frontend_image": "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0@sha256:8d13db7b9be94c1d940819dae6842ef3e5ccbe8c07187c0c17b5ea73044a035b",
+    "observer_api_image": "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api:v0.1.0@sha256:6c190d9c3fa53820ec71d1752763f275d78edc8d05a8ebe43a11bbb8866a90ab",
+    "observatory_frontend_image": "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend:v0.1.0@sha256:8d13db7b9be94c1d940819dae6842ef3e5ccbe8c07187c0c17b5ea73044a035b",
     "llm_d_router_chart": "oci://ghcr.io/llm-d/charts/llm-d-router-standalone:v1.0.0",
     "llm_d_epp_image": "ghcr.io/llm-d/llm-d-router-endpoint-picker:v1.0.0",
     "envoy_image": "docker.io/envoyproxy/envoy:distroless-v1.33.2",

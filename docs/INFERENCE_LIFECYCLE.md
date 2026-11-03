@@ -19,7 +19,7 @@ The Observatory tracks an OpenAI-compatible inference request across 10 distinct
 
 ## 2. Event Envelope Schema (`schema_version: "1"`)
 
-Every event emitted over `GET /api/requests/{request_id}/events` (SSE or JSON) adheres to the [`EventEnvelope`](file:///Users/enes/GitHub/llm-d-inference-observatory/backend/observer/internal/events/model.go#L41-L58) contract:
+Every event emitted over `GET /api/requests/{request_id}/events` (SSE or JSON) adheres to the [`EventEnvelope`](../backend/observer/internal/events/model.go#L41-L58) contract:
 
 ```json
 {
@@ -46,7 +46,7 @@ Every event emitted over `GET /api/requests/{request_id}/events` (SSE or JSON) a
 
 ## 3. RequestRecord Timings & Provenance Fields
 
-Each [`RequestRecord`](file:///Users/enes/GitHub/llm-d-inference-observatory/backend/observer/internal/events/model.go#L117-L141) returned by `GET /api/requests/{request_id}` includes explicit timing and token provenance fields:
+Each [`RequestRecord`](../backend/observer/internal/events/model.go#L117-L141) returned by `GET /api/requests/{request_id}` includes explicit timing and token provenance fields:
 
 | Field | Type / Classification | Description |
 | :--- | :--- | :--- |

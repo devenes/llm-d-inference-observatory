@@ -23,7 +23,7 @@ if grep -R -E "nvidia\.com/gpu|cloud\.google\.com/gke-tpu|a2-|a3-|g2-" "${REPO_R
 fi
 echo "  [OK] CPU-only architecture confirmed across deploy/ and terraform/."
 
-echo "=== [preflight] 3. Read-Only GCP Inventory (enes-turan-demo) ==="
+echo "=== [preflight] 3. Read-Only GCP Inventory (your-gcp-project-id) ==="
 if command -v gcloud >/dev/null 2>&1; then
   PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
   echo "  Active gcloud project: ${PROJECT:-unset}"

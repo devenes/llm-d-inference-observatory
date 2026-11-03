@@ -1,7 +1,7 @@
 # Validation & Test Execution Summary
 
 **Timestamp:** `2026-10-26T23:32:00+03:00`
-**Repository:** `/Users/enes/GitHub/llm-d-inference-observatory`
+**Repository:** `llm-d-inference-observatory`
 **Cloud Mutation Status:** `0` Google Cloud resources created, modified, or deleted (strictly local & read-only cloud preflight).
 
 ---

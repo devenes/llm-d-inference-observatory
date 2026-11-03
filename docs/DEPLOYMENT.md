@@ -2,16 +2,16 @@
 
 > [!NOTE]
 > **Live Deployment Verified (`2026-10-27`):**
-> This runbook was executed against project `enes-turan-demo` (`us-west4-a`, GKE `v1.36.4-gke.2046003`, `24` Terraform resources). Published image digests:
-> - `us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0` (`sha256:d1f1e7d546451bfdaa63a331087227f8ba4e1e2c107975a8e28b93fc08887d30`)
-> - `us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0` (`sha256:8534fd7eb5d20d24b2a66b1625035276dbf17e7470741e7091f7b1ad4705d5e1`)
+> This runbook was executed against project `your-gcp-project-id` (`us-west4-a`, GKE `v1.36.4-gke.2046003`, `24` Terraform resources). Published image digests:
+> - `us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api:v0.1.0` (`sha256:d1f1e7d546451bfdaa63a331087227f8ba4e1e2c107975a8e28b93fc08887d30`)
+> - `us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend:v0.1.0` (`sha256:8534fd7eb5d20d24b2a66b1625035276dbf17e7470741e7091f7b1ad4705d5e1`)
 
 ---
 
 ## 1. Prerequisites
 
 Ensure the following tools are installed locally:
-- `gcloud` CLI authenticated against project `enes-turan-demo`
+- `gcloud` CLI authenticated against project `your-gcp-project-id`
 - `terraform` (`>= 1.6.0`, `< 2.0.0`)
 - `kubectl` (`>= 1.31`)
 - `helm` (`>= 3.14`)
@@ -19,7 +19,7 @@ Ensure the following tools are installed locally:
 
 Verify project and region configuration:
 ```bash
-export PROJECT_ID="enes-turan-demo"
+export PROJECT_ID="your-gcp-project-id"
 export REGION="us-west4"
 export ZONE="us-west4-a"
 export CLUSTER_NAME="llm-d-observatory"
@@ -39,7 +39,7 @@ Before applying infrastructure, inspect regional quotas and the Terraform plan:
 
 The default `experimental-small` profile provisions:
 - **1x VPC Network & Subnet** (`10.42.0.0/20`, secondary pod/service ranges, Cloud Router + Cloud NAT)
-- **1x Artifact Registry Repository** (`us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory`)
+- **1x Artifact Registry Repository** (`us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory`)
 - **1x GKE Standard Zonal Cluster** (`us-west4-a`, Workload Identity enabled, Gateway API `CHANNEL_STANDARD` enabled)
 - **System Node Pool**: `1x e2-standard-4` (`4 vCPU`, `16 GB RAM`) — hosts Observer API, Frontend, OpenTelemetry Collector, Jaeger, Prometheus, and system controllers
 - **Inference Node Pool**: `1x c3-standard-22` (`22 vCPU` Intel Sapphire Rapids AMX, `88 GB RAM`, label `llm-d.ai/inference-node=true`) — hosts `2x vLLM CPU` pods (`8 vCPU` each) + `llm-d Router` + `Endpoint Picker (EPP)`

@@ -20,11 +20,6 @@ fi
 
 terraform validate
 
-# Copy the captured full plan if already generated, or run terraform plan
-if [ -f "/Users/enes/.gemini/antigravity/brain/5690b559-1430-41df-b4eb-c2e151426a8e/scratch/tf-plan.txt" ] && [ ! -s "${OUT_DIR}/terraform-plan.txt" ]; then
-  cp "/Users/enes/.gemini/antigravity/brain/5690b559-1430-41df-b4eb-c2e151426a8e/scratch/tf-plan.txt" "${OUT_DIR}/terraform-plan.txt"
-fi
-
 if terraform plan -input=false -refresh=false -no-color > "${OUT_DIR}/terraform-plan.tmp" 2>/dev/null; then
   mv "${OUT_DIR}/terraform-plan.tmp" "${OUT_DIR}/terraform-plan.txt"
 else

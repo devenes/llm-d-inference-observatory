@@ -8,7 +8,7 @@ The `llm-d-inference-observatory` platform enforces defense-in-depth across the 
 
 The Go Observer API never accepts arbitrary upstream URLs from client requests:
 - Upstream inference requests are routed exclusively to the configured `OBSERVER_UPSTREAM_URL` (default `http://llm-d-router-epp.llm-d-observatory.svc.cluster.local:80`).
-- Startup configuration validation ([`config.go`](file:///Users/enes/GitHub/llm-d-inference-observatory/backend/observer/internal/config/config.go#L213-L232)) parses `OBSERVER_UPSTREAM_URL` and verifies its hostname against `OBSERVER_ALLOWED_UPSTREAM_HOSTS`. If the upstream host is not explicitly allowlisted, the server refuses to start.
+- Startup configuration validation ([`config.go`](../backend/observer/internal/config/config.go#L213-L232)) parses `OBSERVER_UPSTREAM_URL` and verifies its hostname against `OBSERVER_ALLOWED_UPSTREAM_HOSTS`. If the upstream host is not explicitly allowlisted, the server refuses to start.
 
 ---
 
@@ -25,16 +25,16 @@ To protect CPU-only `vLLM` model servers from denial-of-service:
 
 ## 3. Prompt Privacy & Secret Redaction
 
-Implemented in [`redact.go`](file:///Users/enes/GitHub/llm-d-inference-observatory/backend/observer/internal/redact/redact.go):
+Implemented in [`redact.go`](../backend/observer/internal/redact/redact.go):
 - **Default Prompt Redaction (`OBSERVER_REDACT_PROMPTS=true`)**: Raw user prompts and generated completions are scrubbed from retained request records, trace span attributes, and structured logs by default. Only `prompt_chars`, `prompt_sha256` (first 16 hex chars of SHA-256), and numeric token/provenance attributes (`prompt_tokens`, `completion_tokens`, `prompt_tokens_source`, `completion_tokens_source`, `epp_token_count`, `epp_token_backend`) are preserved.
 - **Secret Scrubbing**: Any attribute or string containing `Bearer <token>`, OpenAI keys (`sk-...`), HuggingFace tokens (`hf_...`), or sensitive keys (`authorization`, `api_key`, `secret`, `password`, `cookie`) is automatically scrubbed to `[REDACTED]`.
-- **Collector-Level Redaction**: [`otel-collector.yaml`](file:///Users/enes/GitHub/llm-d-inference-observatory/deploy/telemetry/otel-collector.yaml) runs an `attributes/redact` processor to delete `gen_ai.prompt`, `gen_ai.completion`, `llm.prompts`, `llm.completions`, `prompt`, and `authorization` before exporting spans to Jaeger.
+- **Collector-Level Redaction**: [`otel-collector.yaml`](../deploy/telemetry/otel-collector.yaml) runs an `attributes/redact` processor to delete `gen_ai.prompt`, `gen_ai.completion`, `llm.prompts`, `llm.completions`, `prompt`, and `authorization` before exporting spans to Jaeger.
 
 ---
 
 ## 4. Container & Pod Security Hardening
 
-Both [`backend/observer/Dockerfile`](file:///Users/enes/GitHub/llm-d-inference-observatory/backend/observer/Dockerfile) and [`frontend/Dockerfile`](file:///Users/enes/GitHub/llm-d-inference-observatory/frontend/Dockerfile), as well as all Kubernetes manifests in `deploy/observatory/`, enforce:
+Both [`backend/observer/Dockerfile`](../backend/observer/Dockerfile) and [`frontend/Dockerfile`](../frontend/Dockerfile), as well as all Kubernetes manifests in `deploy/observatory/`, enforce:
 - Non-root execution (`runAsNonRoot: true`, `runAsUser: 65532` / `101`).
 - Read-only root filesystem (`readOnlyRootFilesystem: true`) on `observer-api`.
 - Privilege escalation disabled (`allowPrivilegeEscalation: false`).
@@ -47,5 +47,5 @@ Both [`backend/observer/Dockerfile`](file:///Users/enes/GitHub/llm-d-inference-o
 
 - **RBAC**:
   - `observer-api` and `prometheus` use a read-only `ClusterRole` (`llm-d-observatory-metrics-reader`) restricted to `/metrics` non-resource URLs (for EPP `:9090/metrics` controller-runtime authentication) and read-only `get/list/watch` on pods, services, and endpoints in `llm-d-observatory`.
-- **NetworkPolicies ([`network-policies.yaml`](file:///Users/enes/GitHub/llm-d-inference-observatory/deploy/network-policies/network-policies.yaml))**:
+- **NetworkPolicies ([`network-policies.yaml`](../deploy/network-policies/network-policies.yaml))**:
   - Restricts pod-to-pod traffic within `llm-d-observatory` to documented data-plane (`:8080`, `:8081`, `:9002`, `:8000`, `:5556`, `:5559`) and telemetry (`:4317`, `:4318`, `:9090`, `:16686`) ports.

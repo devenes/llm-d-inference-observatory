@@ -28,7 +28,7 @@ Terraform will perform the following actions:
       + location         = "us-west4"
       + mode             = "STANDARD_REPOSITORY"
       + name             = (known after apply)
-      + project          = "enes-turan-demo"
+      + project          = "your-gcp-project-id"
       + registry_uri     = (known after apply)
       + repository_id    = "llm-d-observatory"
       + terraform_labels = {
@@ -54,7 +54,7 @@ Terraform will perform the following actions:
       + name               = "llm-d-observatory-allow-internal"
       + network            = "llm-d-observatory-vpc"
       + priority           = 1000
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + self_link          = (known after apply)
       + source_ranges      = [
           + "10.10.0.0/24",
@@ -102,7 +102,7 @@ Terraform will perform the following actions:
       + network_firewall_policy_enforcement_order = "AFTER_CLASSIC_FIREWALL"
       + network_id                                = (known after apply)
       + numeric_id                                = (known after apply)
-      + project                                   = "enes-turan-demo"
+      + project                                   = "your-gcp-project-id"
       + routing_mode                              = (known after apply)
       + self_link                                 = (known after apply)
     }
@@ -114,7 +114,7 @@ Terraform will perform the following actions:
       + id                 = (known after apply)
       + name               = "llm-d-observatory-router"
       + network            = (known after apply)
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + region             = "us-west4"
       + self_link          = (known after apply)
     }
@@ -133,7 +133,7 @@ Terraform will perform the following actions:
       + name                                = "llm-d-observatory-nat"
       + nat_ip_allocate_option              = "AUTO_ONLY"
       + nat_ips                             = (known after apply)
-      + project                             = "enes-turan-demo"
+      + project                             = "your-gcp-project-id"
       + region                              = "us-west4"
       + router                              = "llm-d-observatory-router"
       + source_subnetwork_ip_ranges_to_nat  = "ALL_SUBNETWORKS_ALL_IP_RANGES"
@@ -161,7 +161,7 @@ Terraform will perform the following actions:
       + network                          = (known after apply)
       + private_ip_google_access         = true
       + private_ipv6_google_access       = (known after apply)
-      + project                          = "enes-turan-demo"
+      + project                          = "your-gcp-project-id"
       + purpose                          = (known after apply)
       + region                           = "us-west4"
       + self_link                        = (known after apply)
@@ -220,7 +220,7 @@ Terraform will perform the following actions:
       + node_version                             = (known after apply)
       + operation                                = (known after apply)
       + private_ipv6_google_access               = (known after apply)
-      + project                                  = "enes-turan-demo"
+      + project                                  = "your-gcp-project-id"
       + remove_default_node_pool                 = true
       + resource_labels                          = {
           + "accelerator-type" = "cpu-only"
@@ -350,7 +350,7 @@ Terraform will perform the following actions:
       + workload_alts_config (known after apply)
 
       + workload_identity_config {
-          + workload_pool = "enes-turan-demo.svc.id.goog"
+          + workload_pool = "your-gcp-project-id.svc.id.goog"
         }
     }
 
@@ -369,7 +369,7 @@ Terraform will perform the following actions:
       + node_count                  = 1
       + node_locations              = (known after apply)
       + operation                   = (known after apply)
-      + project                     = "enes-turan-demo"
+      + project                     = "your-gcp-project-id"
       + version                     = (known after apply)
 
       + management (known after apply)
@@ -400,7 +400,7 @@ Terraform will perform the following actions:
               + "https://www.googleapis.com/auth/cloud-platform",
             ]
           + preemptible        = false
-          + service_account    = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+          + service_account    = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
           + spot               = false
 
           + boot_disk (known after apply)
@@ -451,7 +451,7 @@ Terraform will perform the following actions:
       + node_count                  = 1
       + node_locations              = (known after apply)
       + operation                   = (known after apply)
-      + project                     = "enes-turan-demo"
+      + project                     = "your-gcp-project-id"
       + version                     = (known after apply)
 
       + management (known after apply)
@@ -481,7 +481,7 @@ Terraform will perform the following actions:
               + "https://www.googleapis.com/auth/cloud-platform",
             ]
           + preemptible        = false
-          + service_account    = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+          + service_account    = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
           + spot               = false
 
           + boot_disk (known after apply)
@@ -521,8 +521,8 @@ Terraform will perform the following actions:
   + resource "google_project_iam_member" "node_sa_roles" {
       + etag    = (known after apply)
       + id      = (known after apply)
-      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
-      + project = "enes-turan-demo"
+      + member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
+      + project = "your-gcp-project-id"
       + role    = "roles/artifactregistry.reader"
     }
 
@@ -530,8 +530,8 @@ Terraform will perform the following actions:
   + resource "google_project_iam_member" "node_sa_roles" {
       + etag    = (known after apply)
       + id      = (known after apply)
-      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
-      + project = "enes-turan-demo"
+      + member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
+      + project = "your-gcp-project-id"
       + role    = "roles/cloudtrace.agent"
     }
 
@@ -539,8 +539,8 @@ Terraform will perform the following actions:
   + resource "google_project_iam_member" "node_sa_roles" {
       + etag    = (known after apply)
       + id      = (known after apply)
-      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
-      + project = "enes-turan-demo"
+      + member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
+      + project = "your-gcp-project-id"
       + role    = "roles/container.defaultNodeServiceAccount"
     }
 
@@ -548,8 +548,8 @@ Terraform will perform the following actions:
   + resource "google_project_iam_member" "node_sa_roles" {
       + etag    = (known after apply)
       + id      = (known after apply)
-      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
-      + project = "enes-turan-demo"
+      + member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
+      + project = "your-gcp-project-id"
       + role    = "roles/logging.logWriter"
     }
 
@@ -557,8 +557,8 @@ Terraform will perform the following actions:
   + resource "google_project_iam_member" "node_sa_roles" {
       + etag    = (known after apply)
       + id      = (known after apply)
-      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
-      + project = "enes-turan-demo"
+      + member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
+      + project = "your-gcp-project-id"
       + role    = "roles/monitoring.metricWriter"
     }
 
@@ -566,8 +566,8 @@ Terraform will perform the following actions:
   + resource "google_project_iam_member" "node_sa_roles" {
       + etag    = (known after apply)
       + id      = (known after apply)
-      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
-      + project = "enes-turan-demo"
+      + member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
+      + project = "your-gcp-project-id"
       + role    = "roles/monitoring.viewer"
     }
 
@@ -575,8 +575,8 @@ Terraform will perform the following actions:
   + resource "google_project_iam_member" "node_sa_roles" {
       + etag    = (known after apply)
       + id      = (known after apply)
-      + member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
-      + project = "enes-turan-demo"
+      + member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
+      + project = "your-gcp-project-id"
       + role    = "roles/stackdriver.resourceMetadata.writer"
     }
 
@@ -585,7 +585,7 @@ Terraform will perform the following actions:
       + deletion_policy    = "DELETE"
       + disable_on_destroy = false
       + id                 = (known after apply)
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + service            = "artifactregistry.googleapis.com"
     }
 
@@ -594,7 +594,7 @@ Terraform will perform the following actions:
       + deletion_policy    = "DELETE"
       + disable_on_destroy = false
       + id                 = (known after apply)
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + service            = "cloudtrace.googleapis.com"
     }
 
@@ -603,7 +603,7 @@ Terraform will perform the following actions:
       + deletion_policy    = "DELETE"
       + disable_on_destroy = false
       + id                 = (known after apply)
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + service            = "compute.googleapis.com"
     }
 
@@ -612,7 +612,7 @@ Terraform will perform the following actions:
       + deletion_policy    = "DELETE"
       + disable_on_destroy = false
       + id                 = (known after apply)
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + service            = "container.googleapis.com"
     }
 
@@ -621,7 +621,7 @@ Terraform will perform the following actions:
       + deletion_policy    = "DELETE"
       + disable_on_destroy = false
       + id                 = (known after apply)
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + service            = "iam.googleapis.com"
     }
 
@@ -630,7 +630,7 @@ Terraform will perform the following actions:
       + deletion_policy    = "DELETE"
       + disable_on_destroy = false
       + id                 = (known after apply)
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + service            = "logging.googleapis.com"
     }
 
@@ -639,7 +639,7 @@ Terraform will perform the following actions:
       + deletion_policy    = "DELETE"
       + disable_on_destroy = false
       + id                 = (known after apply)
-      + project            = "enes-turan-demo"
+      + project            = "your-gcp-project-id"
       + service            = "monitoring.googleapis.com"
     }
 
@@ -649,24 +649,24 @@ Terraform will perform the following actions:
       + deletion_policy = "DELETE"
       + disabled        = false
       + display_name    = "GKE CPU Node Service Account for llm-d-observatory"
-      + email           = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + email           = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
       + id              = (known after apply)
-      + member          = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
+      + member          = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
       + name            = (known after apply)
-      + project         = "enes-turan-demo"
+      + project         = "your-gcp-project-id"
       + unique_id       = (known after apply)
     }
 
 Plan: 24 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
-  + artifact_registry_repository_url = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory"
+  + artifact_registry_repository_url = "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory"
   + cluster_endpoint                 = (sensitive value)
   + cluster_name                     = "llm-d-observatory"
-  + frontend_image_uri               = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0"
-  + node_service_account_email       = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com"
-  + observer_image_uri               = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0"
-  + project_id                       = "enes-turan-demo"
+  + frontend_image_uri               = "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend:v0.1.0"
+  + node_service_account_email       = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com"
+  + observer_image_uri               = "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api:v0.1.0"
+  + project_id                       = "your-gcp-project-id"
   + region                           = "us-west4"
   + subnet_name                      = "llm-d-observatory-nodes"
   + vpc_network_name                 = "llm-d-observatory-vpc"

@@ -103,11 +103,11 @@ flowchart TD
 - **Observability Hooks:** Exposes `/metrics` on `:8000` and publishes real-time KV cache block events over ZMQ (`tcp://*:5556` PUB, `tcp://*:5559` ROUTER replay).
 
 ### 4.5 Go Observer API (`observer-api`)
-- **Source:** [`backend/observer/`](file:///Users/enes/GitHub/llm-d-inference-observatory/backend/observer/).
+- **Source:** [`backend/observer/`](./backend/observer/).
 - **Role:** Accepts browser/CLI requests on `:8080`, enforces security boundaries (SSRF host allowlist, model allowlist, request body byte limit, max output tokens, concurrency semaphore, prompt/secret redaction), injects `"stream_options": {"include_usage": true}`, forwards traffic to `llm-d`, measures monotonic timings, streams SSE lifecycle events, scrapes EPP/vLLM Prometheus metrics across all pod IPs, and enriches traces asynchronously from Jaeger.
 
 ### 4.6 React 19 Observatory UI (`observatory-frontend`)
-- **Source:** [`frontend/`](file:///Users/enes/GitHub/llm-d-inference-observatory/frontend/).
+- **Source:** [`frontend/`](./frontend/).
 - **Role:** Five-screen interactive application featuring the **Interactive Topology** canvas (`@xyflow/react`), **Inference Playground**, **Live Lifecycle Timeline**, **Metrics & Counter Reconciliation**, and **13-Module Learning Lab**.
 
 ---

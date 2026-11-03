@@ -17,7 +17,7 @@ make dev
 
 - Every event, timing, and span produced when `OBSERVER_MOCK_MODE=true` is tagged with `"observation_kind": "simulated"` and prefixed with `[SIMULATED]`.
 - A prominent amber banner (`LOCAL DEMO / MOCK MODE ACTIVE`) is rendered at the top of the UI.
-- Production Kubernetes manifests ([`observer-api.yaml`](file:///Users/enes/GitHub/llm-d-inference-observatory/deploy/observatory/observer-api.yaml)) hardcode `OBSERVER_MOCK_MODE: "false"` and are verified by `./scripts/validate-manifests.sh` so mock mode can never silently substitute for a real upstream in GKE deployments.
+- Production Kubernetes manifests ([`observer-api.yaml`](../deploy/observatory/observer-api.yaml)) hardcode `OBSERVER_MOCK_MODE: "false"` and are verified by `./scripts/validate-manifests.sh` so mock mode can never silently substitute for a real upstream in GKE deployments.
 
 ---
 
@@ -61,7 +61,7 @@ Select any of the following scenarios in the **Inference Playground** (`Simulate
 
 ## 4. Environment Variables Reference
 
-All runtime settings are validated in [`config.go`](file:///Users/enes/GitHub/llm-d-inference-observatory/backend/observer/internal/config/config.go):
+All runtime settings are validated in [`config.go`](../backend/observer/internal/config/config.go):
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |

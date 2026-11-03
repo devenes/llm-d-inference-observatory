@@ -1,8 +1,8 @@
 # Cost Estimate & GCP Quota Analysis
 
-## 1. Verified GCP Regional Quotas (`enes-turan-demo` / `us-west4`)
+## 1. Verified GCP Regional Quotas (`your-gcp-project-id` / `us-west4`)
 
-Verified via read-only `gcloud compute regions describe us-west4 --project=enes-turan-demo` during preflight (`artifacts/preflight/preflight-2026-10-26T222500.md`):
+Verified via read-only `gcloud compute regions describe us-west4 --project=your-gcp-project-id` during preflight (`artifacts/preflight/preflight-2026-10-26T222500.md`):
 
 | Quota Metric (`us-west4`) | Current Limit | Current Usage | Required (`experimental-small`) | Status |
 | :--- | :---: | :---: | :---: | :---: |

@@ -1,4 +1,4 @@
-project_id             = "enes-turan-demo"
+project_id             = "your-gcp-project-id"
 region                 = "us-west4"
 zone                   = "us-west4-a"
 cluster_name           = "llm-d-observatory"

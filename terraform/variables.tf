@@ -1,7 +1,7 @@
 variable "project_id" {
   description = "Google Cloud project ID hosting the llm-d Inference Observatory."
   type        = string
-  default     = "enes-turan-demo"
+  default     = "your-gcp-project-id"
 }
 
 variable "region" {

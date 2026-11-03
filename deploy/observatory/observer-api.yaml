@@ -34,7 +34,7 @@ spec:
         runAsGroup: 65532
       containers:
         - name: observer-api
-          image: us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0
+          image: us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api:v0.1.0
           imagePullPolicy: Always
           env:
             - name: OBSERVER_LISTEN_ADDR

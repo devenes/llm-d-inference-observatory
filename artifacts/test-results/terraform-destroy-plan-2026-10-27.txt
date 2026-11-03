@@ -1,27 +1,27 @@
-google_project_service.required["artifactregistry.googleapis.com"]: Refreshing state... [id=enes-turan-demo/artifactregistry.googleapis.com]
-google_project_service.required["logging.googleapis.com"]: Refreshing state... [id=enes-turan-demo/logging.googleapis.com]
-google_project_service.required["compute.googleapis.com"]: Refreshing state... [id=enes-turan-demo/compute.googleapis.com]
-google_project_service.required["cloudtrace.googleapis.com"]: Refreshing state... [id=enes-turan-demo/cloudtrace.googleapis.com]
-google_project_service.required["container.googleapis.com"]: Refreshing state... [id=enes-turan-demo/container.googleapis.com]
-google_project_service.required["monitoring.googleapis.com"]: Refreshing state... [id=enes-turan-demo/monitoring.googleapis.com]
-google_project_service.required["iam.googleapis.com"]: Refreshing state... [id=enes-turan-demo/iam.googleapis.com]
-google_service_account.node_sa: Refreshing state... [id=projects/enes-turan-demo/serviceAccounts/llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
-google_artifact_registry_repository.observatory: Refreshing state... [id=projects/enes-turan-demo/locations/us-west4/repositories/llm-d-observatory]
-google_compute_network.vpc: Refreshing state... [id=projects/enes-turan-demo/global/networks/llm-d-observatory-vpc]
-google_compute_router.router: Refreshing state... [id=projects/enes-turan-demo/regions/us-west4/routers/llm-d-observatory-router]
-google_compute_subnetwork.nodes: Refreshing state... [id=projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes]
-google_compute_firewall.allow_internal: Refreshing state... [id=projects/enes-turan-demo/global/firewalls/llm-d-observatory-allow-internal]
-google_project_iam_member.node_sa_roles["roles/stackdriver.resourceMetadata.writer"]: Refreshing state... [id=enes-turan-demo/roles/stackdriver.resourceMetadata.writer/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
-google_project_iam_member.node_sa_roles["roles/cloudtrace.agent"]: Refreshing state... [id=enes-turan-demo/roles/cloudtrace.agent/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
-google_project_iam_member.node_sa_roles["roles/artifactregistry.reader"]: Refreshing state... [id=enes-turan-demo/roles/artifactregistry.reader/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
-google_project_iam_member.node_sa_roles["roles/logging.logWriter"]: Refreshing state... [id=enes-turan-demo/roles/logging.logWriter/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
-google_project_iam_member.node_sa_roles["roles/monitoring.metricWriter"]: Refreshing state... [id=enes-turan-demo/roles/monitoring.metricWriter/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
-google_project_iam_member.node_sa_roles["roles/monitoring.viewer"]: Refreshing state... [id=enes-turan-demo/roles/monitoring.viewer/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
-google_project_iam_member.node_sa_roles["roles/container.defaultNodeServiceAccount"]: Refreshing state... [id=enes-turan-demo/roles/container.defaultNodeServiceAccount/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com]
-google_compute_router_nat.nat: Refreshing state... [id=enes-turan-demo/us-west4/llm-d-observatory-router/llm-d-observatory-nat]
-google_container_cluster.primary: Refreshing state... [id=projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory]
-google_container_node_pool.cpu_inference_pool: Refreshing state... [id=projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory/nodePools/cpu-inference-pool]
-google_container_node_pool.system_pool: Refreshing state... [id=projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory/nodePools/system-pool]
+google_project_service.required["artifactregistry.googleapis.com"]: Refreshing state... [id=your-gcp-project-id/artifactregistry.googleapis.com]
+google_project_service.required["logging.googleapis.com"]: Refreshing state... [id=your-gcp-project-id/logging.googleapis.com]
+google_project_service.required["compute.googleapis.com"]: Refreshing state... [id=your-gcp-project-id/compute.googleapis.com]
+google_project_service.required["cloudtrace.googleapis.com"]: Refreshing state... [id=your-gcp-project-id/cloudtrace.googleapis.com]
+google_project_service.required["container.googleapis.com"]: Refreshing state... [id=your-gcp-project-id/container.googleapis.com]
+google_project_service.required["monitoring.googleapis.com"]: Refreshing state... [id=your-gcp-project-id/monitoring.googleapis.com]
+google_project_service.required["iam.googleapis.com"]: Refreshing state... [id=your-gcp-project-id/iam.googleapis.com]
+google_service_account.node_sa: Refreshing state... [id=projects/your-gcp-project-id/serviceAccounts/llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com]
+google_artifact_registry_repository.observatory: Refreshing state... [id=projects/your-gcp-project-id/locations/us-west4/repositories/llm-d-observatory]
+google_compute_network.vpc: Refreshing state... [id=projects/your-gcp-project-id/global/networks/llm-d-observatory-vpc]
+google_compute_router.router: Refreshing state... [id=projects/your-gcp-project-id/regions/us-west4/routers/llm-d-observatory-router]
+google_compute_subnetwork.nodes: Refreshing state... [id=projects/your-gcp-project-id/regions/us-west4/subnetworks/llm-d-observatory-nodes]
+google_compute_firewall.allow_internal: Refreshing state... [id=projects/your-gcp-project-id/global/firewalls/llm-d-observatory-allow-internal]
+google_project_iam_member.node_sa_roles["roles/stackdriver.resourceMetadata.writer"]: Refreshing state... [id=your-gcp-project-id/roles/stackdriver.resourceMetadata.writer/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/cloudtrace.agent"]: Refreshing state... [id=your-gcp-project-id/roles/cloudtrace.agent/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/artifactregistry.reader"]: Refreshing state... [id=your-gcp-project-id/roles/artifactregistry.reader/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/logging.logWriter"]: Refreshing state... [id=your-gcp-project-id/roles/logging.logWriter/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/monitoring.metricWriter"]: Refreshing state... [id=your-gcp-project-id/roles/monitoring.metricWriter/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/monitoring.viewer"]: Refreshing state... [id=your-gcp-project-id/roles/monitoring.viewer/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com]
+google_project_iam_member.node_sa_roles["roles/container.defaultNodeServiceAccount"]: Refreshing state... [id=your-gcp-project-id/roles/container.defaultNodeServiceAccount/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com]
+google_compute_router_nat.nat: Refreshing state... [id=your-gcp-project-id/us-west4/llm-d-observatory-router/llm-d-observatory-nat]
+google_container_cluster.primary: Refreshing state... [id=projects/your-gcp-project-id/locations/us-west4-a/clusters/llm-d-observatory]
+google_container_node_pool.cpu_inference_pool: Refreshing state... [id=projects/your-gcp-project-id/locations/us-west4-a/clusters/llm-d-observatory/nodePools/cpu-inference-pool]
+google_container_node_pool.system_pool: Refreshing state... [id=projects/your-gcp-project-id/locations/us-west4-a/clusters/llm-d-observatory/nodePools/system-pool]
 
 Terraform used the selected providers to generate the following execution
 plan. Resource actions are indicated with the following symbols:
@@ -43,7 +43,7 @@ Terraform will perform the following actions:
           - "project"                    = "llm-d-inference-observatory"
         } -> null
       - format                 = "DOCKER" -> null
-      - id                     = "projects/enes-turan-demo/locations/us-west4/repositories/llm-d-observatory" -> null
+      - id                     = "projects/your-gcp-project-id/locations/us-west4/repositories/llm-d-observatory" -> null
       - labels                 = {
           - "accelerator-type" = "cpu-only"
           - "deployment-tier"  = "experimental-small"
@@ -53,8 +53,8 @@ Terraform will perform the following actions:
       - location               = "us-west4" -> null
       - mode                   = "STANDARD_REPOSITORY" -> null
       - name                   = "llm-d-observatory" -> null
-      - project                = "enes-turan-demo" -> null
-      - registry_uri           = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory" -> null
+      - project                = "your-gcp-project-id" -> null
+      - registry_uri           = "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory" -> null
       - repository_id          = "llm-d-observatory" -> null
       - terraform_labels       = {
           - "accelerator-type"           = "cpu-only"
@@ -80,12 +80,12 @@ Terraform will perform the following actions:
       - destination_ranges      = [] -> null
       - direction               = "INGRESS" -> null
       - disabled                = false -> null
-      - id                      = "projects/enes-turan-demo/global/firewalls/llm-d-observatory-allow-internal" -> null
+      - id                      = "projects/your-gcp-project-id/global/firewalls/llm-d-observatory-allow-internal" -> null
       - name                    = "llm-d-observatory-allow-internal" -> null
-      - network                 = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - network                 = "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/global/networks/llm-d-observatory-vpc" -> null
       - priority                = 1000 -> null
-      - project                 = "enes-turan-demo" -> null
-      - self_link               = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/firewalls/llm-d-observatory-allow-internal" -> null
+      - project                 = "your-gcp-project-id" -> null
+      - self_link               = "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/global/firewalls/llm-d-observatory-allow-internal" -> null
       - source_ranges           = [
           - "10.10.0.0/24",
           - "10.20.0.0/16",
@@ -129,15 +129,15 @@ Terraform will perform the following actions:
       - delete_default_routes_on_create           = false -> null
       - deletion_policy                           = "DELETE" -> null
       - enable_ula_internal_ipv6                  = false -> null
-      - id                                        = "projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - id                                        = "projects/your-gcp-project-id/global/networks/llm-d-observatory-vpc" -> null
       - mtu                                       = 0 -> null
       - name                                      = "llm-d-observatory-vpc" -> null
       - network_firewall_policy_enforcement_order = "AFTER_CLASSIC_FIREWALL" -> null
       - network_id                                = "3659268708510073183" -> null
       - numeric_id                                = "3659268708510073183" -> null
-      - project                                   = "enes-turan-demo" -> null
+      - project                                   = "your-gcp-project-id" -> null
       - routing_mode                              = "REGIONAL" -> null
-      - self_link                                 = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - self_link                                 = "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/global/networks/llm-d-observatory-vpc" -> null
         # (5 unchanged attributes hidden)
     }
 
@@ -146,12 +146,12 @@ Terraform will perform the following actions:
       - creation_timestamp            = "2026-10-26T14:01:59.242-07:00" -> null
       - deletion_policy               = "DELETE" -> null
       - encrypted_interconnect_router = false -> null
-      - id                            = "projects/enes-turan-demo/regions/us-west4/routers/llm-d-observatory-router" -> null
+      - id                            = "projects/your-gcp-project-id/regions/us-west4/routers/llm-d-observatory-router" -> null
       - name                          = "llm-d-observatory-router" -> null
-      - network                       = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
-      - project                       = "enes-turan-demo" -> null
+      - network                       = "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/global/networks/llm-d-observatory-vpc" -> null
+      - project                       = "your-gcp-project-id" -> null
       - region                        = "us-west4" -> null
-      - self_link                     = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/regions/us-west4/routers/llm-d-observatory-router" -> null
+      - self_link                     = "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/regions/us-west4/routers/llm-d-observatory-router" -> null
         # (2 unchanged attributes hidden)
     }
 
@@ -165,13 +165,13 @@ Terraform will perform the following actions:
           - "ENDPOINT_TYPE_VM",
         ] -> null
       - icmp_idle_timeout_sec                = 30 -> null
-      - id                                   = "enes-turan-demo/us-west4/llm-d-observatory-router/llm-d-observatory-nat" -> null
+      - id                                   = "your-gcp-project-id/us-west4/llm-d-observatory-router/llm-d-observatory-nat" -> null
       - max_ports_per_vm                     = 0 -> null
       - min_ports_per_vm                     = 0 -> null
       - name                                 = "llm-d-observatory-nat" -> null
       - nat_ip_allocate_option               = "AUTO_ONLY" -> null
       - nat_ips                              = [] -> null
-      - project                              = "enes-turan-demo" -> null
+      - project                              = "your-gcp-project-id" -> null
       - region                               = "us-west4" -> null
       - router                               = "llm-d-observatory-router" -> null
       - source_subnetwork_ip_ranges_to_nat   = "ALL_SUBNETWORKS_ALL_IP_RANGES" -> null
@@ -189,16 +189,16 @@ Terraform will perform the following actions:
       - creation_timestamp               = "2026-10-26T14:02:00.318-07:00" -> null
       - deletion_policy                  = "DELETE" -> null
       - gateway_address                  = "10.10.0.1" -> null
-      - id                               = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+      - id                               = "projects/your-gcp-project-id/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
       - ip_cidr_range                    = "10.10.0.0/24" -> null
       - name                             = "llm-d-observatory-nodes" -> null
-      - network                          = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - network                          = "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/global/networks/llm-d-observatory-vpc" -> null
       - private_ip_google_access         = true -> null
       - private_ipv6_google_access       = "DISABLE_GOOGLE_ACCESS" -> null
-      - project                          = "enes-turan-demo" -> null
+      - project                          = "your-gcp-project-id" -> null
       - purpose                          = "PRIVATE" -> null
       - region                           = "us-west4" -> null
-      - self_link                        = "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+      - self_link                        = "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
       - stack_type                       = "IPV4_ONLY" -> null
       - subnetwork_id                    = 1295705303092953383 -> null
         # (11 unchanged attributes hidden)
@@ -241,7 +241,7 @@ Terraform will perform the following actions:
       - enable_shielded_nodes                    = true -> null
       - enable_tpu                               = false -> null
       - endpoint                                 = "34.16.143.208" -> null
-      - id                                       = "projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory" -> null
+      - id                                       = "projects/your-gcp-project-id/locations/us-west4-a/clusters/llm-d-observatory" -> null
       - initial_node_count                       = 1 -> null
       - label_fingerprint                        = "df54e789" -> null
       - location                                 = "us-west4-a" -> null
@@ -249,11 +249,11 @@ Terraform will perform the following actions:
       - master_version                           = "1.36.4-gke.2046003" -> null
       - monitoring_service                       = "monitoring.googleapis.com/kubernetes" -> null
       - name                                     = "llm-d-observatory" -> null
-      - network                                  = "projects/enes-turan-demo/global/networks/llm-d-observatory-vpc" -> null
+      - network                                  = "projects/your-gcp-project-id/global/networks/llm-d-observatory-vpc" -> null
       - networking_mode                          = "VPC_NATIVE" -> null
       - node_locations                           = [] -> null
       - node_version                             = "1.36.4-gke.2046003" -> null
-      - project                                  = "enes-turan-demo" -> null
+      - project                                  = "your-gcp-project-id" -> null
       - remove_default_node_pool                 = true -> null
       - resource_labels                          = {
           - "accelerator-type" = "cpu-only"
@@ -261,9 +261,9 @@ Terraform will perform the following actions:
           - "managed-by"       = "terraform"
           - "project"          = "llm-d-inference-observatory"
         } -> null
-      - self_link                                = "https://container.googleapis.com/v1beta1/projects/enes-turan-demo/zones/us-west4-a/clusters/llm-d-observatory" -> null
+      - self_link                                = "https://container.googleapis.com/v1beta1/projects/your-gcp-project-id/zones/us-west4-a/clusters/llm-d-observatory" -> null
       - services_ipv4_cidr                       = "10.30.0.0/20" -> null
-      - subnetwork                               = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+      - subnetwork                               = "projects/your-gcp-project-id/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
       - terraform_labels                         = {
           - "accelerator-type"           = "cpu-only"
           - "deployment-tier"            = "experimental-small"
@@ -337,7 +337,7 @@ Terraform will perform the following actions:
               - allow_external_traffic    = false -> null
               - enable_k8s_certs_via_dns  = false -> null
               - enable_k8s_tokens_via_dns = false -> null
-              - endpoint                  = "gke-6808a6986d204c749e2226661feca28ec745-697289276442.us-west4-a.gke.goog" -> null
+              - endpoint                  = "gke-6808a6986d204c749e2226661feca28ec745-123456789012.us-west4-a.gke.goog" -> null
             }
           - ip_endpoints_config {
               - enabled = true -> null
@@ -443,7 +443,7 @@ Terraform will perform the following actions:
               - "goog-gke-node-pool-provisioning-model" = "on-demand"
             } -> null
           - resource_manager_tags       = {} -> null
-          - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+          - service_account             = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
           - spot                        = false -> null
           - storage_pools               = [] -> null
           - tags                        = [] -> null
@@ -499,10 +499,10 @@ Terraform will perform the following actions:
           - ignore_node_count_changes   = false -> null
           - initial_node_count          = 1 -> null
           - instance_group_urls         = [
-              - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observatory-system-pool-b5b60be9-grp",
+              - "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observatory-system-pool-b5b60be9-grp",
             ] -> null
           - managed_instance_group_urls = [
-              - "https://www.googleapis.com/compute/beta/projects/enes-turan-demo/zones/us-west4-a/instanceGroups/gke-llm-d-observatory-system-pool-b5b60be9-grp",
+              - "https://www.googleapis.com/compute/beta/projects/your-gcp-project-id/zones/us-west4-a/instanceGroups/gke-llm-d-observatory-system-pool-b5b60be9-grp",
             ] -> null
           - max_pods_per_node           = 110 -> null
           - name                        = "system-pool" -> null
@@ -523,7 +523,7 @@ Terraform will perform the following actions:
               - enable_private_nodes        = false -> null
               - pod_ipv4_cidr_block         = "10.20.0.0/16" -> null
               - pod_range                   = "pods" -> null
-              - subnetwork                  = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+              - subnetwork                  = "projects/your-gcp-project-id/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
                 # (1 unchanged attribute hidden)
             }
 
@@ -556,7 +556,7 @@ Terraform will perform the following actions:
                   - "goog-gke-node-pool-provisioning-model" = "on-demand"
                 } -> null
               - resource_manager_tags       = {} -> null
-              - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+              - service_account             = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
               - spot                        = false -> null
               - storage_pools               = [] -> null
               - tags                        = [] -> null
@@ -614,10 +614,10 @@ Terraform will perform the following actions:
           - ignore_node_count_changes   = false -> null
           - initial_node_count          = 1 -> null
           - instance_group_urls         = [
-              - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
+              - "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
             ] -> null
           - managed_instance_group_urls = [
-              - "https://www.googleapis.com/compute/beta/projects/enes-turan-demo/zones/us-west4-a/instanceGroups/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
+              - "https://www.googleapis.com/compute/beta/projects/your-gcp-project-id/zones/us-west4-a/instanceGroups/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
             ] -> null
           - max_pods_per_node           = 110 -> null
           - name                        = "cpu-inference-pool" -> null
@@ -638,7 +638,7 @@ Terraform will perform the following actions:
               - enable_private_nodes        = false -> null
               - pod_ipv4_cidr_block         = "10.20.0.0/16" -> null
               - pod_range                   = "pods" -> null
-              - subnetwork                  = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+              - subnetwork                  = "projects/your-gcp-project-id/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
                 # (1 unchanged attribute hidden)
             }
 
@@ -672,7 +672,7 @@ Terraform will perform the following actions:
                   - "goog-gke-node-pool-provisioning-model" = "on-demand"
                 } -> null
               - resource_manager_tags       = {} -> null
-              - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+              - service_account             = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
               - spot                        = false -> null
               - storage_pools               = [] -> null
               - tags                        = [] -> null
@@ -804,7 +804,7 @@ Terraform will perform the following actions:
         }
 
       - workload_identity_config {
-          - workload_pool = "enes-turan-demo.svc.id.goog" -> null
+          - workload_pool = "your-gcp-project-id.svc.id.goog" -> null
         }
     }
 
@@ -812,15 +812,15 @@ Terraform will perform the following actions:
   - resource "google_container_node_pool" "cpu_inference_pool" {
       - cluster                     = "llm-d-observatory" -> null
       - deletion_policy             = "DELETE" -> null
-      - id                          = "projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory/nodePools/cpu-inference-pool" -> null
+      - id                          = "projects/your-gcp-project-id/locations/us-west4-a/clusters/llm-d-observatory/nodePools/cpu-inference-pool" -> null
       - ignore_node_count_changes   = false -> null
       - initial_node_count          = 1 -> null
       - instance_group_urls         = [
-          - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
+          - "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
         ] -> null
       - location                    = "us-west4-a" -> null
       - managed_instance_group_urls = [
-          - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroups/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
+          - "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/zones/us-west4-a/instanceGroups/gke-llm-d-observator-cpu-inference-po-001432b6-grp",
         ] -> null
       - max_pods_per_node           = 110 -> null
       - name                        = "cpu-inference-pool" -> null
@@ -828,7 +828,7 @@ Terraform will perform the following actions:
       - node_locations              = [
           - "us-west4-a",
         ] -> null
-      - project                     = "enes-turan-demo" -> null
+      - project                     = "your-gcp-project-id" -> null
       - version                     = "1.36.4-gke.2046003" -> null
         # (1 unchanged attribute hidden)
 
@@ -842,7 +842,7 @@ Terraform will perform the following actions:
           - enable_private_nodes        = false -> null
           - pod_ipv4_cidr_block         = "10.20.0.0/16" -> null
           - pod_range                   = "pods" -> null
-          - subnetwork                  = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+          - subnetwork                  = "projects/your-gcp-project-id/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
             # (1 unchanged attribute hidden)
         }
 
@@ -876,7 +876,7 @@ Terraform will perform the following actions:
               - "goog-gke-node-pool-provisioning-model" = "on-demand"
             } -> null
           - resource_manager_tags       = {} -> null
-          - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+          - service_account             = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
           - spot                        = false -> null
           - storage_pools               = [] -> null
           - tags                        = [] -> null
@@ -935,15 +935,15 @@ Terraform will perform the following actions:
   - resource "google_container_node_pool" "system_pool" {
       - cluster                     = "llm-d-observatory" -> null
       - deletion_policy             = "DELETE" -> null
-      - id                          = "projects/enes-turan-demo/locations/us-west4-a/clusters/llm-d-observatory/nodePools/system-pool" -> null
+      - id                          = "projects/your-gcp-project-id/locations/us-west4-a/clusters/llm-d-observatory/nodePools/system-pool" -> null
       - ignore_node_count_changes   = false -> null
       - initial_node_count          = 1 -> null
       - instance_group_urls         = [
-          - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observatory-system-pool-b5b60be9-grp",
+          - "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/zones/us-west4-a/instanceGroupManagers/gke-llm-d-observatory-system-pool-b5b60be9-grp",
         ] -> null
       - location                    = "us-west4-a" -> null
       - managed_instance_group_urls = [
-          - "https://www.googleapis.com/compute/v1/projects/enes-turan-demo/zones/us-west4-a/instanceGroups/gke-llm-d-observatory-system-pool-b5b60be9-grp",
+          - "https://www.googleapis.com/compute/v1/projects/your-gcp-project-id/zones/us-west4-a/instanceGroups/gke-llm-d-observatory-system-pool-b5b60be9-grp",
         ] -> null
       - max_pods_per_node           = 110 -> null
       - name                        = "system-pool" -> null
@@ -951,7 +951,7 @@ Terraform will perform the following actions:
       - node_locations              = [
           - "us-west4-a",
         ] -> null
-      - project                     = "enes-turan-demo" -> null
+      - project                     = "your-gcp-project-id" -> null
       - version                     = "1.36.4-gke.2046003" -> null
         # (1 unchanged attribute hidden)
 
@@ -965,7 +965,7 @@ Terraform will perform the following actions:
           - enable_private_nodes        = false -> null
           - pod_ipv4_cidr_block         = "10.20.0.0/16" -> null
           - pod_range                   = "pods" -> null
-          - subnetwork                  = "projects/enes-turan-demo/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
+          - subnetwork                  = "projects/your-gcp-project-id/regions/us-west4/subnetworks/llm-d-observatory-nodes" -> null
             # (1 unchanged attribute hidden)
         }
 
@@ -998,7 +998,7 @@ Terraform will perform the following actions:
               - "goog-gke-node-pool-provisioning-model" = "on-demand"
             } -> null
           - resource_manager_tags       = {} -> null
-          - service_account             = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
+          - service_account             = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
           - spot                        = false -> null
           - storage_pools               = [] -> null
           - tags                        = [] -> null
@@ -1056,63 +1056,63 @@ Terraform will perform the following actions:
   # google_project_iam_member.node_sa_roles["roles/artifactregistry.reader"] will be destroyed
   - resource "google_project_iam_member" "node_sa_roles" {
       - etag    = "BwZexKT0/7w=" -> null
-      - id      = "enes-turan-demo/roles/artifactregistry.reader/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - project = "enes-turan-demo" -> null
+      - id      = "your-gcp-project-id/roles/artifactregistry.reader/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - project = "your-gcp-project-id" -> null
       - role    = "roles/artifactregistry.reader" -> null
     }
 
   # google_project_iam_member.node_sa_roles["roles/cloudtrace.agent"] will be destroyed
   - resource "google_project_iam_member" "node_sa_roles" {
       - etag    = "BwZexKT0/7w=" -> null
-      - id      = "enes-turan-demo/roles/cloudtrace.agent/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - project = "enes-turan-demo" -> null
+      - id      = "your-gcp-project-id/roles/cloudtrace.agent/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - project = "your-gcp-project-id" -> null
       - role    = "roles/cloudtrace.agent" -> null
     }
 
   # google_project_iam_member.node_sa_roles["roles/container.defaultNodeServiceAccount"] will be destroyed
   - resource "google_project_iam_member" "node_sa_roles" {
       - etag    = "BwZexKT0/7w=" -> null
-      - id      = "enes-turan-demo/roles/container.defaultNodeServiceAccount/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - project = "enes-turan-demo" -> null
+      - id      = "your-gcp-project-id/roles/container.defaultNodeServiceAccount/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - project = "your-gcp-project-id" -> null
       - role    = "roles/container.defaultNodeServiceAccount" -> null
     }
 
   # google_project_iam_member.node_sa_roles["roles/logging.logWriter"] will be destroyed
   - resource "google_project_iam_member" "node_sa_roles" {
       - etag    = "BwZexKT0/7w=" -> null
-      - id      = "enes-turan-demo/roles/logging.logWriter/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - project = "enes-turan-demo" -> null
+      - id      = "your-gcp-project-id/roles/logging.logWriter/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - project = "your-gcp-project-id" -> null
       - role    = "roles/logging.logWriter" -> null
     }
 
   # google_project_iam_member.node_sa_roles["roles/monitoring.metricWriter"] will be destroyed
   - resource "google_project_iam_member" "node_sa_roles" {
       - etag    = "BwZexKT0/7w=" -> null
-      - id      = "enes-turan-demo/roles/monitoring.metricWriter/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - project = "enes-turan-demo" -> null
+      - id      = "your-gcp-project-id/roles/monitoring.metricWriter/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - project = "your-gcp-project-id" -> null
       - role    = "roles/monitoring.metricWriter" -> null
     }
 
   # google_project_iam_member.node_sa_roles["roles/monitoring.viewer"] will be destroyed
   - resource "google_project_iam_member" "node_sa_roles" {
       - etag    = "BwZexKT0/7w=" -> null
-      - id      = "enes-turan-demo/roles/monitoring.viewer/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - project = "enes-turan-demo" -> null
+      - id      = "your-gcp-project-id/roles/monitoring.viewer/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - project = "your-gcp-project-id" -> null
       - role    = "roles/monitoring.viewer" -> null
     }
 
   # google_project_iam_member.node_sa_roles["roles/stackdriver.resourceMetadata.writer"] will be destroyed
   - resource "google_project_iam_member" "node_sa_roles" {
       - etag    = "BwZexKT0/7w=" -> null
-      - id      = "enes-turan-demo/roles/stackdriver.resourceMetadata.writer/serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - project = "enes-turan-demo" -> null
+      - id      = "your-gcp-project-id/roles/stackdriver.resourceMetadata.writer/serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - member  = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - project = "your-gcp-project-id" -> null
       - role    = "roles/stackdriver.resourceMetadata.writer" -> null
     }
 
@@ -1120,8 +1120,8 @@ Terraform will perform the following actions:
   - resource "google_project_service" "required" {
       - deletion_policy    = "DELETE" -> null
       - disable_on_destroy = false -> null
-      - id                 = "enes-turan-demo/artifactregistry.googleapis.com" -> null
-      - project            = "enes-turan-demo" -> null
+      - id                 = "your-gcp-project-id/artifactregistry.googleapis.com" -> null
+      - project            = "your-gcp-project-id" -> null
       - service            = "artifactregistry.googleapis.com" -> null
     }
 
@@ -1129,8 +1129,8 @@ Terraform will perform the following actions:
   - resource "google_project_service" "required" {
       - deletion_policy    = "DELETE" -> null
       - disable_on_destroy = false -> null
-      - id                 = "enes-turan-demo/cloudtrace.googleapis.com" -> null
-      - project            = "enes-turan-demo" -> null
+      - id                 = "your-gcp-project-id/cloudtrace.googleapis.com" -> null
+      - project            = "your-gcp-project-id" -> null
       - service            = "cloudtrace.googleapis.com" -> null
     }
 
@@ -1138,8 +1138,8 @@ Terraform will perform the following actions:
   - resource "google_project_service" "required" {
       - deletion_policy    = "DELETE" -> null
       - disable_on_destroy = false -> null
-      - id                 = "enes-turan-demo/compute.googleapis.com" -> null
-      - project            = "enes-turan-demo" -> null
+      - id                 = "your-gcp-project-id/compute.googleapis.com" -> null
+      - project            = "your-gcp-project-id" -> null
       - service            = "compute.googleapis.com" -> null
     }
 
@@ -1147,8 +1147,8 @@ Terraform will perform the following actions:
   - resource "google_project_service" "required" {
       - deletion_policy    = "DELETE" -> null
       - disable_on_destroy = false -> null
-      - id                 = "enes-turan-demo/container.googleapis.com" -> null
-      - project            = "enes-turan-demo" -> null
+      - id                 = "your-gcp-project-id/container.googleapis.com" -> null
+      - project            = "your-gcp-project-id" -> null
       - service            = "container.googleapis.com" -> null
     }
 
@@ -1156,8 +1156,8 @@ Terraform will perform the following actions:
   - resource "google_project_service" "required" {
       - deletion_policy    = "DELETE" -> null
       - disable_on_destroy = false -> null
-      - id                 = "enes-turan-demo/iam.googleapis.com" -> null
-      - project            = "enes-turan-demo" -> null
+      - id                 = "your-gcp-project-id/iam.googleapis.com" -> null
+      - project            = "your-gcp-project-id" -> null
       - service            = "iam.googleapis.com" -> null
     }
 
@@ -1165,8 +1165,8 @@ Terraform will perform the following actions:
   - resource "google_project_service" "required" {
       - deletion_policy    = "DELETE" -> null
       - disable_on_destroy = false -> null
-      - id                 = "enes-turan-demo/logging.googleapis.com" -> null
-      - project            = "enes-turan-demo" -> null
+      - id                 = "your-gcp-project-id/logging.googleapis.com" -> null
+      - project            = "your-gcp-project-id" -> null
       - service            = "logging.googleapis.com" -> null
     }
 
@@ -1174,8 +1174,8 @@ Terraform will perform the following actions:
   - resource "google_project_service" "required" {
       - deletion_policy    = "DELETE" -> null
       - disable_on_destroy = false -> null
-      - id                 = "enes-turan-demo/monitoring.googleapis.com" -> null
-      - project            = "enes-turan-demo" -> null
+      - id                 = "your-gcp-project-id/monitoring.googleapis.com" -> null
+      - project            = "your-gcp-project-id" -> null
       - service            = "monitoring.googleapis.com" -> null
     }
 
@@ -1185,11 +1185,11 @@ Terraform will perform the following actions:
       - deletion_policy = "DELETE" -> null
       - disabled        = false -> null
       - display_name    = "GKE CPU Node Service Account for llm-d-observatory" -> null
-      - email           = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - id              = "projects/enes-turan-demo/serviceAccounts/llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - member          = "serviceAccount:llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - name            = "projects/enes-turan-demo/serviceAccounts/llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-      - project         = "enes-turan-demo" -> null
+      - email           = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - id              = "projects/your-gcp-project-id/serviceAccounts/llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - member          = "serviceAccount:llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - name            = "projects/your-gcp-project-id/serviceAccounts/llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+      - project         = "your-gcp-project-id" -> null
       - unique_id       = "101601670921364617979" -> null
         # (1 unchanged attribute hidden)
     }
@@ -1197,13 +1197,13 @@ Terraform will perform the following actions:
 Plan: 0 to add, 0 to change, 24 to destroy.
 
 Changes to Outputs:
-  - artifact_registry_repository_url = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory" -> null
+  - artifact_registry_repository_url = "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory" -> null
   - cluster_endpoint                 = (sensitive value) -> null
   - cluster_name                     = "llm-d-observatory" -> null
-  - frontend_image_uri               = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observatory-frontend:v0.1.0" -> null
-  - node_service_account_email       = "llm-d-observatory-node-sa@enes-turan-demo.iam.gserviceaccount.com" -> null
-  - observer_image_uri               = "us-west4-docker.pkg.dev/enes-turan-demo/llm-d-observatory/observer-api:v0.1.0" -> null
-  - project_id                       = "enes-turan-demo" -> null
+  - frontend_image_uri               = "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observatory-frontend:v0.1.0" -> null
+  - node_service_account_email       = "llm-d-observatory-node-sa@your-gcp-project-id.iam.gserviceaccount.com" -> null
+  - observer_image_uri               = "us-west4-docker.pkg.dev/your-gcp-project-id/llm-d-observatory/observer-api:v0.1.0" -> null
+  - project_id                       = "your-gcp-project-id" -> null
   - region                           = "us-west4" -> null
   - subnet_name                      = "llm-d-observatory-nodes" -> null
   - vpc_network_name                 = "llm-d-observatory-vpc" -> null

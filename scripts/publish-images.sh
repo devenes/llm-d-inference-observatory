@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-PROJECT_ID="${PROJECT_ID:-enes-turan-demo}"
+PROJECT_ID="${PROJECT_ID:-your-gcp-project-id}"
 REGION="${REGION:-us-west4}"
 REPO_NAME="${REPO_NAME:-llm-d-observatory}"
 TAG="${TAG:-v0.1.0}"

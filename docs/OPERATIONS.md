@@ -14,7 +14,7 @@ This guide documents operational behaviors and known constraints discovered and 
 ### 1.2 Calibrating `peakPrefillThroughput: 350` for CPU Prefix-Cache Affinity
 - **Symptom:** Under concurrent bursts on CPU, all requests route to a single vLLM replica while the second replica sits idle.
 - **Root Cause:** The upstream `prefix-cache-affinity-filter` default `peakPrefillThroughput` is `15928` tok/s (calibrated for `Qwen3-32B` on `2x H100` GPUs). On `c3-standard-22` CPUs, single-replica prefill throughput is `~250–500` tok/s, so the GPU threshold never detects CPU prefill saturation.
-- **Mitigation:** [router-values.yaml](file:///Users/enes/GitHub/llm-d-inference-observatory/deploy/llm-d/router-values.yaml) and [precise-prefix-cache-values.yaml](file:///Users/enes/GitHub/llm-d-inference-observatory/deploy/llm-d/precise-prefix-cache-values.yaml) explicitly set `peakPrefillThroughput: 350`.
+- **Mitigation:** [router-values.yaml](../deploy/llm-d/router-values.yaml) and [precise-prefix-cache-values.yaml](../deploy/llm-d/precise-prefix-cache-values.yaml) explicitly set `peakPrefillThroughput: 350`.
 
 ### 1.3 Single-Node Rolling Update Deadlock at `replicas >= 3`
 - **Symptom:** Scaling `experimental-small-vllm-decode` to `3` replicas and triggering a rolling update leaves the new pod stuck in `Pending (0/2 nodes available: 1 Insufficient cpu, 1 node(s) didn't match Pod's nodeAffinity/selector)`.

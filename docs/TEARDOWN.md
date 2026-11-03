@@ -1,12 +1,12 @@
 # Infrastructure Teardown Runbook
 
-Use this runbook to cleanly destroy all Kubernetes workloads and Terraform-managed Google Cloud resources created by `llm-d-inference-observatory` in project `enes-turan-demo`.
+Use this runbook to cleanly destroy all Kubernetes workloads and Terraform-managed Google Cloud resources created by `llm-d-inference-observatory` in project `your-gcp-project-id`.
 
 ---
 
 ## 1. Automated Teardown Script
 
-The repository includes [`scripts/teardown.sh`](file:///Users/enes/GitHub/llm-d-inference-observatory/scripts/teardown.sh), which defaults to `--dry-run` unless both `--confirm` and `ALLOW_CLOUD_MUTATION=true` are passed:
+The repository includes [`scripts/teardown.sh`](../scripts/teardown.sh), which defaults to `--dry-run` unless both `--confirm` and `ALLOW_CLOUD_MUTATION=true` are passed:
 
 ```bash
 # 1. Inspect planned teardown steps (safe dry-run)
@@ -48,10 +48,10 @@ terraform destroy -auto-approve
 
 ## 3. Post-Teardown Zero-Resource Verification
 
-After `terraform destroy` completes, verify that zero project resources remain in `enes-turan-demo`:
+After `terraform destroy` completes, verify that zero project resources remain in `your-gcp-project-id`:
 
 ```bash
-export PROJECT_ID="enes-turan-demo"
+export PROJECT_ID="your-gcp-project-id"
 export REGION="us-west4"
 
 # 1. Verify Terraform state is empty
